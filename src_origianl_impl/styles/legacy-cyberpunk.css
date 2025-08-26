@@ -1,0 +1,135 @@
+/* Cyberpunk Neon Theme */
+body {
+  background: url('https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif') center/cover no-repeat fixed;
+  min-height: 100vh;
+  font-family: 'Orbitron', 'Inter', 'Roboto', 'Arial', sans-serif;
+  color: #fff;
+}
+
+.legacy-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  background: rgba(20,20,40,0.92);
+  border-radius: 18px;
+  box-shadow: 0 0 32px #00fff7cc, 0 0 8px #ff00cc99;
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #00fff7;
+}
+
+.legacy-header {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #00fff7, #ff00cc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 12px #00fff7, 0 0 8px #ff00cc;
+  margin-bottom: 2rem;
+}
+
+.legacy-card {
+  background: rgba(30,30,60,0.95);
+  border-radius: 12px;
+  box-shadow: 0 0 16px #ff00cc55, 0 0 8px #00fff799;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1.5px solid #ff00cc;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.legacy-card:hover {
+  box-shadow: 0 0 32px #00fff7cc, 0 0 16px #ff00cc99;
+  border-color: #00fff7;
+}
+
+.legacy-badge {
+  display: inline-block;
+  background: linear-gradient(90deg, #ff00cc, #00fff7);
+  color: #fff;
+  border-radius: 16px;
+  padding: 0.4em 1.2em;
+  margin-right: 10px;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 0 8px #ff00cc99, 0 0 4px #00fff799;
+  margin-bottom: 8px;
+  border: 1.5px solid #00fff7;
+}
+.legacy-badge.locked {
+  background: #222;
+  color: #888;
+  box-shadow: none;
+  border: 1.5px solid #444;
+}
+
+.legacy-btn {
+  padding: 0.7rem 2rem;
+  background: url('https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif') center/cover;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 1.1rem;
+  box-shadow: 0 0 12px #ff00cc99, 0 0 8px #00fff799;
+  transition: background 0.2s, box-shadow 0.2s;
+  border: 2px solid #ff00cc;
+  text-shadow: 0 0 8px #00fff7, 0 0 4px #ff00cc;
+}
+.legacy-btn:hover {
+  background: url('https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif') center/cover;
+  box-shadow: 0 0 24px #00fff7cc, 0 0 16px #ff00cc99;
+  border-color: #00fff7;
+}
+
+.legacy-reset {
+  background: url('https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif') center/cover;
+  border: 2px solid #ff00cc;
+}
+.legacy-reset:hover {
+  background: url('https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif') center/cover;
+  border-color: #00fff7;
+}
+
+.legacy-slider {
+  width: 100%;
+  accent-color: #ff00cc;
+  background: transparent;
+  border-radius: 8px;
+  box-shadow: 0 0 8px #ff00cc99;
+}
+
+.legacy-event {
+  color: #00fff7;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 8px #00fff7;
+}
+
+.legacy-ai {
+  color: #ff00cc;
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 8px #ff00cc;
+}
+
+.legacy-task {
+  color: #ff00cc;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 8px #ff00cc;
+}
+
+.legacy-progress {
+  color: #00fff7;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 8px #00fff7;
+}

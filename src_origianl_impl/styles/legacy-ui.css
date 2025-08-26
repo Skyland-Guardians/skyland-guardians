@@ -1,0 +1,114 @@
+body {
+  background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+  min-height: 100vh;
+  font-family: 'Inter', 'Roboto', 'Arial', sans-serif;
+}
+
+.legacy-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  background: rgba(255,255,255,0.95);
+  border-radius: 18px;
+  box-shadow: 0 4px 32px #0002;
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.legacy-header {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #f6d365, #fda085);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.legacy-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #0001;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.2s;
+}
+.legacy-card:hover {
+  box-shadow: 0 6px 24px #fda08555;
+}
+
+.legacy-badge {
+  display: inline-block;
+  background: linear-gradient(90deg, #27ae60, #16a085);
+  color: #fff;
+  border-radius: 16px;
+  padding: 0.4em 1.2em;
+  margin-right: 10px;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 1px 6px #27ae6055;
+  margin-bottom: 8px;
+}
+.legacy-badge.locked {
+  background: #ccc;
+  color: #fff;
+  box-shadow: none;
+}
+
+.legacy-btn {
+  padding: 0.7rem 2rem;
+  background: linear-gradient(90deg, #27ae60, #16a085);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px #27ae6055;
+  transition: background 0.2s;
+}
+.legacy-btn:hover {
+  background: linear-gradient(90deg, #16a085, #27ae60);
+}
+
+.legacy-reset {
+  background: linear-gradient(90deg, #e74c3c, #e67e22);
+}
+.legacy-reset:hover {
+  background: linear-gradient(90deg, #e67e22, #e74c3c);
+}
+
+.legacy-slider {
+  width: 100%;
+  accent-color: #27ae60;
+}
+
+.legacy-event {
+  color: #16a085;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.legacy-ai {
+  color: #8e44ad;
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+
+.legacy-task {
+  color: #c0392b;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.legacy-progress {
+  color: #2980b9;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
