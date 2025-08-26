@@ -12,12 +12,15 @@ import goldIcon from '../assets/主界面1资源/黄金icon.png'
 import fountainIcon from '../assets/主界面1资源/喷泉icon.png'
 import crystalIcon from '../assets/主界面1资源/水晶icon.png'
 import magicIcon from '../assets/主界面1资源/魔杖icon.png'
+import cardsIcon from '../assets/主界面1资源/卡牌主界面icon.png'
+import badgesIcon from '../assets/主界面1资源/徽章主界面icon.png'
 
 import './MainScreen.css'
 
 export default function MainScreen() {
   const stars = 15
   const day = 1
+  const playerName = 'James'
 
   const actions = [
     { icon: swordIcon, label: 'Sword' },
@@ -33,17 +36,28 @@ export default function MainScreen() {
   return (
     <div className="main-screen">
       <img src={bg} className="background" alt="Skyland background" />
+      <div className="header-message">{playerName}, guard your fortune!</div>
       <div className="top-bar">
         <div className="avatar-area">
           <img src={avatar} alt="Player avatar" className="avatar" />
           <span className="level-text">Level 1</span>
         </div>
         <div className="status-area">
-          <span className="day-text">Day {day}</span>
+          <span className="day-text">DAY {day}</span>
           <div className="star-counter">
             <img src={starIcon} alt="Stars" className="star-icon" />
             <span className="star-text">{stars}</span>
           </div>
+        </div>
+      </div>
+      <div className="side-menu">
+        <div className="side-button">
+          <img src={cardsIcon} alt="My Cards" />
+          <span>My Cards</span>
+        </div>
+        <div className="side-button">
+          <img src={badgesIcon} alt="Badges" />
+          <span>Badges</span>
         </div>
       </div>
       <div className="ai-area">
@@ -57,11 +71,15 @@ export default function MainScreen() {
         <img src={bottomBar} className="bottom-bar" alt="Menu background" />
         <div className="menu">
           {actions.map((act) => (
-            <button key={act.label} className="menu-button">
-              <img src={act.icon} alt={act.label} />
-            </button>
+            <div key={act.label} className="menu-item">
+              <button className="menu-button">
+                <img src={act.icon} alt={act.label} />
+              </button>
+              <span className="menu-label">{act.label}</span>
+            </div>
           ))}
         </div>
+        <button className="apply-button">Apply</button>
       </div>
       <div className="disclaimer">Educational/Simulation Only</div>
     </div>
