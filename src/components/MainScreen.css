@@ -7,11 +7,11 @@
 
 .background {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center bottom;
 }
 
 .star-counter {
@@ -33,24 +33,34 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 30%;
-  max-width: 200px;
+  width: 25%;
+  max-width: 180px;
+}
+
+.bottom-area {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 500px;
 }
 
 .bottom-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
   width: 100%;
+  height: auto;
+  display: block;
 }
 
 .menu {
   position: absolute;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
-  gap: 2rem;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
 .menu-button {
@@ -60,8 +70,8 @@
 }
 
 .menu-button img {
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: auto;
 }
 
 .disclaimer {

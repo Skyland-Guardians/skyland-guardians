@@ -18,14 +18,16 @@ export default function MainScreen() {
         <span className="star-text">{stars}</span>
       </div>
       <img src={ai} alt="AI companion" className="companion" />
-      <img src={bottomBar} className="bottom-bar" alt="Menu background" />
-      <div className="menu">
-        <button className="menu-button">
-          <img src={cardIcon} alt="Mission cards" />
-        </button>
-        <button className="menu-button">
-          <img src={badgeIcon} alt="Badges" />
-        </button>
+      <div className="bottom-area">
+        <img src={bottomBar} className="bottom-bar" alt="Menu background" />
+        <div className="menu">
+          <button className="menu-button">
+            <img src={cardIcon} alt="Mission cards" />
+          </button>
+          <button className="menu-button">
+            <img src={badgeIcon} alt="Badges" />
+          </button>
+        </div>
       </div>
       <div className="disclaimer">Educational/Simulation Only</div>
     </div>
