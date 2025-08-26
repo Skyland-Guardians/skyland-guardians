@@ -3,25 +3,94 @@ import { LeftSidebar } from '../Sidebar/LeftSidebar';
 import { SkylandIsland } from '../Island/SkylandIsland';
 import { AIPanel } from '../AIPanel/AIPanel';
 import { AssetToolbar } from '../AssetToolbar/AssetToolbar';
-import { DebugPanel } from '../DebugPanel/DebugPanel';
-import { useGameState } from '../../hooks/useGameState';
+import { useGameState } from '../../hooks/useGameContext';
 
 export function MainScreen() {
   const { gameState } = useGameState();
   const isChaoMode = gameState.mode === 'chaos';
 
   return (
-    <div className={`min-h-screen transition-all duration-1000 ${
-      isChaoMode 
-        ? 'bg-gradient-to-br from-purple-900 via-slate-800 to-purple-900' 
-        : 'bg-gradient-to-br from-purple-50 via-blue-50 to-purple-100'
-    }`}>
+    <div style={{
+      minHeight: '100vh',
+      background: isChaoMode 
+        ? 'linear-gradient(135deg, #1e1b4b 0%, #374151 50%, #1e1b4b 100%)' 
+        : 'linear-gradient(135deg, #FDF6E3 0%, #FFF8E1 30%, #F5E6A3 70%, #E8D5A6 100%)', // Warm cream/yellow tones
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      transition: 'all 1s ease',
+      fontFamily: 'Arial, sans-serif',
+      position: 'relative'
+    }}>
+      
+      {/* Background decorative elements */}
+      {!isChaoMode && (
+        <>
+          {/* Bottom purple decoration - more rounded arc shape */}
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '35%',
+            background: 'linear-gradient(135deg, #c084fc, #a855f7, #9333ea)',
+            borderTopLeftRadius: '50% 100%',
+            borderTopRightRadius: '50% 100%',
+            opacity: 0.4,
+            zIndex: 1
+          }} />
+          
+          {/* Top right yellow semi-circle - more prominent on warm background */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: '350px',
+            height: '250px',
+            background: 'radial-gradient(circle at 100% 0%, #FFFACD, #F0E68C, transparent 65%)',
+            opacity: 0.8,
+            zIndex: 1,
+            borderBottomLeftRadius: '100%'
+          }} />
+          
+          {/* Decorative clouds matching original design exactly */}
+          <div style={{
+            position: 'absolute',
+            top: '100px',
+            left: '20%',
+            width: '70px',
+            height: '35px',
+            backgroundColor: '#2c5282',
+            borderRadius: '40px',
+            opacity: 0.85,
+            zIndex: 1
+          }} />
+          
+          <div style={{
+            position: 'absolute',
+            top: '90px',
+            right: '25%',
+            width: '65px',
+            height: '32px',
+            backgroundColor: '#2c5282',
+            borderRadius: '35px',
+            opacity: 0.8,
+            zIndex: 1
+          }} />
+        </>
+      )}
       
       {/* Header */}
       <Header />
       
       {/* Main Content Area */}
-      <main className="flex-1 flex min-h-[calc(100vh-200px)]">
+      <main style={{
+        display: 'flex',
+        flex: 1,
+        minHeight: 'calc(100vh - 200px)',
+        position: 'relative',
+        zIndex: 2
+      }}>
         {/* Left Sidebar */}
         <LeftSidebar />
         
@@ -32,34 +101,40 @@ export function MainScreen() {
         <AIPanel />
       </main>
       
-      {/* Bottom Asset Toolbar */}
-      <AssetToolbar />
+      {/* Bottom Asset Toolbar - moved up to overlay 1/4 of island */}
+      <div style={{
+        position: 'fixed',
+        bottom: '15vh', // Moved down further from 20vh
+        left: 0,
+        right: 0,
+        zIndex: 10 // Ensure it's above the island
+      }}>
+        <AssetToolbar />
+      </div>
       
       {/* Chaos Mode Overlay Effects */}
       {isChaoMode && (
-        <div className="fixed inset-0 pointer-events-none">
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          pointerEvents: 'none',
+          zIndex: 10
+        }}>
           {/* Screen shake effect */}
-          <div className="absolute inset-0 bg-red-500 opacity-5 animate-pulse"></div>
-          
-          {/* Lightning flash effect */}
-          <div 
-            className="absolute inset-0 bg-white opacity-0 animate-ping"
-            style={{ 
-              animationDuration: '0.1s', 
-              animationIterationCount: '1',
-              animationDelay: '2s'
-            }}
-          ></div>
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(239, 68, 68, 0.05)',
+            animation: 'pulse 2s infinite'
+          }}></div>
         </div>
       )}
-      
-      {/* Debug Panel */}
-      <DebugPanel />
-      
-      {/* Educational disclaimer */}
-      <div className="fixed bottom-4 left-4 bg-black bg-opacity-70 text-white text-xs px-3 py-1 rounded-full">
-        🎓 Educational Simulation Only
-      </div>
     </div>
   );
 }

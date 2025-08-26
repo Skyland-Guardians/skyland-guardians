@@ -1,4 +1,4 @@
-import { GameProvider } from './hooks/useGameState';
+import { GameProvider } from './components/GameProvider/GameProvider';
 import { MainScreen } from './components/MainScreen/MainScreen';
 
 function App() {

@@ -1,92 +1,160 @@
-import { useGameState } from '../../hooks/useGameState';
+import { useGameState } from '../../hooks/useGameContext';
 
 export function SkylandIsland() {
   const { gameState } = useGameState();
   const isChaoMode = gameState.mode === 'chaos';
 
   return (
-    <div className={`relative flex-1 flex items-center justify-center transition-all duration-1000 ${
-      isChaoMode 
-        ? 'bg-gradient-to-b from-purple-900 via-purple-800 to-purple-900' 
-        : 'bg-gradient-to-b from-purple-100 via-blue-50 to-purple-200'
-    }`}>
+    <div style={{
+      position: 'relative',
+      flex: 1,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      transition: 'all 1s ease',
+      backgroundColor: 'transparent' // Remove the blue/purple background
+    }}>
       
       {/* Clouds */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className={`absolute top-10 left-20 w-16 h-8 rounded-full opacity-60 ${
-          isChaoMode ? 'bg-gray-700' : 'bg-white'
-        }`}></div>
-        <div className={`absolute top-16 right-32 w-12 h-6 rounded-full opacity-50 ${
-          isChaoMode ? 'bg-gray-600' : 'bg-white'
-        }`}></div>
-        <div className={`absolute top-24 left-1/3 w-20 h-10 rounded-full opacity-40 ${
-          isChaoMode ? 'bg-gray-800' : 'bg-white'
-        }`}></div>
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        overflow: 'hidden'
+      }}>
+        <div style={{
+          position: 'absolute',
+          top: '2.5rem',
+          left: '5rem',
+          width: '4rem',
+          height: '2rem',
+          borderRadius: '9999px',
+          opacity: 0.6,
+          backgroundColor: isChaoMode ? '#374151' : 'white'
+        }}></div>
+        <div style={{
+          position: 'absolute',
+          top: '4rem',
+          right: '8rem',
+          width: '3rem',
+          height: '1.5rem',
+          borderRadius: '9999px',
+          opacity: 0.5,
+          backgroundColor: isChaoMode ? '#4b5563' : 'white'
+        }}></div>
+        <div style={{
+          position: 'absolute',
+          top: '6rem',
+          left: '33%',
+          width: '5rem',
+          height: '2.5rem',
+          borderRadius: '9999px',
+          opacity: 0.4,
+          backgroundColor: isChaoMode ? '#1f2937' : 'white'
+        }}></div>
       </div>
 
       {/* Lightning effects for chaos mode */}
       {isChaoMode && (
         <>
           <img 
-            src="/src/assets/主界面2 资源/一号闪电右.png"
+            src="/assets/主界面2资源/一号闪电右.png"
             alt="Lightning"
-            className="absolute top-16 right-20 w-16 h-32 animate-pulse"
+            style={{
+              position: 'absolute',
+              top: '4rem',
+              right: '5rem',
+              width: '4rem',
+              height: '8rem',
+              animation: 'pulse 2s infinite'
+            }}
           />
           <img 
-            src="/src/assets/主界面2 资源/二号闪电左.png"
+            src="/assets/主界面2资源/二号闪电左.png"
             alt="Lightning"
-            className="absolute top-12 left-24 w-12 h-28 animate-pulse delay-500"
+            style={{
+              position: 'absolute',
+              top: '3rem',
+              left: '6rem',
+              width: '3rem',
+              height: '7rem',
+              animation: 'pulse 2s infinite 0.5s'
+            }}
           />
         </>
       )}
 
       {/* Main Island Container */}
-      <div className="relative">
-        {/* Island Base */}
-        <div className="relative w-96 h-64">
+      <div style={{ position: 'relative' }}>
+        {/* Island with floating animation */}
+        <div style={{
+          position: 'relative',
+          width: '80vw', // 80% of viewport width
+          height: '80vh', // 80% of viewport height
+          animation: 'pulse 4s infinite'
+        }}>
           <img 
-            src="/src/assets/主界面1资源/背景空岛.png"
+            src="/assets/主界面1资源/背景空岛.png"
             alt="Skyland Base"
-            className="w-full h-full object-contain drop-shadow-2xl"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.25)) brightness(110%)'
+            }}
           />
           
-          {/* Buildings and landscape elements positioned on the island */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="relative w-80 h-48">
-              
-              {/* Background buildings */}
-              <div className="absolute top-8 left-16 w-8 h-16 bg-orange-400 rounded-t-sm"></div>
-              <div className="absolute top-6 left-24 w-6 h-20 bg-blue-500 rounded-t-sm"></div>
-              <div className="absolute top-10 left-32 w-10 h-12 bg-orange-300 rounded-t-sm"></div>
-              
-              {/* Main central building */}
-              <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-12 h-24 bg-blue-600 rounded-t-sm">
-                <div className="w-full h-2 bg-orange-400 mt-2"></div>
-                <div className="w-full h-2 bg-orange-400 mt-2"></div>
-                <div className="w-full h-2 bg-orange-400 mt-2"></div>
-              </div>
-              
-              {/* Right side buildings */}
-              <div className="absolute top-8 right-16 w-8 h-14 bg-orange-500 rounded-t-sm"></div>
-              <div className="absolute top-12 right-24 w-6 h-10 bg-blue-400 rounded-t-sm"></div>
-              
-              {/* Trees */}
-              <div className="absolute top-16 left-12 w-3 h-6 bg-orange-600 rounded-full"></div>
-              <div className="absolute top-18 left-20 w-3 h-6 bg-blue-700 rounded-full"></div>
-              <div className="absolute top-20 right-12 w-3 h-6 bg-green-600 rounded-full"></div>
-              <div className="absolute top-16 right-20 w-3 h-6 bg-blue-600 rounded-full"></div>
-              
-              {/* Small decorative elements */}
-              <div className="absolute bottom-8 left-1/4 w-2 h-4 bg-orange-400 rounded-t-full"></div>
-              <div className="absolute bottom-6 right-1/4 w-2 h-4 bg-blue-500 rounded-t-full"></div>
-            </div>
-          </div>
-          
-          {/* Floating animation */}
-          <div className="absolute inset-0 animate-bounce" style={{ animationDuration: '3s' }}>
-            <div className="w-full h-full opacity-20 bg-gradient-to-t from-blue-400 to-transparent rounded-full blur-xl transform translate-y-8"></div>
-          </div>
+          {/* Floating glow effect */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(to top, rgba(251, 146, 60, 0.3), transparent, rgba(147, 197, 253, 0.3))',
+            opacity: 0.3,
+            borderRadius: '50%',
+            filter: 'blur(3rem)',
+            animation: 'pulse 3s infinite'
+          }}></div>
         </div>
+        
+        {/* Particle effects */}
+        <div style={{
+          position: 'absolute',
+          top: '2.5rem',
+          left: '5rem',
+          width: '0.5rem',
+          height: '0.5rem',
+          backgroundColor: '#fde047',
+          borderRadius: '50%',
+          opacity: 0.7,
+          animation: 'ping 1s infinite'
+        }}></div>
+        <div style={{
+          position: 'absolute',
+          top: '8rem',
+          right: '4rem',
+          width: '0.25rem',
+          height: '0.25rem',
+          backgroundColor: '#93c5fd',
+          borderRadius: '50%',
+          opacity: 0.5,
+          animation: 'ping 1s infinite 1s'
+        }}></div>
+        <div style={{
+          position: 'absolute',
+          bottom: '5rem',
+          left: '8rem',
+          width: '0.375rem',
+          height: '0.375rem',
+          backgroundColor: '#fdba74',
+          borderRadius: '50%',
+          opacity: 0.6,
+          animation: 'ping 1s infinite 2s'
+        }}></div>
       </div>
     </div>
   );

@@ -1,62 +1,223 @@
-import { AssetType } from '../../types';
+import { useGameState } from '../../hooks/useGameContext';
+import type { AssetType } from '../../types/game';
 
 interface AssetButtonProps {
   asset: AssetType;
   onClick?: () => void;
+  isActive?: boolean;
 }
 
-export function AssetButton({ asset, onClick }: AssetButtonProps) {
-  const getThemeClasses = (theme: string) => {
+export function AssetButton({ asset, onClick, isActive = false }: AssetButtonProps) {
+  const { updateAssetAllocations, assetAllocations } = useGameState();
+
+  const handleSliderChange = (newValue: number) => {
+    const updatedAllocations = assetAllocations.map(a => 
+      a.id === asset.id ? { ...a, allocation: newValue } : a
+    );
+    updateAssetAllocations(updatedAllocations);
+  };
+  const getThemeColors = (theme: string) => {
     switch (theme) {
       case 'gold':
-        return 'bg-gradient-to-b from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 border-yellow-500';
+        return {
+          background: 'linear-gradient(to bottom, #fbbf24, #d97706)',
+          border: '#f59e0b',
+          hoverBackground: 'linear-gradient(to bottom, #fcd34d, #f59e0b)'
+        };
       case 'orange':
-        return 'bg-gradient-to-b from-orange-400 to-orange-600 hover:from-orange-300 hover:to-orange-500 border-orange-500';
+        return {
+          background: 'linear-gradient(to bottom, #fb923c, #ea580c)',
+          border: '#f97316',
+          hoverBackground: 'linear-gradient(to bottom, #fdba74, #f97316)'
+        };
       case 'green':
-        return 'bg-gradient-to-b from-green-400 to-green-600 hover:from-green-300 hover:to-green-500 border-green-500';
+        return {
+          background: 'linear-gradient(to bottom, #4ade80, #16a34a)',
+          border: '#22c55e',
+          hoverBackground: 'linear-gradient(to bottom, #6ee7b7, #22c55e)'
+        };
       case 'blue':
-        return 'bg-gradient-to-b from-blue-400 to-blue-600 hover:from-blue-300 hover:to-blue-500 border-blue-500';
+        return {
+          background: 'linear-gradient(to bottom, #60a5fa, #2563eb)',
+          border: '#3b82f6',
+          hoverBackground: 'linear-gradient(to bottom, #93c5fd, #3b82f6)'
+        };
       default:
-        return 'bg-gradient-to-b from-gray-400 to-gray-600 hover:from-gray-300 hover:to-gray-500 border-gray-500';
+        return {
+          background: 'linear-gradient(to bottom, #9ca3af, #6b7280)',
+          border: '#6b7280',
+          hoverBackground: 'linear-gradient(to bottom, #d1d5db, #9ca3af)'
+        };
     }
   };
 
+  const colors = getThemeColors(asset.theme);
+
   return (
-    <button
+    <div style={{ position: 'relative' }}>
+      {/* Mini Slider - appears above button when active */}
+      {isActive && (
+        <div style={{
+          position: 'absolute',
+          bottom: '100%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'white',
+          borderRadius: '0.5rem',
+          padding: '0.75rem',
+          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+          border: `2px solid ${colors.border}`,
+          minWidth: '120px',
+          marginBottom: '0.5rem',
+          zIndex: 30,
+          animation: 'slideUp 0.2s ease'
+        }}>
+          {/* Percentage Display */}
+          <div style={{
+            textAlign: 'center',
+            marginBottom: '0.5rem'
+          }}>
+            <span style={{
+              fontSize: '1rem',
+              fontWeight: 'bold',
+              color: colors.border
+            }}>
+              {asset.allocation.toFixed(1)}%
+            </span>
+          </div>
+          
+          {/* Mini Slider */}
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="0.1"
+            value={asset.allocation}
+            onChange={(e) => handleSliderChange(parseFloat(e.target.value))}
+            style={{
+              width: '100%',
+              height: '4px',
+              borderRadius: '2px',
+              background: `linear-gradient(to right, ${colors.border} 0%, ${colors.border} ${asset.allocation}%, #e5e7eb ${asset.allocation}%, #e5e7eb 100%)`,
+              outline: 'none',
+              cursor: 'pointer',
+              appearance: 'none'
+            }}
+          />
+          
+          {/* Quick Presets */}
+          <div style={{
+            display: 'flex',
+            gap: '0.25rem',
+            marginTop: '0.5rem',
+            justifyContent: 'center'
+          }}>
+            {[0, 25, 50].map((preset) => (
+              <button
+                key={preset}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSliderChange(preset);
+                }}
+                style={{
+                  padding: '0.125rem 0.375rem',
+                  borderRadius: '0.125rem',
+                  border: `1px solid ${colors.border}`,
+                  backgroundColor: asset.allocation === preset ? colors.border : 'white',
+                  color: asset.allocation === preset ? 'white' : colors.border,
+                  fontSize: '0.625rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {preset}%
+              </button>
+            ))}
+          </div>
+          
+          {/* Arrow pointing down to button */}
+          <div style={{
+            position: 'absolute',
+            top: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 0,
+            height: 0,
+            borderLeft: '6px solid transparent',
+            borderRight: '6px solid transparent',
+            borderTop: `6px solid ${colors.border}`
+          }}></div>
+        </div>
+      )}
+      
+      <button
       onClick={onClick}
-      className={`
-        ${getThemeClasses(asset.theme)}
-        border rounded-xl p-3 shadow-lg transition-all duration-200 
-        hover:shadow-xl hover:scale-105 active:scale-95
-        flex flex-col items-center gap-1 min-w-[64px]
-      `}
+      style={{
+        background: '#f5f5dc', // Light beige color matching design
+        border: isActive ? `3px solid ${colors.border}` : '2px solid rgba(255,255,255,0.5)',
+        borderRadius: '0.75rem',
+        padding: '0.75rem',
+        boxShadow: isActive ? `0 4px 12px ${colors.border}40` : '0 2px 4px rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.2s ease',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '0.25rem',
+        minWidth: '7rem',
+        minHeight: '7rem',
+        cursor: 'pointer',
+        transform: isActive ? 'scale(1.05)' : 'scale(1)'
+      }}
+      onMouseEnter={(e) => {
+        if (!isActive) {
+          e.currentTarget.style.transform = 'scale(1.02)';
+          e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isActive) {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+        }
+      }}
     >
       {/* Asset Icon */}
-      <div className="w-8 h-8 flex items-center justify-center">
+      <div style={{
+        width: '3.5rem',
+        height: '3.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
         <img 
           src={asset.icon}
           alt={asset.name}
-          className="w-6 h-6 object-contain drop-shadow-sm"
+          style={{
+            width: '3rem',
+            height: '3rem',
+            objectFit: 'contain',
+            opacity: 0.8
+          }}
         />
       </div>
       
-      {/* Asset Name */}
-      <span className="text-xs font-bold text-white uppercase tracking-wide drop-shadow-sm">
+      {/* Asset Name - Full name with larger font */}
+      <span style={{
+        fontSize: '1rem',
+        fontWeight: 'bold',
+        color: '#4a5568',
+        textAlign: 'center',
+        lineHeight: '1',
+        textTransform: 'uppercase',
+        maxWidth: '6.5rem',
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis'
+      }}>
         {asset.name}
       </span>
-      
-      {/* Allocation Percentage */}
-      <div className="text-xs text-white opacity-90 font-medium">
-        {asset.allocation.toFixed(1)}%
-      </div>
-      
-      {/* Selection indicator */}
-      <div className="w-full h-1 bg-white bg-opacity-30 rounded-full mt-1 overflow-hidden">
-        <div 
-          className="h-full bg-white transition-all duration-300"
-          style={{ width: `${(asset.allocation / 25) * 100}%` }}
-        />
-      </div>
-    </button>
+      </button>
+    </div>
   );
 }

@@ -1,41 +1,106 @@
-import { useGameState } from '../../hooks/useGameState';
+import { useState } from 'react';
+import { useGameState } from '../../hooks/useGameContext';
 import { AssetButton } from './AssetButton';
 
 export function AssetToolbar() {
-  const { assetAllocations } = useGameState();
+  const { assetAllocations, updateGameState } = useGameState();
+  const [activeAssetId, setActiveAssetId] = useState<string | null>(null);
+
+  const handleAssetClick = (assetId: string) => {
+    setActiveAssetId(activeAssetId === assetId ? null : assetId);
+  };
+
+  const handleApplyClick = () => {
+    // Calculate total allocation
+    const total = assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0);
+    if (Math.abs(total - 100) < 0.1) {
+      setActiveAssetId(null); // Close any open sliders
+      // TODO: Move to next step (Mission Card selection)
+      alert('Ready to proceed to Mission Selection!');
+    } else {
+      alert(`Please adjust allocations to total 100%. Current total: ${total.toFixed(1)}%`);
+    }
+  };
 
   return (
-    <div className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 p-4 rounded-t-3xl shadow-2xl">
-      <div className="flex justify-center items-center gap-3 max-w-4xl mx-auto">
+    <div style={{
+      background: '#357ABD', // Deeper blue from design specifications
+      padding: '1.5rem 1rem', // Increased vertical padding
+      borderTopLeftRadius: '2.5rem', // Much larger rounded corners
+      borderTopRightRadius: '2.5rem',
+      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+      position: 'relative',
+      zIndex: 3,
+      margin: '0 auto', // Center the toolbar
+      width: 'fit-content', // Shrink to content size
+      borderRadius: '2.5rem' // Make all corners rounded since it's now centered
+    }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: '1.5rem', // Increased gap between buttons
+        maxWidth: '80rem',
+        margin: '0 auto'
+      }}>
         {assetAllocations.slice(0, 4).map((asset) => (
-          <AssetButton key={asset.id} asset={asset} />
+          <AssetButton 
+            key={asset.id} 
+            asset={asset} 
+            onClick={() => handleAssetClick(asset.id)}
+            isActive={activeAssetId === asset.id}
+          />
         ))}
         
-        {/* APPLY Button - Special styling */}
-        <button className="bg-gradient-to-b from-yellow-100 to-yellow-50 hover:from-yellow-200 hover:to-yellow-100 border border-yellow-300 rounded-xl px-6 py-3 shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105">
-          <div className="flex flex-col items-center gap-1">
-            <div className="w-8 h-8 flex items-center justify-center">
-              <span className="text-blue-700 font-bold text-sm">✓</span>
-            </div>
-            <span className="text-xs font-bold text-blue-800 uppercase tracking-wide">
-              APPLY
-            </span>
-          </div>
+        {/* APPLY Button - More prominent golden design */}
+        <button 
+          onClick={handleApplyClick}
+          style={{
+            background: 'linear-gradient(135deg, #FFD700, #FFA500)', // Golden gradient
+            border: '3px solid #FFB000',
+            borderRadius: '0.75rem',
+            padding: '0.75rem',
+            boxShadow: '0 4px 12px rgba(255, 215, 0, 0.4)', // Golden shadow
+            transition: 'all 0.2s ease',
+            minWidth: '12rem', // Make it wider horizontally
+            minHeight: '7rem',
+            cursor: 'pointer',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.25rem',
+            transform: 'scale(1.1)' // Slightly larger than other buttons
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.15)';
+            e.currentTarget.style.boxShadow = '0 6px 16px rgba(255, 215, 0, 0.6)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1.1)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 215, 0, 0.4)';
+          }}
+        >
+          <span style={{
+            fontSize: '2rem',
+            fontWeight: '900',
+            color: '#B8860B',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
+          }}>
+            APPLY
+          </span>
         </button>
         
         {assetAllocations.slice(4).map((asset) => (
-          <AssetButton key={asset.id} asset={asset} />
+          <AssetButton 
+            key={asset.id} 
+            asset={asset} 
+            onClick={() => handleAssetClick(asset.id)}
+            isActive={activeAssetId === asset.id}
+          />
         ))}
-      </div>
-      
-      {/* Allocation status indicator */}
-      <div className="text-center mt-3">
-        <div className="inline-flex items-center gap-2 bg-white bg-opacity-20 rounded-full px-4 py-1">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span className="text-xs text-white font-medium">
-            Portfolio Balanced • Ready to Trade
-          </span>
-        </div>
       </div>
     </div>
   );

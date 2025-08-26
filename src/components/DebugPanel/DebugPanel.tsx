@@ -1,4 +1,4 @@
-import { useGameState } from '../../hooks/useGameState';
+import { useGameState } from '../../hooks/useGameContext';
 
 export function DebugPanel() {
   const { gameState, updateGameState } = useGameState();
@@ -10,23 +10,62 @@ export function DebugPanel() {
   };
 
   return (
-    <div className="fixed top-4 right-4 bg-black bg-opacity-70 text-white p-3 rounded-lg text-sm space-y-2 z-50">
-      <div className="font-bold text-yellow-300">🔧 Debug Panel</div>
+    <div style={{
+      position: 'fixed',
+      top: '1rem',
+      right: '1rem',
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      color: 'white',
+      padding: '1rem',
+      borderRadius: '0.5rem',
+      fontSize: '0.875rem',
+      zIndex: 50,
+      minWidth: '200px'
+    }}>
+      <div style={{
+        fontWeight: 'bold',
+        color: '#fde047',
+        marginBottom: '0.5rem'
+      }}>
+        🔧 Debug Panel
+      </div>
       
       <button 
         onClick={toggleMode}
-        className={`w-full px-3 py-1 rounded transition-colors ${
-          gameState.mode === 'chaos' 
-            ? 'bg-red-600 hover:bg-red-500' 
-            : 'bg-blue-600 hover:bg-blue-500'
-        }`}
+        style={{
+          width: '100%',
+          padding: '0.5rem 0.75rem',
+          borderRadius: '0.25rem',
+          border: 'none',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+          backgroundColor: gameState.mode === 'chaos' ? '#dc2626' : '#2563eb',
+          color: 'white',
+          marginBottom: '0.5rem'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = gameState.mode === 'chaos' ? '#ef4444' : '#3b82f6';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = gameState.mode === 'chaos' ? '#dc2626' : '#2563eb';
+        }}
       >
-        Mode: {gameState.mode.toUpperCase()}
-        <br />
-        <span className="text-xs opacity-75">Click to toggle</span>
+        <div>Mode: {gameState.mode.toUpperCase()}</div>
+        <div style={{
+          fontSize: '0.75rem',
+          opacity: 0.75,
+          marginTop: '0.25rem'
+        }}>
+          Click to toggle
+        </div>
       </button>
       
-      <div className="text-xs opacity-75 border-t border-gray-600 pt-2">
+      <div style={{
+        fontSize: '0.75rem',
+        opacity: 0.75,
+        borderTop: '1px solid #6b7280',
+        paddingTop: '0.5rem'
+      }}>
         Day: {gameState.currentDay} | Stars: {gameState.stars}
       </div>
     </div>

@@ -1,40 +1,95 @@
-import { useGameState } from '../../hooks/useGameState';
+import { useGameState } from '../../hooks/useGameContext';
 
 export function AIPanel() {
   const { currentAIMessage } = useGameState();
 
   return (
-    <aside className="w-72 p-4 flex flex-col items-end">
+    <aside style={{
+      width: '18rem',
+      padding: '1rem',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-end'
+    }}>
       {/* AI Character */}
-      <div className="relative mb-4">
+      <div style={{
+        position: 'relative',
+        marginBottom: '1rem'
+      }}>
         <img 
-          src="/src/assets/主界面1资源/右边的AI人物.png"
+          src="/assets/主界面1资源/右边的AI人物.png"
           alt="AI Companion"
-          className="w-24 h-24 object-contain animate-pulse"
-          style={{ animationDuration: '2s' }}
+          style={{
+            width: '6rem',
+            height: '6rem',
+            objectFit: 'contain',
+            animation: 'pulse 2s infinite'
+          }}
         />
         
         {/* Floating animation effect */}
         <div 
-          className="absolute inset-0 w-24 h-24 rounded-full bg-gradient-to-r from-orange-200 to-orange-300 opacity-20 blur-lg animate-pulse"
-          style={{ animationDuration: '2.5s', animationDelay: '0.5s' }}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '6rem',
+            height: '6rem',
+            borderRadius: '50%',
+            background: 'linear-gradient(to right, #fed7aa, #fdba74)',
+            opacity: 0.2,
+            filter: 'blur(1rem)',
+            animation: 'pulse 2.5s infinite 0.5s'
+          }}
         ></div>
       </div>
 
       {/* Chat Bubble */}
       {currentAIMessage && (
-        <div className="relative max-w-64">
+        <div style={{
+          position: 'relative',
+          maxWidth: '16rem'
+        }}>
           {/* Speech bubble tail pointing to AI character */}
-          <div className="absolute -top-3 left-8 w-6 h-6 bg-blue-100 rotate-45 border-l border-t border-blue-200"></div>
+          <div style={{
+            position: 'absolute',
+            top: '-0.75rem',
+            left: '2rem',
+            width: '1.5rem',
+            height: '1.5rem',
+            backgroundColor: '#dbeafe',
+            transform: 'rotate(45deg)',
+            borderLeft: '1px solid #bfdbfe',
+            borderTop: '1px solid #bfdbfe'
+          }}></div>
           
           {/* Main chat bubble */}
-          <div className="bg-blue-100 border border-blue-200 rounded-2xl p-4 shadow-lg">
-            <p className="text-sm font-medium text-blue-900 leading-relaxed">
+          <div style={{
+            backgroundColor: '#dbeafe',
+            border: '1px solid #bfdbfe',
+            borderRadius: '1rem',
+            padding: '1rem',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+          }}>
+            <p style={{
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              color: '#1e3a8a',
+              lineHeight: '1.625',
+              margin: 0
+            }}>
               {currentAIMessage.content}
             </p>
             
             {/* Message timestamp */}
-            <div className="mt-2 text-xs text-blue-600 opacity-75">
+            <div style={{
+              marginTop: '0.5rem',
+              fontSize: '0.75rem',
+              color: '#2563eb',
+              opacity: 0.75
+            }}>
               {currentAIMessage.timestamp.toLocaleTimeString([], { 
                 hour: '2-digit', 
                 minute: '2-digit' 
@@ -43,20 +98,61 @@ export function AIPanel() {
           </div>
 
           {/* Typing indicator animation (when AI is "thinking") */}
-          <div className="mt-2 flex justify-center opacity-60">
-            <div className="flex gap-1">
-              <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce"></div>
-              <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce delay-100"></div>
-              <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce delay-200"></div>
+          <div style={{
+            marginTop: '0.5rem',
+            display: 'flex',
+            justifyContent: 'center',
+            opacity: 0.6
+          }}>
+            <div style={{
+              display: 'flex',
+              gap: '0.25rem'
+            }}>
+              <div style={{
+                width: '0.375rem',
+                height: '0.375rem',
+                backgroundColor: '#60a5fa',
+                borderRadius: '50%',
+                animation: 'bounce 1s infinite'
+              }}></div>
+              <div style={{
+                width: '0.375rem',
+                height: '0.375rem',
+                backgroundColor: '#60a5fa',
+                borderRadius: '50%',
+                animation: 'bounce 1s infinite 0.1s'
+              }}></div>
+              <div style={{
+                width: '0.375rem',
+                height: '0.375rem',
+                backgroundColor: '#60a5fa',
+                borderRadius: '50%',
+                animation: 'bounce 1s infinite 0.2s'
+              }}></div>
             </div>
           </div>
         </div>
       )}
 
       {/* AI status indicator */}
-      <div className="mt-4 flex items-center gap-2 text-xs text-blue-600">
-        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-        <span className="font-medium">AI Guardian Online</span>
+      <div style={{
+        marginTop: '1rem',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        fontSize: '0.75rem',
+        color: '#2563eb'
+      }}>
+        <div style={{
+          width: '0.5rem',
+          height: '0.5rem',
+          backgroundColor: '#4ade80',
+          borderRadius: '50%',
+          animation: 'pulse 1s infinite'
+        }}></div>
+        <span style={{
+          fontWeight: '500'
+        }}>AI Guardian Online</span>
       </div>
     </aside>
   );
