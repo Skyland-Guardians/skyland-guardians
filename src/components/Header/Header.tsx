@@ -16,26 +16,44 @@ export function Header() {
       {/* Left side - User Info */}
       <div style={{
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         gap: '1rem'
       }}>
         <div style={{
-          width: '4rem',
-          height: '4rem',
-          borderRadius: '50%',
-          overflow: 'hidden',
-          border: '4px solid #fed7aa',
-          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '0.5rem'
         }}>
-          <img 
-            src={userInfo.avatar} 
-            alt="User Avatar" 
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover'
-            }}
-          />
+          <div style={{
+            width: '4rem',
+            height: '4rem',
+            borderRadius: '50%',
+            overflow: 'hidden',
+            border: '4px solid #fed7aa',
+            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'
+          }}>
+            <img 
+              src={userInfo.avatar} 
+              alt="User Avatar" 
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }}
+            />
+          </div>
+          <p style={{
+            fontSize: '1rem',
+            color: '#1e40af',
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            margin: 0,
+            textAlign: 'center'
+          }}>
+            LEVEL {userInfo.level}
+          </p>
         </div>
         <div>
           <h1 style={{
@@ -49,49 +67,35 @@ export function Header() {
           }}>
             {userInfo.name}, GUARD YOUR FORTUNE!
           </h1>
-          <p style={{
-            fontSize: '1rem',
-            color: '#1e40af',
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            margin: '0.25rem 0 0 0'
-          }}>
-            LEVEL {userInfo.level}
-          </p>
         </div>
       </div>
 
-      {/* Right side - Game Status */}
+      {/* Right side - Game Status - matching design */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         gap: '0.75rem'
       }}>
         <div style={{
-          background: 'linear-gradient(to right, #3b82f6, #2563eb)',
-          color: 'white',
+          background: 'transparent',
+          color: '#1e3a8a',
           padding: '0.75rem 1.5rem',
-          borderRadius: '9999px',
           fontWeight: '900',
-          fontSize: '1rem',
-          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-          border: '2px solid #60a5fa'
+          fontSize: '1rem'
         }}>
           DAY {gameState.currentDay}
         </div>
         <div style={{
-          background: 'linear-gradient(to right, #2563eb, #1d4ed8)',
+          background: '#2563eb',
           color: 'white',
           padding: '0.75rem 1.5rem',
-          borderRadius: '9999px',
+          borderRadius: '0.75rem',
           fontWeight: '900',
           fontSize: '1rem',
           display: 'flex',
           alignItems: 'center',
           gap: '0.5rem',
-          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-          border: '2px solid #3b82f6'
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
         }}>
           <span style={{
             color: '#fde047',

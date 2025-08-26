@@ -25,13 +25,15 @@ export function AssetToolbar() {
   return (
     <div style={{
       background: '#357ABD', // Deeper blue from design specifications
-      padding: '1.5rem 1rem', // Increased vertical padding
+      padding: '2rem 3.25rem', // Increased horizontal padding by 30% (2.5rem * 1.3)
       borderTopLeftRadius: '2.5rem', // Much larger rounded corners
       borderTopRightRadius: '2.5rem',
       boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-      position: 'relative',
+      position: 'fixed',
+      bottom: '6vh',
+      left: '50%',
+      transform: 'translateX(-50%)',
       zIndex: 3,
-      margin: '0 auto', // Center the toolbar
       width: 'fit-content', // Shrink to content size
       borderRadius: '2.5rem' // Make all corners rounded since it's now centered
     }}>
@@ -52,42 +54,42 @@ export function AssetToolbar() {
           />
         ))}
         
-        {/* APPLY Button - More prominent golden design */}
+        {/* APPLY Button - Centered and wider */}
         <button 
           onClick={handleApplyClick}
           style={{
-            background: 'linear-gradient(135deg, #FFD700, #FFA500)', // Golden gradient
-            border: '3px solid #FFB000',
+            background: '#f5f5dc', // Exact same light beige
+            border: '2px solid rgba(255,255,255,0.5)', // Exact same border
             borderRadius: '0.75rem',
-            padding: '0.75rem',
-            boxShadow: '0 4px 12px rgba(255, 215, 0, 0.4)', // Golden shadow
+            padding: '0.75rem', // Same padding as asset buttons
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Exact same shadow
             transition: 'all 0.2s ease',
-            minWidth: '12rem', // Make it wider horizontally
-            minHeight: '7rem',
-            cursor: 'pointer',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '0.25rem',
-            transform: 'scale(1.1)' // Slightly larger than other buttons
+            minWidth: '16rem', // Wider button
+            minHeight: '7rem',
+            cursor: 'pointer',
+            transform: 'scale(1)'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.15)';
-            e.currentTarget.style.boxShadow = '0 6px 16px rgba(255, 215, 0, 0.6)';
+            e.currentTarget.style.transform = 'scale(1.02)';
+            e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 215, 0, 0.4)';
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
           }}
         >
           <span style={{
             fontSize: '2rem',
             fontWeight: '900',
-            color: '#B8860B',
+            color: '#4a5568', // Exact same color as asset names
             textTransform: 'uppercase',
             letterSpacing: '0.1em',
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
+            textAlign: 'center'
           }}>
             APPLY
           </span>

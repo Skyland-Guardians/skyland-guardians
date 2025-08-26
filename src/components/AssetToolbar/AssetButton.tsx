@@ -167,7 +167,8 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
         minWidth: '7rem',
         minHeight: '7rem',
         cursor: 'pointer',
-        transform: isActive ? 'scale(1.05)' : 'scale(1)'
+        transform: isActive ? 'scale(1.05)' : 'scale(1)',
+        position: 'relative' // Added for absolute positioning of text background
       }}
       onMouseEnter={(e) => {
         if (!isActive) {
@@ -184,8 +185,8 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
     >
       {/* Asset Icon */}
       <div style={{
-        width: '3.5rem',
-        height: '3.5rem',
+        width: '4rem',
+        height: '4rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
@@ -194,29 +195,37 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
           src={asset.icon}
           alt={asset.name}
           style={{
-            width: '3rem',
-            height: '3rem',
+            width: '3.5rem',
+            height: '3.5rem',
             objectFit: 'contain',
             opacity: 0.8
           }}
         />
       </div>
       
-      {/* Asset Name - Full name with larger font */}
-      <span style={{
-        fontSize: '1rem',
+      {/* Asset Name - Black gray background covering bottom 30% of button */}
+      <div style={{
+        position: 'absolute',
+        bottom: '-2px', // Extend slightly beyond border to eliminate white gap
+        left: '-2px', // Extend slightly beyond border
+        right: '-2px', // Extend slightly beyond border
+        height: 'calc(30% + 2px)', // Compensate for the extended positioning
+        background: '#2d3748', // Dark gray background
+        color: 'white', // White text
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '1rem', // Larger font size
         fontWeight: 'bold',
-        color: '#4a5568',
-        textAlign: 'center',
-        lineHeight: '1',
         textTransform: 'uppercase',
-        maxWidth: '6.5rem',
         overflow: 'hidden',
         whiteSpace: 'nowrap',
-        textOverflow: 'ellipsis'
+        textOverflow: 'ellipsis',
+        borderBottomLeftRadius: '0.75rem',
+        borderBottomRightRadius: '0.75rem'
       }}>
         {asset.name}
-      </span>
+      </div>
       </button>
     </div>
   );

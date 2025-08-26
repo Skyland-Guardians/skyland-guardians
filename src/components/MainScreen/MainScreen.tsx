@@ -40,43 +40,9 @@ export function MainScreen() {
             zIndex: 1
           }} />
           
-          {/* Top right yellow semi-circle - more prominent on warm background */}
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            width: '350px',
-            height: '250px',
-            background: 'radial-gradient(circle at 100% 0%, #FFFACD, #F0E68C, transparent 65%)',
-            opacity: 0.8,
-            zIndex: 1,
-            borderBottomLeftRadius: '100%'
-          }} />
+
           
-          {/* Decorative clouds matching original design exactly */}
-          <div style={{
-            position: 'absolute',
-            top: '100px',
-            left: '20%',
-            width: '70px',
-            height: '35px',
-            backgroundColor: '#2c5282',
-            borderRadius: '40px',
-            opacity: 0.85,
-            zIndex: 1
-          }} />
-          
-          <div style={{
-            position: 'absolute',
-            top: '90px',
-            right: '25%',
-            width: '65px',
-            height: '32px',
-            backgroundColor: '#2c5282',
-            borderRadius: '35px',
-            opacity: 0.8,
-            zIndex: 1
-          }} />
+
         </>
       )}
       
