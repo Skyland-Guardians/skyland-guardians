@@ -1,0 +1,63 @@
+{
+  "project": "Legacy Guardians",
+  "version": "1.0.0",
+  "description": "开发规则配置文件",
+  "rules": [
+    {
+      "id": "ai-coding-rules",
+      "file": "AI_CODING_RULES.md",
+      "priority": 1,
+      "description": "AI编码规则 - 最高优先级（包含缩进规范）",
+      "alwaysApply": true,
+      "tags": ["style", "quality", "standards", "indentation", "tabs"]
+    },
+    {
+      "id": "code-style",
+      "file": "code-style.mdc",
+      "priority": 2,
+      "description": "代码风格规范 - 高优先级",
+      "alwaysApply": true,
+      "tags": ["style", "quality", "standards"]
+    },
+    {
+      "id": "cursorrules",
+      "file": "cursorrules.mdc",
+      "priority": 3,
+      "description": "主要技术栈规则 - 中优先级",
+      "alwaysApply": true,
+      "tags": ["typescript", "react", "nextjs", "architecture"]
+    },
+    {
+      "id": "typescript",
+      "file": "typescript.mdc",
+      "priority": 4,
+      "description": "TypeScript专用规则 - 中优先级",
+      "alwaysApply": true,
+      "tags": ["typescript", "syntax", "best-practices"]
+    },
+    {
+      "id": "cursor-ai",
+      "file": "cursor-ai.mdc",
+      "priority": 5,
+      "description": "AI编程助手规则 - 基础优先级",
+      "alwaysApply": true,
+      "tags": ["ai", "assistant", "workflow"]
+    }
+  ],
+  "metadata": {
+    "lastUpdated": "2024-01-01",
+    "maintainer": "Development Team",
+    "contact": "team@legacy-guardians.com"
+  },
+  "usage": {
+    "forDevelopers": "在开始编码前阅读相关规则文件",
+    "forAI": "始终遵循这些规则进行代码生成",
+    "forReviewers": "使用这些规则进行代码审查"
+  },
+  "compatibility": {
+    "typescript": ">=5.0.0",
+    "react": ">=18.0.0",
+    "nextjs": ">=14.0.0",
+    "node": ">=18.0.0"
+  }
+}
