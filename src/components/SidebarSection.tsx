@@ -11,17 +11,17 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({ icon, label, onC
   return (
     <Button
       variant="ghost"
-      className="flex flex-col items-center gap-2 h-auto p-4 hover:bg-fantasy-cream/30 transition-colors"
+      className="flex flex-col items-center gap-2 h-auto p-4 hover:bg-secondary/30 transition-colors"
       onClick={onClick}
     >
-      <div className="w-16 h-16 flex items-center justify-center">
+      <div className="w-24 h-24 flex items-center justify-center">
         <img 
           src={icon} 
           alt={label}
           className="w-full h-full object-contain"
         />
       </div>
-      <span className="text-fantasy-navy font-['Koulen'] text-xl font-normal uppercase">
+      <span className="text-foreground font-['Koulen'] text-xl font-bold uppercase">
         {label}
       </span>
     </Button>

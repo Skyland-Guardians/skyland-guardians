@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Koulen:wght@400');
+@import url('https://fonts.googleapis.com/css2?family=Koulen:wght@400;700');
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -109,6 +109,60 @@ body {
   min-width: 320px;
   min-height: 100vh;
   font-family: 'Koulen', system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.fantasy-text-primary {
+  color: var(--fantasy-navy);
+  font-family: 'Koulen', sans-serif;
+}
+
+.fantasy-text-secondary {
+  color: var(--fantasy-blue);
+  font-family: 'Koulen', sans-serif;
+}
+
+.fantasy-bg-primary {
+  background-color: var(--fantasy-blue);
+}
+
+.fantasy-bg-secondary {
+  background-color: var(--fantasy-cream);
+}
+
+.fantasy-bg-accent {
+  background-color: var(--fantasy-orange);
+}
+
+.speech-bubble {
+  position: relative;
+}
+
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #dbeafe;
+  z-index: 1;
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 12px solid #93c5fd;
+  z-index: 0;
 }
 
 @utility fantasy-text-primary {

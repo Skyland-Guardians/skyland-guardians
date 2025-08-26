@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
-import { Button } from './ui/button';
 import { UserProfile } from './UserProfile';
 import { ProgressTracker } from './ProgressTracker';
-import { GameItem } from './GameItem';
 import { SidebarSection } from './SidebarSection';
 import { CharacterMessage } from './CharacterMessage';
-import BottomSectionIcon from './icons/BottomSectionIcon';
+import { GameItemsSection } from './GameItemsSection';
 import {
   mockUserProfile,
   mockProgressData,
   mockGameItems,
   mockCharacterMessage,
-  mockSidebarData,
-  type GameItem as GameItemType
+  mockSidebarData
 } from './fantasyDashboardMockData';
 
 export const FantasyDashboard: React.FC = () => {
@@ -46,7 +43,7 @@ export const FantasyDashboard: React.FC = () => {
         <img 
           src="/images/fantasy-cityscape.png" 
           alt="Fantasy cityscape"
-          className="max-w-none h-full object-cover opacity-90"
+          className="w-4/5 h-4/5 object-contain opacity-90"
         />
       </div>
 
@@ -60,7 +57,7 @@ export const FantasyDashboard: React.FC = () => {
               level={mockUserProfile.level}
               avatar={mockUserProfile.avatar}
             />
-            <div className="text-fantasy-navy font-['Koulen'] text-xl font-normal uppercase">
+            <div className="text-foreground font-['Koulen'] text-xl font-bold uppercase">
               {mockUserProfile.name}, guard your fortune！
             </div>
           </div>
@@ -79,14 +76,14 @@ export const FantasyDashboard: React.FC = () => {
             onClick={() => handleSidebarAction('cards')}
           />
           <SidebarSection 
-            icon="/images/card-deck.png" // Using same icon for badges for now
+            icon={mockSidebarData.badgeIcon || "/images/card-deck.png"}
             label={mockSidebarData.badgesLabel}
             onClick={() => handleSidebarAction('badges')}
           />
         </div>
 
-        {/* Character Message */}
-        <div className="absolute right-8 top-1/2 -translate-y-1/4">
+        {/* Character Message - narrow and attached to right side */}
+        <div className="fixed right-4 top-1/3 -translate-y-1/2 z-20">
           <CharacterMessage 
             avatar={mockCharacterMessage.avatar}
             message={mockCharacterMessage.message}
@@ -94,55 +91,13 @@ export const FantasyDashboard: React.FC = () => {
         </div>
 
         {/* Bottom Game Items Section */}
-        <div className="mt-auto relative">
-          <div className="relative">
-            <BottomSectionIcon width="100%" height="136" color="#4A90E2" />
-            
-            {/* Game Items Grid */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="flex items-center gap-6 px-8">
-                {/* Left side items */}
-                <div className="flex gap-4">
-                  {mockGameItems.slice(0, 4).map((item: GameItemType) => (
-                    <GameItem
-                      key={item.id}
-                      id={item.id}
-                      name={item.name}
-                      image={item.image}
-                      label={item.label}
-                      isSelected={selectedItems.includes(item.id)}
-                      onClick={handleItemSelect}
-                    />
-                  ))}
-                </div>
-
-                {/* Apply Button */}
-                <Button
-                  size="lg"
-                  className="mx-8 bg-fantasy-blue hover:bg-fantasy-blue/90 text-white font-['Koulen'] text-3xl font-normal px-8 py-4 rounded-lg shadow-lg"
-                  onClick={handleApply}
-                  disabled={selectedItems.length === 0}
-                >
-                  APPLY
-                </Button>
-
-                {/* Right side items */}
-                <div className="flex gap-4">
-                  {mockGameItems.slice(4, 8).map((item: GameItemType) => (
-                    <GameItem
-                      key={item.id}
-                      id={item.id}
-                      name={item.name}
-                      image={item.image}
-                      label={item.label}
-                      isSelected={selectedItems.includes(item.id)}
-                      onClick={handleItemSelect}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="mt-auto">
+          <GameItemsSection
+            gameItems={mockGameItems}
+            selectedItems={selectedItems}
+            onItemSelect={handleItemSelect}
+            onApply={handleApply}
+          />
         </div>
       </div>
     </div>

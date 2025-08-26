@@ -103,5 +103,6 @@ export const mockCharacterMessage: CharacterMessage = {
 export const mockSidebarData = {
   cardDeck: "/images/card-deck.png",
   cardsLabel: "my cards",
-  badgesLabel: "badges"
+  badgesLabel: "badges",
+  badgeIcon: "/images/card-deck.png" // Using same for now, should be different badge icon
 };

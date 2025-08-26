@@ -8,17 +8,22 @@ interface CharacterMessageProps {
 
 export const CharacterMessage: React.FC<CharacterMessageProps> = ({ avatar, message }) => {
   return (
-    <div className="relative flex flex-col items-center">
-      <div className="w-40 h-28 mb-4">
-        <img 
-          src={avatar} 
-          alt="Character guide"
-          className="w-full h-full object-contain"
-        />
+    <div className="relative w-48">
+      {/* Blue background container for character - narrow and tall */}
+      <div className="bg-blue-200 rounded-t-2xl p-4 flex justify-center items-end min-h-[100px] w-full">
+        <div className="w-20 h-16">
+          <img 
+            src={avatar} 
+            alt="Character guide"
+            className="w-full h-full object-contain"
+          />
+        </div>
       </div>
-      <Card className="bg-blue-100 border-2 border-fantasy-blue rounded-lg shadow-lg max-w-xs">
-        <CardContent className="p-3">
-          <p className="text-black font-['Koulen'] text-sm font-normal leading-relaxed whitespace-pre-line">
+      
+      {/* White dialog box - narrow and elongated */}
+      <Card className="bg-white border-2 border-gray-300 rounded-b-2xl rounded-t-none shadow-lg w-full">
+        <CardContent className="p-4">
+          <p className="text-black font-['Koulen'] text-xs font-medium leading-tight whitespace-pre-line text-left">
             {message}
           </p>
         </CardContent>
