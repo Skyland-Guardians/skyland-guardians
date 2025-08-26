@@ -4,6 +4,7 @@ import { SkylandIsland } from '../Island/SkylandIsland';
 import { AIPanel } from '../AIPanel/AIPanel';
 import { AssetToolbar } from '../AssetToolbar/AssetToolbar';
 import { useGameState } from '../../hooks/useGameContext';
+import { MissionCard } from '../MissionCard/MissionCard';
 
 export function MainScreen() {
   const { gameState } = useGameState();
@@ -77,7 +78,8 @@ export function MainScreen() {
       }}>
         <AssetToolbar />
       </div>
-      
+
+      <MissionCard />
       {/* Chaos Mode Overlay Effects */}
       {isChaoMode && (
         <div style={{

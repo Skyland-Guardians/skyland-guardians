@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
 import { AssetButton } from './AssetButton';
+import { MISSIONS } from '../../data/missions';
 
 export function AssetToolbar() {
-  const { assetAllocations, updateGameState } = useGameState();
+  const { assetAllocations, updateGameState, setCurrentMission } = useGameState();
   const [activeAssetId, setActiveAssetId] = useState<string | null>(null);
 
   const handleAssetClick = (assetId: string) => {
@@ -15,8 +16,9 @@ export function AssetToolbar() {
     const total = assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0);
     if (Math.abs(total - 100) < 0.1) {
       setActiveAssetId(null); // Close any open sliders
-      // TODO: Move to next step (Mission Card selection)
-      alert('Ready to proceed to Mission Selection!');
+      const mission = MISSIONS[Math.floor(Math.random() * MISSIONS.length)];
+      setCurrentMission(mission);
+      updateGameState({ currentScreen: 'mission' });
     } else {
       alert(`Please adjust allocations to total 100%. Current total: ${total.toFixed(1)}%`);
     }

@@ -1,5 +1,3 @@
-import { useGameState } from '../../hooks/useGameContext';
-
 export function AIPanel() {
   return (
     <aside style={{

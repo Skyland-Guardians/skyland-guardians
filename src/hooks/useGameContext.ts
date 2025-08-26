@@ -1,15 +1,17 @@
 import { createContext, useContext } from 'react';
-import type { GameState, UserInfo, AssetType, AIMessage } from '../types/game';
+import type { GameState, UserInfo, AssetType, AIMessage, Mission } from '../types/game';
 
 export interface GameContextType {
   gameState: GameState;
   userInfo: UserInfo;
   assetAllocations: AssetType[];
   currentAIMessage: AIMessage | null;
+  currentMission: Mission | null;
   updateGameState: (updates: Partial<GameState>) => void;
   updateUserInfo: (updates: Partial<UserInfo>) => void;
   updateAssetAllocation: (assetId: string, allocation: number) => void;
   setAIMessage: (message: AIMessage | null) => void;
+  setCurrentMission: (mission: Mission | null) => void;
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);

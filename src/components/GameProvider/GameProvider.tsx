@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { ReactNode } from 'react';
-import type { GameState, UserInfo, AssetType, AIMessage } from '../../types/game';
+import type { GameState, UserInfo, AssetType, AIMessage, Mission } from '../../types/game';
 import { GameContext } from '../../hooks/useGameContext';
 
 export function GameProvider({ children }: { children: ReactNode }) {
@@ -36,6 +36,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     type: 'greeting'
   });
 
+  const [currentMission, setCurrentMission] = useState<Mission | null>(null);
+
   const updateGameState = (updates: Partial<GameState>) => {
     setGameState(prev => ({ ...prev, ...updates }));
   };
@@ -62,10 +64,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       userInfo,
       assetAllocations,
       currentAIMessage,
+      currentMission,
       updateGameState,
       updateUserInfo,
       updateAssetAllocation,
-      setAIMessage
+      setAIMessage,
+      setCurrentMission
     }}>
       {children}
     </GameContext.Provider>

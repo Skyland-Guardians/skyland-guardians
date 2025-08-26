@@ -37,3 +37,11 @@ export interface Achievement {
   progress: number;
   maxProgress: number;
 }
+
+export interface Mission {
+  id: number;
+  title: string;
+  background: string;
+  tip: string;
+  focus: string;
+}
