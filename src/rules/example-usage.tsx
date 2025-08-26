@@ -3,9 +3,6 @@
  * 这个文件演示了所有规则的实际应用
  */
 
-import React, { Suspense } from 'react';
-import { rulesManager, RulesEnforcer } from './loader';
-
 // 遵循命名约定：使用描述性变量名和辅助动词
 interface UserProfileProps {
 	userId: string;
@@ -158,36 +155,10 @@ const PROFILE_STYLES = {
 // 类型定义：放在文件末尾
 type ProfileStyleKey = keyof typeof PROFILE_STYLES;
 
-// 规则验证示例
-function validateProfileCode() {
-	const code = `
-		function UserProfile({ userId, isLoading, hasError, userData }) {
-			if (isLoading) return <Skeleton />;
-			if (hasError) return <Error />;
-			return <Profile user={userData} />;
-		}
-	`;
-
-	const violations = RulesEnforcer.validateCode(code, ['code-style', 'typescript']);
-	
-	if (violations.length > 0) {
-		console.warn('Code validation violations:', violations);
-	} else {
-		console.log('✅ Code follows all rules');
-	}
-}
-
-// 规则摘要示例
-function showRulesSummary() {
-	const summary = RulesEnforcer.getRulesSummary();
-	console.log('📋 Development Rules Summary:');
-	console.log(summary);
-}
-
 // 导出组件（遵循命名导出约定）
 export { UserProfile };
 export default UserProfile;
 
 // 导出类型和工具函数
 export type { UserProfileProps, UserData, ProfileStyleKey };
-export { PROFILE_STYLES, validateProfileCode, showRulesSummary };
+export { PROFILE_STYLES };

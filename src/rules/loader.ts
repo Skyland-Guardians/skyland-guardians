@@ -66,8 +66,10 @@ export class RulesManager {
 			this.config = await configResponse.json();
 
 			// 加载所有规则文件
-			for (const rule of this.config.rules) {
-				await this.loadRuleContent(rule);
+			if (this.config && this.config.rules) {
+				for (const rule of this.config.rules) {
+					await this.loadRuleContent(rule);
+				}
 			}
 
 			console.log(`✅ 成功加载 ${this.rules.size} 条开发规则`);
@@ -150,12 +152,8 @@ export class RulesEnforcer {
 	/**
 	 * 验证代码是否符合规则
 	 */
-	public static validateCode(code: string, ruleIds: string[] = []): string[] {
+	public static validateCode(_code: string, _ruleIds: string[] = []): string[] {
 		const violations: string[] = [];
-		const rules = ruleIds.length > 0 
-			? ruleIds.map(id => rulesManager.getRule(id)).filter(Boolean)
-			: rulesManager.getAllRules();
-
 		// 这里可以添加具体的代码验证逻辑
 		// 例如：检查命名约定、代码结构等
 
@@ -176,7 +174,7 @@ export class RulesEnforcer {
 /**
  * 开发环境规则检查
  */
-if (process.env.NODE_ENV === 'development') {
+if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
 	// 在开发环境中自动验证规则
 	setTimeout(() => {
 		const isValid = rulesManager.validateRules();
