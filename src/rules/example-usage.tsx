@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /**
  * 规则应用示例 - 展示如何在代码中遵循开发规则
  * 这个文件演示了所有规则的实际应用

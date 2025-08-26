@@ -152,13 +152,13 @@ export class RulesEnforcer {
 	/**
 	 * 验证代码是否符合规则
 	 */
-	public static validateCode(_code: string, _ruleIds: string[] = []): string[] {
-		const violations: string[] = [];
-		// 这里可以添加具体的代码验证逻辑
-		// 例如：检查命名约定、代码结构等
+        public static validateCode(): string[] {
+                const violations: string[] = [];
+                // 这里可以添加具体的代码验证逻辑
+                // 例如：检查命名约定、代码结构等
 
-		return violations;
-	}
+                return violations;
+        }
 
 	/**
 	 * 获取规则摘要
