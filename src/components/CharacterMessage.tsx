@@ -8,26 +8,27 @@ interface CharacterMessageProps {
 
 export const CharacterMessage: React.FC<CharacterMessageProps> = ({ avatar, message }) => {
   return (
-    <div className="relative w-48">
-      {/* Blue background container for character - narrow and tall */}
-      <div className="bg-blue-200 rounded-t-2xl p-4 flex justify-center items-end min-h-[100px] w-full">
-        <div className="w-20 h-16">
-          <img 
-            src={avatar} 
-            alt="Character guide"
-            className="w-full h-full object-contain"
-          />
+    <div className="relative w-[119px]">
+      {/* Outer bubble frame image */}
+      <img
+        src="/images/chat-bubble.png"
+        alt="chat bubble"
+        className="w-[119px] h-[383px]"
+      />
+
+      {/* Avatar overlapping the bubble top */}
+      <img
+        src={avatar}
+        alt="Character guide"
+        className="absolute w-[100px] h-[70px] -top-6 left-1/2 -translate-x-1/2 object-contain"
+      />
+
+      {/* Inner text background and message */}
+      <div className="absolute top-[90px] left-[14px] w-[91px] h-[288px]">
+        <div className="absolute top-2 left-2 right-2 text-black font-['Koulen'] text-[13px] leading-snug whitespace-pre-line">
+          {message}
         </div>
       </div>
-      
-      {/* White dialog box - narrow and elongated */}
-      <Card className="bg-white border-2 border-gray-300 rounded-b-2xl rounded-t-none shadow-lg w-full">
-        <CardContent className="p-4">
-          <p className="text-black font-['Koulen'] text-xs font-medium leading-tight whitespace-pre-line text-left">
-            {message}
-          </p>
-        </CardContent>
-      </Card>
     </div>
   );
 };

@@ -51,13 +51,13 @@ export const FantasyDashboard: React.FC = () => {
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Header */}
         <header className="flex justify-between items-start p-8">
-          <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2">
             <UserProfile 
               name={mockUserProfile.name}
               level={mockUserProfile.level}
               avatar={mockUserProfile.avatar}
             />
-            <div className="text-foreground font-['Koulen'] text-xl font-bold uppercase">
+            <div className="text-foreground font-['Koulen'] text-lg font-bold uppercase leading-none">
               {mockUserProfile.name}, guard your fortune！
             </div>
           </div>
@@ -83,7 +83,7 @@ export const FantasyDashboard: React.FC = () => {
         </div>
 
         {/* Character Message - narrow and attached to right side */}
-        <div className="fixed right-4 top-1/3 -translate-y-1/2 z-20">
+        <div className="fixed right-4 top-1/2 -translate-y-1/2 z-20">
           <CharacterMessage 
             avatar={mockCharacterMessage.avatar}
             message={mockCharacterMessage.message}
