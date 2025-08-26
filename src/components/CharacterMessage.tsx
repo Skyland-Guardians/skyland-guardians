@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card, CardContent } from './ui/card';
 
 interface CharacterMessageProps {
   avatar: string;
