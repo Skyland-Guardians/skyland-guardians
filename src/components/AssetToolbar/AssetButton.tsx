@@ -195,9 +195,8 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
           src={asset.icon}
           alt={asset.name}
           style={{
-            width: '3.5rem',
-            height: '3.5rem',
-            objectFit: 'contain',
+            width: '4rem',
+            height: '4rem',
             opacity: 0.8
           }}
         />

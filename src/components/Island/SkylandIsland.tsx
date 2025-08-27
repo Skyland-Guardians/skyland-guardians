@@ -14,47 +14,6 @@ export function SkylandIsland() {
       transition: 'all 1s ease',
       backgroundColor: 'transparent' // Remove the blue/purple background
     }}>
-      
-      {/* Clouds */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        overflow: 'hidden'
-      }}>
-        <div style={{
-          position: 'absolute',
-          top: '2.5rem',
-          left: '5rem',
-          width: '4rem',
-          height: '2rem',
-          borderRadius: '9999px',
-          opacity: 0.6,
-          backgroundColor: isChaoMode ? '#374151' : 'white'
-        }}></div>
-        <div style={{
-          position: 'absolute',
-          top: '4rem',
-          right: '8rem',
-          width: '3rem',
-          height: '1.5rem',
-          borderRadius: '9999px',
-          opacity: 0.5,
-          backgroundColor: isChaoMode ? '#4b5563' : 'white'
-        }}></div>
-        <div style={{
-          position: 'absolute',
-          top: '6rem',
-          left: '33%',
-          width: '5rem',
-          height: '2.5rem',
-          borderRadius: '9999px',
-          opacity: 0.4,
-          backgroundColor: isChaoMode ? '#1f2937' : 'white'
-        }}></div>
-      </div>
 
       {/* Lightning effects for chaos mode */}
       {isChaoMode && (
@@ -90,8 +49,7 @@ export function SkylandIsland() {
       <div style={{ position: 'relative' }}>
         {/* Island with floating animation */}
         <div style={{
-          position: 'relative',
-          width: '80vw', // 80% of viewport width
+          position: 'relative', // 80% of viewport width
           height: '80vh', // 80% of viewport height
           animation: 'pulse 4s infinite'
         }}>
@@ -122,17 +80,6 @@ export function SkylandIsland() {
         </div>
         
         {/* Particle effects */}
-        <div style={{
-          position: 'absolute',
-          top: '2.5rem',
-          left: '5rem',
-          width: '0.5rem',
-          height: '0.5rem',
-          backgroundColor: '#fde047',
-          borderRadius: '50%',
-          opacity: 0.7,
-          animation: 'ping 1s infinite'
-        }}></div>
         <div style={{
           position: 'absolute',
           top: '8rem',

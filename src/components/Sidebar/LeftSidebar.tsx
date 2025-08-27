@@ -33,8 +33,8 @@ export function LeftSidebar() {
             src="/assets/主界面1资源/卡牌主界面icon.png" 
             alt="Cards"
             style={{
-              width: '6rem', // Slightly narrower
-              height: '8rem' // Same height as badge
+              width: '9rem', // Slightly narrower
+              height: '12rem' // Same height as badge
             }}
           />
           <span style={{
@@ -55,7 +55,8 @@ export function LeftSidebar() {
         backgroundColor: 'transparent',
         border: 'none',
         cursor: 'pointer',
-        transition: 'all 0.2s ease'
+        transition: 'all 0.2s ease',
+        padding: '0.5rem 1rem',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'scale(1.05)';
@@ -64,8 +65,8 @@ export function LeftSidebar() {
         e.currentTarget.style.transform = 'scale(1)';
       }}>
         <div style={{
-          width: '8rem', // Increased from 6rem to 8rem
-          height: '8rem',
+          width: '9rem', // Increased from 6rem to 8rem
+          height: '9rem',
           margin: '0 auto',
           position: 'relative'
         }}>
