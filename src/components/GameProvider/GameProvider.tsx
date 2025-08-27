@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { ReactNode } from 'react';
-import type { GameState, UserInfo, AssetType, AIMessage, Mission } from '../../types/game';
+import type { GameState, UserInfo, AssetType, ChatMessage, Mission } from '../../types/game';
 import { GameContext } from '../../hooks/useGameContext';
 
 export function GameProvider({ children }: { children: ReactNode }) {
@@ -29,12 +29,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
     { id: 'magic', name: 'MAGIC', icon: '/assets/主界面1资源/魔杖icon.png', type: 'magic', theme: 'gold', allocation: 12.5 }
   ]);
 
-  const [currentAIMessage, setCurrentAIMessage] = useState<AIMessage | null>({
-    id: '1',
-    content: 'GOOD MORNING, LITTLE GUARDIAN! THE INVESTMENT PERFORMANCE YESTERDAY WAS QUITE GOOD! DO YOU WANT TO TRY ANY NEW CHALLENGES TODAY?',
-    timestamp: new Date(),
-    type: 'greeting'
-  });
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      id: '1',
+      sender: 'ai',
+      content:
+        'GOOD MORNING, LITTLE GUARDIAN! THE INVESTMENT PERFORMANCE YESTERDAY WAS QUITE GOOD! DO YOU WANT TO TRY ANY NEW CHALLENGES TODAY?',
+      timestamp: new Date(),
+      type: 'greeting'
+    }
+  ]);
 
   const [currentMission, setCurrentMission] = useState<Mission | null>(null);
   const [missions, setMissions] = useState<Mission[]>([]);
@@ -56,8 +60,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const setAIMessage = (message: AIMessage | null) => {
-    setCurrentAIMessage(message);
+  const addMessage = (message: ChatMessage) => {
+    setMessages(prev => [...prev, message]);
   };
 
   const addMission = (mission: Mission) => {
@@ -69,14 +73,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
       gameState,
       userInfo,
       assetAllocations,
-      currentAIMessage,
+      messages,
       currentMission,
       missions,
       isMissionListOpen,
       updateGameState,
       updateUserInfo,
       updateAssetAllocation,
-      setAIMessage,
+      addMessage,
       setCurrentMission,
       addMission,
       setMissionListOpen

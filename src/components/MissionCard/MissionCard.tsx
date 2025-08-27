@@ -1,13 +1,14 @@
 import { useGameState } from '../../hooks/useGameContext';
 
 export function MissionCard() {
-  const { currentMission, setCurrentMission, setAIMessage, addMission } = useGameState();
+  const { currentMission, setCurrentMission, addMessage, addMission } = useGameState();
 
   if (!currentMission) return null;
 
   const handleAccept = () => {
-    setAIMessage({
+    addMessage({
       id: `mission-${currentMission.id}`,
+      sender: 'ai',
       content: `Mission accepted: ${currentMission.title}. Good luck!`,
       timestamp: new Date(),
       type: 'hint'

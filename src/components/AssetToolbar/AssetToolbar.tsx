@@ -4,7 +4,7 @@ import { AssetButton } from './AssetButton';
 import { MISSIONS } from '../../data/missions';
 
 export function AssetToolbar() {
-  const { assetAllocations, setCurrentMission, setAIMessage } = useGameState();
+  const { assetAllocations, setCurrentMission } = useGameState();
   const [activeAssetId, setActiveAssetId] = useState<string | null>(null);
 
   const handleAssetClick = (assetId: string) => {
@@ -21,15 +21,6 @@ export function AssetToolbar() {
     } else {
       alert(`Please adjust allocations to total 100%. Current total: ${total.toFixed(1)}%`);
     }
-  };
-
-  const handleAskAIClick = () => {
-    setAIMessage({
-      id: `ai-${Date.now()}`,
-      content: 'HOW CAN I ASSIST YOU TODAY?',
-      timestamp: new Date(),
-      type: 'feedback'
-    });
   };
 
   return (
@@ -56,55 +47,13 @@ export function AssetToolbar() {
         margin: '0 auto'
       }}>
         {assetAllocations.slice(0, 4).map((asset) => (
-          <AssetButton 
-            key={asset.id} 
-            asset={asset} 
+          <AssetButton
+            key={asset.id}
+            asset={asset}
             onClick={() => handleAssetClick(asset.id)}
             isActive={activeAssetId === asset.id}
           />
         ))}
-        
-        {/* ASK AI Button */}
-        <button
-          onClick={handleAskAIClick}
-          style={{
-            background: '#f5f5dc',
-            border: '2px solid rgba(255,255,255,0.5)',
-            borderRadius: '0.75rem',
-            padding: '0.75rem',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            transition: 'all 0.2s ease',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.25rem',
-            minWidth: '16rem',
-            minHeight: '7rem',
-            cursor: 'pointer',
-            transform: 'scale(1)'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.02)';
-            e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-          }}
-        >
-          <span style={{
-            fontSize: '2rem',
-            fontWeight: '900',
-            color: '#4a5568',
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-            textAlign: 'center'
-          }}>
-            ASK AI
-          </span>
-        </button>
-
         {/* NEXT DAY Button */}
         <button
           onClick={handleNextDayClick}
@@ -147,9 +96,9 @@ export function AssetToolbar() {
         </button>
         
         {assetAllocations.slice(4).map((asset) => (
-          <AssetButton 
-            key={asset.id} 
-            asset={asset} 
+          <AssetButton
+            key={asset.id}
+            asset={asset}
             onClick={() => handleAssetClick(asset.id)}
             isActive={activeAssetId === asset.id}
           />

@@ -21,11 +21,12 @@ export interface AssetType {
   allocation: number;
 }
 
-export interface AIMessage {
+export interface ChatMessage {
   id: string;
+  sender: 'ai' | 'user';
   content: string;
   timestamp: Date;
-  type: 'greeting' | 'feedback' | 'hint' | 'celebration';
+  type?: 'greeting' | 'feedback' | 'hint' | 'celebration';
 }
 
 export interface Achievement {
