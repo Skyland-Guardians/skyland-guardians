@@ -7,6 +7,8 @@ import { useGameState } from '../../hooks/useGameContext';
 import { MissionCard } from '../MissionCard/MissionCard';
 import { CardCollection } from '../CardCollection/CardCollection';
 import { DebugPanel } from '../DebugPanel/DebugPanel';
+import { AchievementPanel } from '../AchievementPanel/AchievementPanel';
+import { achievementService } from '../../services/achievement-service';
 
 export function MainScreen() {
   const { gameState } = useGameState();

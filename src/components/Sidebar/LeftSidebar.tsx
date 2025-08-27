@@ -1,7 +1,11 @@
+import { useState } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
+import { AchievementPanel } from '../AchievementPanel/AchievementPanel';
+import { achievementService } from '../../services/achievement-service';
 
 export function LeftSidebar() {
   const { setCardCollectionOpen } = useGameState();
+  const [showBadges, setShowBadges] = useState(false);
   return (
     <aside style={{
       width: '12rem', // Increased width for larger buttons
@@ -54,7 +58,7 @@ export function LeftSidebar() {
       </button>
 
       {/* BADGES Button - Larger size */}
-      <button style={{
+  <button style={{
         position: 'relative',
         backgroundColor: 'transparent',
         border: 'none',
@@ -62,6 +66,7 @@ export function LeftSidebar() {
         transition: 'all 0.2s ease',
         padding: '0.5rem 1rem',
       }}
+      onClick={() => setShowBadges(true)}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'scale(1.05)';
       }}
@@ -107,6 +112,45 @@ export function LeftSidebar() {
           BADGES
         </span>
       </button>
+      {/* BADGES 弹窗 */}
+      {showBadges && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0,0,0,0.4)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+          onClick={() => setShowBadges(false)}
+        >
+          <div style={{
+            background: '#fff',
+            borderRadius: 16,
+            padding: 32,
+            minWidth: 320,
+            boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+            position: 'relative',
+          }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button style={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              background: 'transparent',
+              border: 'none',
+              fontSize: 24,
+              cursor: 'pointer',
+            }} onClick={() => setShowBadges(false)}>&times;</button>
+            <AchievementPanel summary={achievementService.getSummary()} />
+          </div>
+        </div>
+      )}
     </aside>
   );
 }
