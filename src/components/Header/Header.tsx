@@ -1,7 +1,52 @@
 import { useGameState } from '../../hooks/useGameContext';
 
 export function Header() {
-  const { gameState, userInfo, coins } = useGameState();
+  const { gameState, userInfo, coins, addMessage, assetAllocations, performanceHistory } = useGameState();
+
+  const handleGameHelp = async () => {
+    // Add thinking message
+    addMessage({
+      id: `ai-thinking-help-${Date.now()}`,
+      sender: 'ai',
+      content: '🤔 *Let me explain how to play this game...*',
+      timestamp: new Date(),
+      type: 'feedback'
+    });
+
+    try {
+      const { gamifiedAIService } = await import('../../services/gamified-ai-service');
+      const response = await gamifiedAIService.getGameResponse(
+        'Explain how this investment game works. What should I focus on?',
+        {
+          assets: assetAllocations,
+          currentDay: gameState.currentDay,
+          stars: gameState.stars,
+          level: gameState.level,
+          coins: coins || 1000,
+          performanceHistory: performanceHistory
+        }
+      );
+
+      // Add AI explanation
+      addMessage({
+        id: `ai-help-explain-${Date.now()}`,
+        sender: 'ai',
+        content: response,
+        timestamp: new Date(),
+        type: 'feedback'
+      });
+    } catch (error) {
+      console.error('Failed to get AI help:', error);
+      // Fallback explanation
+      addMessage({
+        id: `ai-help-fallback-${Date.now()}`,
+        sender: 'ai',
+        content: 'Welcome to Skyland Guardians! Adjust your asset allocations, apply changes, and see how your portfolio performs. Diversification is key to managing risk! 🏰',
+        timestamp: new Date(),
+        type: 'feedback'
+      });
+    }
+  };
 
   return (
     <header style={{
@@ -136,6 +181,39 @@ export function Header() {
           }}>★</span>
           <span>{gameState.stars}</span>
         </div>
+        
+        {/* Game Help Button */}
+        <button
+          onClick={handleGameHelp}
+          style={{
+            background: 'linear-gradient(145deg, #10b981, #059669)',
+            color: 'white',
+            padding: '0.75rem 1rem',
+            borderRadius: '1rem',
+            fontWeight: '700',
+            fontSize: '1rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+            border: '2px solid rgba(255, 255, 255, 0.2)',
+            textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'linear-gradient(145deg, #059669, #047857)';
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'linear-gradient(145deg, #10b981, #059669)';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+          title="Get game instructions"
+        >
+          <span style={{ fontSize: '1.2rem' }}>🎮</span>
+          <span>How to Play</span>
+        </button>
       </div>
     </header>
   );
