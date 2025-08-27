@@ -8,7 +8,7 @@ export function Header() {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: '1.5rem',
+      padding: '1.5rem 3rem',
       backgroundColor: 'transparent',
       position: 'relative',
       zIndex: 3
@@ -16,7 +16,7 @@ export function Header() {
       {/* Left side - User Info */}
       <div style={{
         display: 'flex',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         gap: '1rem'
       }}>
         <div style={{
@@ -46,10 +46,10 @@ export function Header() {
           <p style={{
             fontSize: '1rem',
             color: '#1e40af',
-            fontWeight: 'bold',
+            fontWeight: '800',
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
-            margin: 0,
+            margin: '0',
             textAlign: 'center'
           }}>
             LEVEL {userInfo.level}
@@ -58,12 +58,12 @@ export function Header() {
         <div>
           <h1 style={{
             fontSize: '1.25rem',
-            fontWeight: '900',
+            fontWeight: '600',
             color: '#1e3a8a',
             textTransform: 'uppercase',
             letterSpacing: '0.1em',
-            margin: 0,
-            textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+            margin: '0',
+            textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
           }}>
             {userInfo.name}, GUARD YOUR FORTUNE!
           </h1>
@@ -89,15 +89,15 @@ export function Header() {
           background: 'transparent',
           color: '#1e3a8a',
           padding: '0.75rem 1.5rem',
-          fontWeight: '900',
-          fontSize: '1rem'
+          fontWeight: '600',
+          fontSize: '40px'
         }}>
           DAY {gameState.currentDay}
         </div>
         <div style={{
-          background: '#2563eb',
+          background: '#2571BC',
           color: 'white',
-          padding: '0.75rem 1.5rem',
+          padding: '0.50rem 1.5rem',
           borderRadius: '0.75rem',
           fontWeight: '900',
           fontSize: '1rem',
@@ -108,9 +108,10 @@ export function Header() {
         }}>
           <span style={{
             color: '#fde047',
-            fontSize: '1.25rem'
+            fontSize: '40px'
           }}>★</span>
-          <span>{gameState.stars}</span>
+          <span style={{
+            fontSize: '40px'}}>{gameState.stars}</span>
         </div>
       </div>
     </header>

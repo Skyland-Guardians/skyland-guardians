@@ -21,7 +21,6 @@ export function MainScreen() {
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat',
-      transition: 'all 1s ease',
       fontFamily: 'Arial, sans-serif',
       position: 'relative'
     }}>
@@ -32,15 +31,29 @@ export function MainScreen() {
           {/* Bottom purple decoration - more rounded arc shape */}
           <div style={{
             position: 'absolute',
-            bottom: 0,
+            bottom: '-20%',
             left: 0,
             right: 0,
-            height: '35%',
-            background: 'linear-gradient(135deg, #c084fc, #a855f7, #9333ea)',
-            borderTopLeftRadius: '50% 100%',
-            borderTopRightRadius: '50% 100%',
-            opacity: 0.4,
-            zIndex: 1
+            height: '60%',
+            			background: 'url("/assets/main-screen-1-assets/background-color-block-2.png")',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            backgroundPosition: 'bottom center',
+            zIndex: 2
+          }} />
+
+          <div style={{
+            position: 'absolute',
+            bottom: '-10%',
+            left: 0,
+            right: 0,
+            width: '100%',
+            height: '70%',
+            			background: 'url("/assets/main-screen-1-assets/background-color-1.png")',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            backgroundPosition: 'bottom center',
+            zIndex: 1,
           }} />
           
 
@@ -55,8 +68,6 @@ export function MainScreen() {
       {/* Main Content Area */}
       <main style={{
         display: 'flex',
-        flex: 1,
-        minHeight: 'calc(100vh - 200px)',
         position: 'relative',
         zIndex: 2
       }}>

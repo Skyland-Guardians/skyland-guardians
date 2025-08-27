@@ -21,7 +21,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const [userInfo, setUserInfo] = useState<UserInfo>({
     name: 'JAMES',
-    avatar: '/assets/主界面1资源/小孩头像icon.png',
+    		avatar: '/assets/main-screen-1-assets/child-avatar-icon.png',
     level: 1
   });
 

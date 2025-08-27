@@ -43,7 +43,7 @@ export function AssetToolbar() {
   return (
     <>
     <div style={{
-      background: '#357ABD', // Deeper blue from design specifications
+      background: '#5196DC', // Deeper blue from design specifications
       padding: '2rem 3.25rem', // Increased horizontal padding by 30% (2.5rem * 1.3)
       borderTopLeftRadius: '2.5rem', // Much larger rounded corners
       borderTopRightRadius: '2.5rem',
@@ -113,7 +113,6 @@ export function AssetToolbar() {
             fontWeight: '900',
             color: isValidAllocation ? '#4a5568' : '#9ca3af',
             textTransform: 'uppercase',
-            letterSpacing: '0.1em',
             textAlign: 'center'
           }}>
             APPLY

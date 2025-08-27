@@ -156,10 +156,6 @@ export function AIPanel() {
           }}
         />
 
-
-
-
-
         {/* Messages */}
         <div
           style={{
