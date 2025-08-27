@@ -39,34 +39,35 @@ export function AIPanel() {
         padding: '1rem',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         position: 'relative'
       }}
     >
-      <img
-        src="/assets/主界面1资源/右边的AI人物.png"
-        alt="AI Character"
-        style={{ width: '12rem', height: '20rem', objectFit: 'contain' }}
-      />
       <div
         style={{
-          marginTop: '1rem',
           width: '100%',
           backgroundColor: '#89CFF0',
           borderRadius: '0.5rem',
           padding: '0.5rem',
           display: 'flex',
           flexDirection: 'column',
+          alignItems: 'center',
           height: '22rem'
         }}
       >
+        <img
+          src="/assets/主界面1资源/右边的AI人物.png"
+          alt="AI Character"
+          style={{ width: '8rem', height: '8rem', objectFit: 'contain', marginBottom: '0.5rem' }}
+        />
         <div
           style={{
             flexGrow: 1,
             overflowY: 'auto',
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.5rem'
+            gap: '0.5rem',
+            alignSelf: 'stretch'
           }}
         >
           {messages.map(msg => (
@@ -94,7 +95,7 @@ export function AIPanel() {
           ))}
           <div ref={messagesEndRef} />
         </div>
-        <form onSubmit={handleSubmit} style={{ marginTop: '0.5rem' }}>
+        <form onSubmit={handleSubmit} style={{ marginTop: '0.5rem', width: '100%' }}>
           <input
             type="text"
             value={input}
