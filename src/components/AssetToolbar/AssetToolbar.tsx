@@ -1,62 +1,29 @@
 import { useState } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
 import { AssetButton } from './AssetButton';
-import { MISSIONS } from '../../data/missions';
 
 export function AssetToolbar() {
-  const { assetAllocations, setCurrentMission, performNextDaySettlement, addMessage } = useGameState();
+  const { assetAllocations, addMessage } = useGameState();
   const [activeAssetId, setActiveAssetId] = useState<string | null>(null);
 
   const handleAssetClick = (assetId: string) => {
     setActiveAssetId(activeAssetId === assetId ? null : assetId);
   };
 
-  const handleNextDayClick = () => {
+  const handleApplyClick = () => {
     // Calculate total allocation
     const total = assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0);
     if (Math.abs(total - 100) < 0.1) {
       setActiveAssetId(null); // Close any open sliders
-      if (performNextDaySettlement) {
-        const res = performNextDaySettlement();
-        if (res && typeof res === 'object') {
-          // Create rich message data for AI chat with icons
-          const richContent = {
-            type: 'settlement',
-            title: `SETTLEMENT COMPLETE! 🎯`,
-            summary: {
-              portfolioReturn: res.portfolioReturn,
-              totalChange: res.delta
-            },
-            assets: res.perAsset.map((p: any) => ({
-              id: p.id,
-              name: p.shortName || p.name,
-              icon: p.icon,
-              return: p.adjustedReturn,
-              coinDelta: p.coinDelta
-            }))
-          };
-          
-          addMessage({
-            id: `settlement-${Date.now()}`,
-            sender: 'ai',
-            content: JSON.stringify(richContent), // Store rich data as JSON
-            timestamp: new Date(),
-            type: 'feedback'
-          });
-        } else {
-          addMessage({
-            id: `settlement-${Date.now()}`,
-            sender: 'ai',
-            content: 'DAY SETTLEMENT COMPLETED. 📊',
-            timestamp: new Date(),
-            type: 'feedback'
-          });
-        }
-      } else {
-        // Fallback: open a mission as before
-        const mission = MISSIONS[Math.floor(Math.random() * MISSIONS.length)];
-        setCurrentMission(mission);
-      }
+      
+      // Generate AI feedback about the allocation
+      addMessage({
+        id: `apply-${Date.now()}`,
+        sender: 'ai',
+        content: `✅ Portfolio allocation applied successfully! Your allocation looks ${total > 99 ? 'perfectly balanced' : 'well-structured'}. Ready for the next market session!`,
+        timestamp: new Date(),
+        type: 'feedback'
+      });
     } else {
       addMessage({
         id: `error-${Date.now()}`,
@@ -102,9 +69,9 @@ export function AssetToolbar() {
             isActive={activeAssetId === asset.id}
           />
         ))}
-        {/* NEXT DAY Button */}
+        {/* APPLY Button */}
         <button
-          onClick={handleNextDayClick}
+          onClick={handleApplyClick}
           style={{
             background: '#f5f5dc',
             border: '2px solid rgba(255,255,255,0.5)',
@@ -139,7 +106,7 @@ export function AssetToolbar() {
             letterSpacing: '0.1em',
             textAlign: 'center'
           }}>
-            NEXT DAY
+            APPLY
           </span>
         </button>
         

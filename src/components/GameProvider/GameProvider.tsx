@@ -7,6 +7,7 @@ import { SAMPLE_EVENTS } from '../../data/sample-events';
 import { DEFAULT_MARKET_CONFIG } from '../../data/asset-market-config';
 import { GAME_ASSETS } from '../../data/game-assets';
 import { sampleReturnForType } from '../../data/asset-return-config';
+import { aiService } from '../../services/ai-service';
 import type { MarketMode } from '../../data/asset-market-config';
 
 export function GameProvider({ children }: { children: ReactNode }) {
@@ -47,16 +48,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const [assetAllocations, setAssetAllocations] = useState<AssetType[]>(defaultAllocations);
 
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: '1',
-      sender: 'ai',
-      content:
-        'GOOD MORNING, LITTLE GUARDIAN! THE INVESTMENT PERFORMANCE YESTERDAY WAS QUITE GOOD! DO YOU WANT TO TRY ANY NEW CHALLENGES TODAY?',
-      timestamp: new Date(),
-      type: 'greeting'
-    }
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const [currentMission, setCurrentMission] = useState<Mission | null>(null);
   const [missions, setMissions] = useState<Mission[]>([]);
@@ -76,11 +68,35 @@ export function GameProvider({ children }: { children: ReactNode }) {
   };
 
   const updateAssetAllocation = (assetId: string, allocation: number) => {
-    setAssetAllocations(prev => 
-      prev.map(asset => 
+    setAssetAllocations(prev => {
+      const updated = prev.map(asset => 
         asset.id === assetId ? { ...asset, allocation } : asset
-      )
-    );
+      );
+      
+      // Generate AI feedback when allocation changes significantly
+      const asset = updated.find(a => a.id === assetId);
+      const previousAsset = prev.find(a => a.id === assetId);
+      if (asset && previousAsset && Math.abs(asset.allocation - previousAsset.allocation) > 5) {
+        // Add AI suggestion after a short delay
+        setTimeout(() => {
+          const suggestion = aiService.analyzeAllocation(updated);
+          if (suggestion.trim()) {
+            setMessages(prevMessages => [
+              ...prevMessages,
+              {
+                id: `allocation-${Date.now()}`,
+                sender: 'ai',
+                content: suggestion,
+                timestamp: new Date(),
+                type: 'hint'
+              }
+            ]);
+          }
+        }, 1000);
+      }
+      
+      return updated;
+    });
   };
 
   const addMessage = (message: ChatMessage) => {
@@ -167,13 +183,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setMarketDayIndex(i => i + 1);
     setGameState(prev => ({ ...prev, currentDay: prev.currentDay + 1 }));
 
-    // message summary
+    // Generate AI feedback about the settlement
+    const aiEventFeedback = aiService.generateEventFeedback('market settlement', portfolioReturn);
     setMessages(prev => [
       ...prev,
       {
         id: String(Date.now()),
         sender: 'ai',
-        content: `Day ${gameState.currentDay + 1} settlement: portfolio change ${(portfolioReturn * 100).toFixed(2)}%, ${delta >= 0 ? '+' : ''}${delta} coins.`,
+        content: aiEventFeedback,
         timestamp: new Date(),
         type: 'feedback'
       }

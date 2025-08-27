@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
+import { aiService } from '../../services/ai-service';
+import { AI_PERSONALITIES } from '../../data/ai-personalities';
 
 // Helper component to render rich settlement messages
 const RichMessage = ({ content }: { content: string }) => {
@@ -47,18 +49,30 @@ const formatCoins = (amount: number): string => {
 };
 
 export function AIPanel() {
-  const { messages, addMessage } = useGameState();
+  const { messages, addMessage, gameState, userInfo, assetAllocations } = useGameState();
   const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [currentPersonality, setCurrentPersonality] = useState(AI_PERSONALITIES[0]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSubmit = (e: FormEvent) => {
+  // Initialize with welcome message
+  useEffect(() => {
+    if (messages.length === 0) {
+      const welcomeMessage = aiService.generateWelcomeMessage(userInfo.name);
+      addMessage(welcomeMessage);
+    }
+  }, [messages.length, userInfo.name, addMessage]);
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const trimmed = input.trim();
-    if (!trimmed) return;
+    if (!trimmed || isTyping) return;
+
+    // Add user message
     addMessage({
       id: `user-${Date.now()}`,
       sender: 'user',
@@ -66,15 +80,58 @@ export function AIPanel() {
       timestamp: new Date()
     });
     setInput('');
-    setTimeout(() => {
-      addMessage({
-        id: `ai-${Date.now()}`,
-        sender: 'ai',
-        content: 'LET ME THINK ABOUT THAT.',
-        timestamp: new Date(),
-        type: 'feedback'
+    setIsTyping(true);
+
+    try {
+      // Get AI response
+      const response = await aiService.getResponse(trimmed, {
+        assets: assetAllocations,
+        currentDay: gameState.currentDay,
+        stars: gameState.stars,
+        level: gameState.level
       });
-    }, 500);
+
+      // Add AI response after a short delay for natural feel
+      setTimeout(() => {
+        addMessage({
+          id: `ai-${Date.now()}`,
+          sender: 'ai',
+          content: response,
+          timestamp: new Date(),
+          type: 'feedback'
+        });
+        setIsTyping(false);
+      }, 800);
+    } catch (error) {
+      console.error('AI response error:', error);
+      setTimeout(() => {
+        addMessage({
+          id: `ai-error-${Date.now()}`,
+          sender: 'ai',
+          content: 'Sorry, I\'m a bit busy right now. Please try again later!',
+          timestamp: new Date(),
+          type: 'feedback'
+        });
+        setIsTyping(false);
+      }, 500);
+    }
+  };
+
+  const handlePersonalityChange = (personalityId: string) => {
+    const personality = AI_PERSONALITIES.find(p => p.id === personalityId);
+    if (personality) {
+      setCurrentPersonality(personality);
+      aiService.setPersonality(personalityId);
+      
+      // Add personality switch message
+      addMessage({
+        id: `personality-${Date.now()}`,
+        sender: 'ai',
+        content: `Hi! I'm ${personality.name}, your new AI investment companion! What investment questions would you like to explore?`,
+        timestamp: new Date(),
+        type: 'greeting'
+      });
+    }
   };
 
   return (
@@ -102,9 +159,10 @@ export function AIPanel() {
           position: 'relative'
         }}
       >
+        {/* AI Character */}
         <img
-          src="/assets/主界面1资源/右边的AI人物.png"
-          alt="AI Character"
+          src={currentPersonality.avatar}
+          alt={currentPersonality.name}
           style={{
             width: '12rem',
             height: '20rem',
@@ -114,6 +172,36 @@ export function AIPanel() {
             alignSelf: 'center'
           }}
         />
+
+        {/* AI Personality Selector */}
+        <div style={{ 
+          display: 'flex', 
+          gap: '0.5rem', 
+          marginBottom: '0.5rem',
+          justifyContent: 'center',
+          flexWrap: 'wrap'
+        }}>
+          {AI_PERSONALITIES.map(personality => (
+            <button
+              key={personality.id}
+              onClick={() => handlePersonalityChange(personality.id)}
+              style={{
+                padding: '0.25rem 0.5rem',
+                fontSize: '0.75rem',
+                borderRadius: '0.25rem',
+                border: 'none',
+                backgroundColor: currentPersonality.id === personality.id ? '#ffffff' : 'rgba(255,255,255,0.7)',
+                color: '#000',
+                cursor: 'pointer',
+                fontWeight: currentPersonality.id === personality.id ? 'bold' : 'normal'
+              }}
+            >
+              {personality.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Messages */}
         <div
           style={{
             flexGrow: 1,
@@ -139,19 +227,42 @@ export function AIPanel() {
               <RichMessage content={msg.content} />
             </div>
           ))}
+          
+          {/* Typing indicator */}
+          {isTyping && (
+            <div
+              style={{
+                alignSelf: 'flex-start',
+                backgroundColor: '#ffffff',
+                borderRadius: '0.5rem',
+                padding: '0.5rem 1rem',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                maxWidth: '90%',
+                fontStyle: 'italic',
+                color: '#666'
+              }}
+            >
+              {currentPersonality.name} is thinking...
+            </div>
+          )}
+          
           <div ref={messagesEndRef} />
         </div>
+
+        {/* Input Form */}
         <form onSubmit={handleSubmit} style={{ marginTop: '0.5rem' }}>
           <input
             type="text"
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder="Type a message..."
+            placeholder={`Ask ${currentPersonality.name} any investment question...`}
+            disabled={isTyping}
             style={{
               width: '100%',
               padding: '0.5rem',
               borderRadius: '0.5rem',
-              border: '1px solid #cbd5e1'
+              border: '1px solid #cbd5e1',
+              opacity: isTyping ? 0.6 : 1
             }}
           />
         </form>
