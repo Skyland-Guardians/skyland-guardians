@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
 import { AssetButton } from './AssetButton';
-import { aiService } from '../../services/ai-service';
 
 export function AssetToolbar() {
   const { assetAllocations, addMessage } = useGameState();
@@ -22,16 +21,27 @@ export function AssetToolbar() {
     if (Math.abs(total - 100) < 0.1) {
       setActiveAssetId(null); // Close any open sliders
       
-      // Generate AI analysis of the allocation
-      const aiAnalysis = aiService.analyzeAllocation(assetAllocations);
-      
-      // Generate comprehensive AI feedback
-      const feedbackContent = `✅ Portfolio allocation applied successfully!\n\n${aiAnalysis}\n\nYour portfolio is now ready for the next market session!`;
+      // Create rich portfolio summary message similar to settlement format
+      const portfolioSummary = {
+        type: 'portfolio',
+        title: `PORTFOLIO APPLIED! 📋`,
+        summary: {
+          totalAllocation: total,
+          assetCount: assetAllocations.length
+        },
+        assets: assetAllocations.map((asset) => ({
+          id: asset.id,
+          name: asset.shortName || asset.name,
+          icon: asset.icon,
+          allocation: asset.allocation,
+          theme: asset.theme
+        }))
+      };
       
       addMessage({
-        id: `apply-${Date.now()}`,
+        id: `portfolio-${Date.now()}`,
         sender: 'ai',
-        content: feedbackContent,
+        content: JSON.stringify(portfolioSummary),
         timestamp: new Date(),
         type: 'feedback'
       });

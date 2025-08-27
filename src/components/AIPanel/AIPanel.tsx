@@ -4,7 +4,7 @@ import { useGameState } from '../../hooks/useGameContext';
 import { useAIPersonality } from '../../hooks/useAIPersonality';
 import { aiService } from '../../services/ai-service';
 
-// Helper component to render rich settlement messages
+// Helper component to render rich settlement and portfolio messages
 const RichMessage = ({ content }: { content: string }) => {
   try {
     const data = JSON.parse(content);
@@ -27,6 +27,31 @@ const RichMessage = ({ content }: { content: string }) => {
                 </div>
                 <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: asset.coinDelta >= 0 ? '#16a34a' : '#dc2626' }}>
                   {formatCoins(asset.coinDelta)}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    } else if (data.type === 'portfolio') {
+      return (
+        <div style={{ fontSize: '0.875rem', color: '#000' }}>
+          <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#3b82f6' }}>
+            {data.title}
+          </div>
+          <div style={{ marginBottom: '0.75rem', padding: '0.5rem', backgroundColor: '#eff6ff', borderRadius: '0.375rem' }}>
+            <div>📊 Total Allocation: <strong>{data.summary.totalAllocation.toFixed(1)}%</strong></div>
+            <div>🎯 Assets: <strong>{data.summary.assetCount} positions</strong></div>
+          </div>
+          <div style={{ display: 'grid', gap: '0.375rem' }}>
+            {data.assets.map((asset: any) => (
+              <div key={asset.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.25rem', backgroundColor: '#fafafa', borderRadius: '0.25rem' }}>
+                <img src={asset.icon} alt="" style={{ width: 20, height: 20, objectFit: 'contain' }} />
+                <div style={{ flex: 1, fontSize: '0.8rem' }}>
+                  <strong>{asset.name}</strong>
+                </div>
+                <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#3b82f6' }}>
+                  {asset.allocation.toFixed(1)}%
                 </div>
               </div>
             ))}
@@ -120,8 +145,8 @@ export function AIPanel() {
   return (
     <aside
       style={{
-        width: '30vw', // 占屏幕宽度30%
-        padding: '1.5rem',
+        width: '20vw',
+        padding: '1.2rem', // 减少内边距
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-end',
@@ -174,9 +199,10 @@ export function AIPanel() {
                 alignSelf: msg.sender === 'ai' ? 'flex-start' : 'flex-end',
                 backgroundColor: '#ffffff',
                 borderRadius: '0.5rem',
-                padding: '0.5rem 1rem',
+                padding: '0.4rem 0.8rem', // 稍微减少内边距
                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                maxWidth: '90%'
+                maxWidth: '95%', // 增加最大宽度占比，适应更窄的容器
+                fontSize: '0.85rem' // 稍微减小字体
               }}
             >
               <RichMessage content={msg.content} />
@@ -190,11 +216,12 @@ export function AIPanel() {
                 alignSelf: 'flex-start',
                 backgroundColor: '#ffffff',
                 borderRadius: '0.5rem',
-                padding: '0.5rem 1rem',
+                padding: '0.4rem 0.8rem', // 与消息气泡保持一致
                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                maxWidth: '90%',
+                maxWidth: '95%', // 与消息气泡保持一致
                 fontStyle: 'italic',
-                color: '#666'
+                color: '#666',
+                fontSize: '0.85rem' // 与消息气泡保持一致
               }}
             >
               {currentPersonality.name} is thinking...
@@ -210,14 +237,15 @@ export function AIPanel() {
             type="text"
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder={`Ask ${currentPersonality.name} any investment question...`}
+            placeholder={`Ask ${currentPersonality.name}...`} // 缩短占位符文本
             disabled={isTyping}
             style={{
               width: '100%',
-              padding: '0.5rem',
+              padding: '0.4rem', // 稍微减少内边距
               borderRadius: '0.5rem',
               border: '1px solid #cbd5e1',
-              opacity: isTyping ? 0.6 : 1
+              opacity: isTyping ? 0.6 : 1,
+              fontSize: '0.85rem' // 减小字体大小
             }}
           />
         </form>
