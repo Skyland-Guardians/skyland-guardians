@@ -3,6 +3,10 @@ import type { UserAchievement, AchievementSummary } from '../types/achievement';
 import { achievements } from '../data/achievements';
 
 export class AchievementService {
+  // 重置用户成就（用于新用户或重新开始）
+  resetAchievements() {
+    this.userAchievements = [];
+  }
   private userAchievements: UserAchievement[] = [];
 
   // 用户完成成就

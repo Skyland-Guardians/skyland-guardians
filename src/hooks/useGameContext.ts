@@ -45,8 +45,10 @@ export function useGameState() {
   // BADGE 1: BALANCE APPRENTICE
   useEffect(() => {
     if (context.assetAllocations && context.assetAllocations.length > 0) {
+      // Rule: No single divine artifact (asset) exceeds 50% allocation
+      const totalAllocation = context.assetAllocations.reduce((sum, a) => sum + a.allocation, 0);
       const maxAllocation = Math.max(...context.assetAllocations.map(a => a.allocation));
-      if (maxAllocation <= 50) {
+      if (totalAllocation > 0 && maxAllocation / totalAllocation <= 0.5) {
         achievementService.achieve('badge_1', 1, 'bronze');
       }
     }
@@ -55,8 +57,9 @@ export function useGameState() {
   // BADGE 2: DIVERSIFICATION EXPLORER
   useEffect(() => {
     if (context.assetAllocations && context.assetAllocations.length > 0) {
+      // Rule: Invest in more than three kinds of magical tools simultaneously
       const diversified = context.assetAllocations.filter(a => a.allocation > 0).length;
-      if (diversified >= 3) {
+      if (diversified > 3) {
         achievementService.achieve('badge_2', 2, 'silver');
       }
     }

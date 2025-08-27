@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { achievementService } from '../../services/achievement-service';
+import React, { useState } from 'react';
 import type { ReactNode } from 'react';
 import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult, SettlementAsset } from '../../types/game';
 import { GameContext } from '../../hooks/useGameContext';
@@ -11,6 +12,10 @@ import { gamifiedAIService } from '../../services/gamified-ai-service';
 import type { MarketMode } from '../../data/asset-market-config';
 
 export function GameProvider({ children }: { children: ReactNode }) {
+  // 自动重置成就（新用户或新游戏开始时）
+  React.useEffect(() => {
+    achievementService.resetAchievements();
+  }, []);
   const [gameState, setGameState] = useState<GameState>({
     currentDay: 1,
     stars: 15,
