@@ -73,28 +73,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
         asset.id === assetId ? { ...asset, allocation } : asset
       );
       
-      // Generate AI feedback when allocation changes significantly
-      const asset = updated.find(a => a.id === assetId);
-      const previousAsset = prev.find(a => a.id === assetId);
-      if (asset && previousAsset && Math.abs(asset.allocation - previousAsset.allocation) > 5) {
-        // Add AI suggestion after a short delay
-        setTimeout(() => {
-          const suggestion = aiService.analyzeAllocation(updated);
-          if (suggestion.trim()) {
-            setMessages(prevMessages => [
-              ...prevMessages,
-              {
-                id: `allocation-${Date.now()}`,
-                sender: 'ai',
-                content: suggestion,
-                timestamp: new Date(),
-                type: 'hint'
-              }
-            ]);
-          }
-        }, 1000);
-      }
-      
       return updated;
     });
   };

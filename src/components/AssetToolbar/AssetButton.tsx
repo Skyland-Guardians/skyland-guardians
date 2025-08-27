@@ -8,9 +8,41 @@ interface AssetButtonProps {
 }
 
 export function AssetButton({ asset, onClick, isActive = false }: AssetButtonProps) {
-  const { updateAssetAllocation } = useGameState();
+  const { updateAssetAllocation, assetAllocations } = useGameState();
 
   const handleSliderChange = (newValue: number) => {
+    // Calculate current total allocation excluding this asset
+    const otherAssetsTotal = assetAllocations
+      .filter(a => a.id !== asset.id)
+      .reduce((sum, a) => sum + a.allocation, 0);
+    
+    // Calculate what the total would be with the new value
+    const potentialTotal = otherAssetsTotal + newValue;
+    
+    // If the potential total is less than 100%, auto-adjust to make it 100%
+    // But only if the user is dragging upward (increasing allocation)
+    let finalValue = newValue;
+    if (potentialTotal < 100 && newValue > asset.allocation) {
+      // Auto-adjust to fill up to 100%
+      finalValue = 100 - otherAssetsTotal;
+      // Ensure we don't exceed 100%
+      finalValue = Math.min(finalValue, 100);
+      // Ensure we don't go below 0%
+      finalValue = Math.max(finalValue, 0);
+    }
+    
+    updateAssetAllocation(asset.id, finalValue);
+  };
+
+  const handleDirectInput = (value: string) => {
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue) && numValue >= 0 && numValue <= 100) {
+      updateAssetAllocation(asset.id, numValue);
+    }
+  };
+
+  const handleStepChange = (step: number) => {
+    const newValue = Math.max(0, Math.min(100, asset.allocation + step));
     updateAssetAllocation(asset.id, newValue);
   };
   const getThemeColors = (theme: string) => {
@@ -64,23 +96,192 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
           padding: '0.75rem',
           boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
           border: `2px solid ${colors.border}`,
-          minWidth: '120px',
+          minWidth: '200px',
           marginBottom: '0.5rem',
           zIndex: 30,
           animation: 'slideUp 0.2s ease'
         }}>
-          {/* Percentage Display */}
+          {/* Other Assets Overview */}
+          <div style={{
+            marginBottom: '0.75rem',
+            padding: '0.5rem',
+            backgroundColor: '#f8f9fa',
+            borderRadius: '4px',
+            border: '1px solid #e9ecef'
+          }}>
+            <div style={{
+              fontSize: '11px',
+              fontWeight: 'bold',
+              color: '#6c757d',
+              marginBottom: '0.25rem',
+              textAlign: 'center'
+            }}>
+              Other Assets
+            </div>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '0.25rem',
+              fontSize: '10px'
+            }}>
+              {assetAllocations
+                .filter(a => a.id !== asset.id)
+                .map(otherAsset => (
+                  <div 
+                    key={otherAsset.id}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '2px 4px',
+                      backgroundColor: 'white',
+                      borderRadius: '2px',
+                      border: '1px solid #dee2e6'
+                    }}
+                  >
+                    <span style={{
+                      color: '#495057',
+                      fontWeight: '500',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      maxWidth: '50px'
+                    }}>
+                      {otherAsset.shortName || otherAsset.name}
+                    </span>
+                    <span style={{
+                      color: '#007bff',
+                      fontWeight: 'bold',
+                      fontSize: '10px'
+                    }}>
+                      {otherAsset.allocation.toFixed(1)}%
+                    </span>
+                  </div>
+                ))
+              }
+            </div>
+            {/* Total remaining */}
+            <div style={{
+              marginTop: '0.25rem',
+              padding: '2px 4px',
+              backgroundColor: '#e7f3ff',
+              borderRadius: '2px',
+              border: '1px solid #b3d9ff',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <span style={{
+                fontSize: '10px',
+                fontWeight: 'bold',
+                color: '#0056b3'
+              }}>
+                Total Others:
+              </span>
+              <span style={{
+                fontSize: '10px',
+                fontWeight: 'bold',
+                color: '#0056b3'
+              }}>
+                {assetAllocations
+                  .filter(a => a.id !== asset.id)
+                  .reduce((sum, a) => sum + a.allocation, 0)
+                  .toFixed(1)}%
+              </span>
+            </div>
+          </div>
+
+          {/* Current Asset Controls */}
           <div style={{
             textAlign: 'center',
-            marginBottom: '0.5rem'
+            marginBottom: '0.5rem',
+            padding: '0.5rem',
+            backgroundColor: '#fff3cd',
+            borderRadius: '4px',
+            border: '1px solid #ffeaa7'
           }}>
-            <span style={{
-              fontSize: '1rem',
+            <div style={{
+              fontSize: '11px',
               fontWeight: 'bold',
-              color: colors.border
+              color: '#856404',
+              marginBottom: '0.5rem'
             }}>
-              {asset.allocation.toFixed(1)}%
-            </span>
+              Editing: {asset.shortName || asset.name}
+            </div>
+            
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem'
+            }}>
+              <button
+                onClick={() => handleStepChange(-0.5)}
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  border: `1px solid ${colors.border}`,
+                  backgroundColor: 'white',
+                  color: colors.border,
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                −
+              </button>
+              
+              <input
+                type="number"
+                min="0"
+                max="100"
+                step="0.1"
+                value={asset.allocation.toFixed(1)}
+                onChange={(e) => handleDirectInput(e.target.value)}
+                style={{
+                  width: '60px',
+                  padding: '4px 6px',
+                  border: `2px solid ${colors.border}`,
+                  borderRadius: '4px',
+                  textAlign: 'center',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  color: colors.border
+                }}
+              />
+              
+              <span style={{
+                fontSize: '14px',
+                fontWeight: 'bold',
+                color: colors.border
+              }}>
+                %
+              </span>
+              
+              <button
+                onClick={() => handleStepChange(0.5)}
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  border: `1px solid ${colors.border}`,
+                  backgroundColor: 'white',
+                  color: colors.border,
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                +
+              </button>
+            </div>
           </div>
           
           {/* Mini Slider */}
@@ -88,17 +289,18 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
             type="range"
             min="0"
             max="100"
-            step="0.1"
+            step="0.5"
             value={asset.allocation}
             onChange={(e) => handleSliderChange(parseFloat(e.target.value))}
             style={{
               width: '100%',
-              height: '4px',
-              borderRadius: '2px',
+              height: '6px',
+              borderRadius: '3px',
               background: `linear-gradient(to right, ${colors.border} 0%, ${colors.border} ${asset.allocation}%, #e5e7eb ${asset.allocation}%, #e5e7eb 100%)`,
               outline: 'none',
               cursor: 'pointer',
-              appearance: 'none'
+              appearance: 'none',
+              marginBottom: '0.5rem'
             }}
           />
           
@@ -106,10 +308,10 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
           <div style={{
             display: 'flex',
             gap: '0.25rem',
-            marginTop: '0.5rem',
+            marginTop: '0.25rem',
             justifyContent: 'center'
           }}>
-            {[0, 25, 50].map((preset) => (
+            {[0, 12.5, 25, 37.5, 50].map((preset) => (
               <button
                 key={preset}
                 onClick={(e) => {
@@ -117,12 +319,12 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
                   handleSliderChange(preset);
                 }}
                 style={{
-                  padding: '0.125rem 0.375rem',
+                  padding: '0.125rem 0.25rem',
                   borderRadius: '0.125rem',
                   border: `1px solid ${colors.border}`,
-                  backgroundColor: asset.allocation === preset ? colors.border : 'white',
-                  color: asset.allocation === preset ? 'white' : colors.border,
-                  fontSize: '0.625rem',
+                  backgroundColor: Math.abs(asset.allocation - preset) < 0.1 ? colors.border : 'white',
+                  color: Math.abs(asset.allocation - preset) < 0.1 ? 'white' : colors.border,
+                  fontSize: '0.55rem',
                   fontWeight: 'bold',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease'

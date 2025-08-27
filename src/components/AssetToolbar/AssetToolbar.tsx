@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
 import { AssetButton } from './AssetButton';
+import { aiService } from '../../services/ai-service';
 
 export function AssetToolbar() {
   const { assetAllocations, addMessage } = useGameState();
@@ -10,25 +11,27 @@ export function AssetToolbar() {
     setActiveAssetId(activeAssetId === assetId ? null : assetId);
   };
 
+  // Calculate total allocation for validation
+  const totalAllocation = assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0);
+  const isValidAllocation = Math.abs(totalAllocation - 100) < 0.1;
+
   const handleApplyClick = () => {
     // Calculate total allocation
     const total = assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0);
+    
     if (Math.abs(total - 100) < 0.1) {
       setActiveAssetId(null); // Close any open sliders
       
-      // Generate AI feedback about the allocation
+      // Generate AI analysis of the allocation
+      const aiAnalysis = aiService.analyzeAllocation(assetAllocations);
+      
+      // Generate comprehensive AI feedback
+      const feedbackContent = `✅ Portfolio allocation applied successfully!\n\n${aiAnalysis}\n\nYour portfolio is now ready for the next market session!`;
+      
       addMessage({
         id: `apply-${Date.now()}`,
         sender: 'ai',
-        content: `✅ Portfolio allocation applied successfully! Your allocation looks ${total > 99 ? 'perfectly balanced' : 'well-structured'}. Ready for the next market session!`,
-        timestamp: new Date(),
-        type: 'feedback'
-      });
-    } else {
-      addMessage({
-        id: `error-${Date.now()}`,
-        sender: 'ai',
-        content: `⚠️ ALLOCATION ERROR: Please adjust allocations to total 100%. Current total: ${total.toFixed(1)}%`,
+        content: feedbackContent,
         timestamp: new Date(),
         type: 'feedback'
       });
@@ -69,11 +72,13 @@ export function AssetToolbar() {
             isActive={activeAssetId === asset.id}
           />
         ))}
+        
         {/* APPLY Button */}
         <button
           onClick={handleApplyClick}
+          disabled={!isValidAllocation}
           style={{
-            background: '#f5f5dc',
+            background: isValidAllocation ? '#f5f5dc' : '#e0e0e0',
             border: '2px solid rgba(255,255,255,0.5)',
             borderRadius: '0.75rem',
             padding: '0.75rem',
@@ -86,28 +91,43 @@ export function AssetToolbar() {
             gap: '0.25rem',
             minWidth: '16rem',
             minHeight: '7rem',
-            cursor: 'pointer',
-            transform: 'scale(1)'
+            cursor: isValidAllocation ? 'pointer' : 'not-allowed',
+            transform: 'scale(1)',
+            opacity: isValidAllocation ? 1 : 0.6
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.02)';
-            e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
+            if (isValidAllocation) {
+              e.currentTarget.style.transform = 'scale(1.02)';
+              e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
+            }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+            if (isValidAllocation) {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+            }
           }}
         >
           <span style={{
             fontSize: '2rem',
             fontWeight: '900',
-            color: '#4a5568',
+            color: isValidAllocation ? '#4a5568' : '#9ca3af',
             textTransform: 'uppercase',
             letterSpacing: '0.1em',
             textAlign: 'center'
           }}>
             APPLY
           </span>
+          {!isValidAllocation && (
+            <span style={{
+              fontSize: '0.8rem',
+              color: '#ef4444',
+              textAlign: 'center',
+              marginTop: '0.25rem'
+            }}>
+              Total: {totalAllocation.toFixed(1)}%
+            </span>
+          )}
         </button>
         
         {assetAllocations.slice(4).map((asset) => (
