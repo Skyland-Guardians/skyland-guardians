@@ -286,7 +286,15 @@ IMPORTANT GUIDELINES:
 - Use simple Markdown formatting when helpful: **bold** for emphasis, *italics* for gentle emphasis, bullet points for lists
 - Keep formatting minimal and readable
 
-Provide investment advice keeping responses under 200 words. Use fantasy-themed language while giving real investment education based on the actual asset data above.
+RESPONSE LENGTH REQUIREMENTS:
+- MAXIMUM 100 words total
+- Be concise and direct
+- Focus on 1-2 key insights only
+- Use short sentences
+- Avoid long explanations or lists
+- Get straight to the point
+
+Provide investment advice keeping responses under 80 words. Use fantasy-themed language while giving real investment education based on the actual asset data above.
 
 Always end with an appropriate emoji. Focus on education and risk management.`;
 
@@ -332,6 +340,73 @@ Always end with an appropriate emoji. Focus on education and risk management.`;
     ];
 
     return templates[Math.floor(Math.random() * templates.length)];
+  }
+
+  /**
+   * Generate AI feedback for Apply button clicks (portfolio allocation changes)
+   */
+  async generateApplyFeedback(gameContext: {
+    assets: any[];
+    currentDay: number;
+    stars: number;
+    level: number;
+    coins: number;
+    performanceHistory?: any[];
+  }): Promise<string> {
+    try {
+      const response = await this.getGameResponse(
+        `Applied! Rate my allocation. 50 words max.`,
+        gameContext
+      );
+      return response;
+    } catch (error) {
+      console.error('AI Apply Feedback Error:', error);
+      // Simple fallback response
+      return `Portfolio allocation applied! Your investment choices will guide your journey through the Skyland realms. Keep learning and adjusting your strategy as you grow! 🎯✨`;
+    }
+  }
+
+  /**
+   * Generate AI feedback for Next Day operations (market settlement)
+   */
+  async generateNextDayFeedback(gameContext: {
+    assets: any[];
+    currentDay: number;
+    stars: number;
+    level: number;
+    coins: number;
+    performanceHistory?: any[];
+    settlementResult?: {
+      portfolioReturn: number;
+      delta: number;
+      perAsset: any[];
+    };
+  }): Promise<string> {
+    const { settlementResult } = gameContext;
+    
+    if (!settlementResult) {
+      return "Another day passes in the Skyland Guardians realm! Let's see how your investments are performing... 🌅";
+    }
+
+    const portfolioReturn = settlementResult.portfolioReturn;
+    const coinChange = settlementResult.delta;
+    const returnPercent = (portfolioReturn * 100).toFixed(2);
+    const isPositive = portfolioReturn >= 0;
+
+    try {
+      const userMessage = `Day ended. ${isPositive ? 'Gained' : 'Lost'} ${Math.abs(parseFloat(returnPercent))}%. Quick insight. 30 words max.`;
+      
+      const response = await this.getGameResponse(userMessage, gameContext);
+      return response;
+    } catch (error) {
+      console.error('AI Next Day Feedback Error:', error);
+      // Fallback response based on performance
+      if (isPositive) {
+        return `Excellent work, guardian! Your portfolio gained ${returnPercent}% today (+${coinChange} coins). Remember, consistency beats timing the market. 🎆⭐`;
+      } else {
+        return `Today brought some challenges with a ${Math.abs(parseFloat(returnPercent))}% portfolio decline (${coinChange} coins). Don't worry - market volatility is normal! Your diversified approach will help weather these storms. Stay the course! 🌩️🛡️`;
+      }
+    }
   }
 }
 

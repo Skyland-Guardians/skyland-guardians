@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
 import { AssetButton } from './AssetButton';
+import { gamifiedAIService } from '../../services/gamified-ai-service';
 
 export function AssetToolbar() {
-  const { assetAllocations, addMessage } = useGameState();
+  const { assetAllocations, addMessage, gameState, coins, performanceHistory } = useGameState();
   const [activeAssetId, setActiveAssetId] = useState<string | null>(null);
 
   const handleAssetClick = (assetId: string) => {
@@ -14,7 +15,7 @@ export function AssetToolbar() {
   const totalAllocation = assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0);
   const isValidAllocation = Math.abs(totalAllocation - 100) < 0.1;
 
-  const handleApplyClick = () => {
+  const handleApplyClick = async () => {
     // Calculate total allocation
     const total = assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0);
     
@@ -45,6 +46,46 @@ export function AssetToolbar() {
         timestamp: new Date(),
         type: 'feedback'
       });
+
+      // Add AI thinking message
+      addMessage({
+        id: `ai-thinking-apply-${Date.now()}`,
+        sender: 'ai',
+        content: '🤔 *Analyzing your portfolio allocation strategy...*',
+        timestamp: new Date(),
+        type: 'feedback'
+      });
+
+      // Get AI feedback on the portfolio allocation
+      try {
+        const aiFeedback = await gamifiedAIService.generateApplyFeedback({
+          assets: assetAllocations,
+          currentDay: gameState.currentDay,
+          stars: gameState.stars,
+          level: gameState.level,
+          coins: coins || 1000,
+          performanceHistory: performanceHistory
+        });
+
+        // Add AI feedback message
+        addMessage({
+          id: `ai-apply-feedback-${Date.now()}`,
+          sender: 'ai',
+          content: aiFeedback,
+          timestamp: new Date(),
+          type: 'feedback'
+        });
+      } catch (error) {
+        console.error('Failed to get AI feedback:', error);
+        // Add fallback message
+        addMessage({
+          id: `ai-apply-fallback-${Date.now()}`,
+          sender: 'ai',
+          content: 'Portfolio allocation applied! Your investment choices will guide your journey through the Skyland realms. Keep learning and adjusting your strategy! 🎯✨',
+          timestamp: new Date(),
+          type: 'feedback'
+        });
+      }
     }
   };
 
