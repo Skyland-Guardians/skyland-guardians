@@ -1,4 +1,5 @@
-import { useState, FormEvent, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import type { FormEvent } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
 
 export function AIPanel() {
@@ -35,19 +36,15 @@ export function AIPanel() {
   return (
     <aside
       style={{
-        width: '18rem',
-        padding: '1rem',
+        width: '30vw', // 占屏幕宽度30%
+        padding: '1.5rem',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-end',
-        position: 'relative'
+        position: 'relative',
+        height: '70vh' // 占屏幕高度一半
       }}
     >
-      <img
-        src="/assets/主界面1资源/右边的AI人物.png"
-        alt="AI Character"
-        style={{ width: '12rem', height: '20rem', objectFit: 'contain' }}
-      />
       <div
         style={{
           marginTop: '1rem',
@@ -57,16 +54,30 @@ export function AIPanel() {
           padding: '0.5rem',
           display: 'flex',
           flexDirection: 'column',
-          height: '22rem'
+          height: '100%', // 填满aside高度
+          position: 'relative'
         }}
       >
+        <img
+          src="/assets/主界面1资源/右边的AI人物.png"
+          alt="AI Character"
+          style={{
+            width: '12rem',
+            height: '20rem',
+            objectFit: 'contain',
+            position: 'absolute',
+            top: '-10rem',
+            alignSelf: 'center'
+          }}
+        />
         <div
           style={{
             flexGrow: 1,
             overflowY: 'auto',
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.5rem'
+            gap: '0.5rem',
+            marginTop: '5rem'
           }}
         >
           {messages.map(msg => (
