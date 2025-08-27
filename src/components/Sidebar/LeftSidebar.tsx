@@ -30,7 +30,7 @@ export function LeftSidebar() {
           gap: '0.75rem'
         }}>
           <img 
-            src="/assets/主界面1资源/卡牌主界面icon.png" 
+            				src="/assets/main-screen-1-assets/card-main-icon.png" 
             alt="Cards"
             style={{
               width: '9rem', // Slightly narrower
@@ -79,7 +79,7 @@ export function LeftSidebar() {
             justifyContent: 'center'
           }}>
             <img 
-              src="/assets/主界面1资源/徽章主界面icon.png" 
+              				src="/assets/main-screen-1-assets/badge-main-icon.png" 
               alt="Badge"
               style={{
                 width: '100%',

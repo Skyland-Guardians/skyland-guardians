@@ -14,19 +14,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const [userInfo, setUserInfo] = useState<UserInfo>({
     name: 'JAMES',
-    avatar: '/assets/主界面1资源/小孩头像icon.png',
+    		avatar: '/assets/main-screen-1-assets/child-avatar-icon.png',
     level: 1
   });
 
   const [assetAllocations, setAssetAllocations] = useState<AssetType[]>([
-    { id: 'sword', name: 'SWORD', icon: '/assets/主界面1资源/剑 icon.png', type: 'sword', theme: 'gold', allocation: 12.5 },
-    { id: 'shield', name: 'SHIELD', icon: '/assets/主界面1资源/盾icon.png', type: 'shield', theme: 'orange', allocation: 12.5 },
-    { id: 'forest', name: 'FOREST', icon: '/assets/主界面1资源/森林icon.png', type: 'forest', theme: 'green', allocation: 12.5 },
-    { id: 'askali', name: 'ASK ALI', icon: '/assets/主界面1资源/AI人物icon.png', type: 'askali', theme: 'orange', allocation: 12.5 },
-    { id: 'golden', name: 'GOLDEN', icon: '/assets/主界面1资源/黄金icon.png', type: 'golden', theme: 'gold', allocation: 12.5 },
-    { id: 'fountain', name: 'FOUNTAIN', icon: '/assets/主界面1资源/喷泉icon.png', type: 'fountain', theme: 'blue', allocation: 12.5 },
-    { id: 'crystal', name: 'CRYSTAL', icon: '/assets/主界面1资源/水晶icon.png', type: 'crystal', theme: 'blue', allocation: 12.5 },
-    { id: 'magic', name: 'MAGIC', icon: '/assets/主界面1资源/魔杖icon.png', type: 'magic', theme: 'gold', allocation: 12.5 }
+    		{ id: 'sword', name: 'SWORD', icon: '/assets/main-screen-1-assets/sword-icon.png', type: 'sword', theme: 'gold', allocation: 12.5 },
+    		{ id: 'shield', name: 'SHIELD', icon: '/assets/main-screen-1-assets/shield-icon.png', type: 'shield', theme: 'orange', allocation: 12.5 },
+    		{ id: 'forest', name: 'FOREST', icon: '/assets/main-screen-1-assets/forest-icon.png', type: 'forest', theme: 'green', allocation: 12.5 },
+    		{ id: 'askali', name: 'ASK ALI', icon: '/assets/main-screen-1-assets/ai-character-icon.png', type: 'askali', theme: 'orange', allocation: 12.5 },
+    		{ id: 'golden', name: 'GOLDEN', icon: '/assets/main-screen-1-assets/gold-icon.png', type: 'golden', theme: 'gold', allocation: 12.5 },
+    		{ id: 'fountain', name: 'FOUNTAIN', icon: '/assets/main-screen-1-assets/fountain-icon.png', type: 'fountain', theme: 'blue', allocation: 12.5 },
+    		{ id: 'crystal', name: 'CRYSTAL', icon: '/assets/main-screen-1-assets/crystal-icon.png', type: 'crystal', theme: 'blue', allocation: 12.5 },
+    		{ id: 'magic', name: 'MAGIC', icon: '/assets/main-screen-1-assets/wand-icon.png', type: 'magic', theme: 'gold', allocation: 12.5 }
   ]);
 
   const [currentAIMessage, setCurrentAIMessage] = useState<AIMessage | null>({

@@ -12,7 +12,7 @@ export function AIPanel() {
         position: 'relative',
         height: '550px',
       }}>
-          <img src="/assets/主界面1资源/右边的AI人物.png" alt="AI Rabbit" style={{maxWidth: '200px',position: 'absolute',top: '-30px',left: '-35px'}}/>
+          				<img src="/assets/main-screen-1-assets/right-ai-character.png" alt="AI Rabbit" style={{maxWidth: '200px',position: 'absolute',top: '-30px',left: '-35px'}}/>
           <div style={{
             backgroundColor: `#FFFCF7`,
             fontSize: `19px`,
