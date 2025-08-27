@@ -1,9 +1,0 @@
-[
-  {"key": "tech", "name": "敏捷之剑", "theme": "forest", "icon": "🗡️", "color": "#00fff7"},
-  {"key": "bond", "name": "稳固之盾", "theme": "snow", "icon": "🛡️", "color": "#00eaff"},
-  {"key": "esg", "name": "绿色森林", "theme": "oasis", "icon": "🌱", "color": "#00ff88"},
-  {"key": "gold", "name": "黄金圣殿", "theme": "palace", "icon": "🏛️", "color": "#ffd700"},
-  {"key": "stablecoin", "name": "稳定之泉", "theme": "lake", "icon": "💧", "color": "#1e90ff"},
-  {"key": "yield", "name": "收益神庙", "theme": "temple", "icon": "⛩️", "color": "#ffa500"},
-  {"key": "crypto", "name": "神秘水晶", "theme": "starsea", "icon": "🔮", "color": "#ff00cc"}
-]
