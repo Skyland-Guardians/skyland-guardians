@@ -142,23 +142,16 @@ function UserProfileNotFound({ userId }: { userId: string }) {
 	);
 }
 
-// 静态内容：放在文件末尾
-const PROFILE_STYLES = {
-	container: 'user-profile',
-	header: 'profile-header',
-	avatar: 'profile-avatar',
-	name: 'profile-name',
-	details: 'profile-details',
-	actions: 'profile-actions',
-} as const;
-
-// 类型定义：放在文件末尾
-type ProfileStyleKey = keyof typeof PROFILE_STYLES;
+// 静态内容：放在文件末尾（仅用于示例，不导出）
+// const PROFILE_STYLES = {
+// 	container: 'user-profile',
+// 	header: 'profile-header',
+// 	avatar: 'profile-avatar',
+// 	name: 'profile-name',
+// 	details: 'profile-details',
+// 	actions: 'profile-actions',
+// } as const;
 
 // 导出组件（遵循命名导出约定）
 export { UserProfile };
 export default UserProfile;
-
-// 导出类型和工具函数
-export type { UserProfileProps, UserData, ProfileStyleKey };
-export { PROFILE_STYLES };

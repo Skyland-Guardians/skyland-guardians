@@ -154,6 +154,14 @@ export class RulesEnforcer {
 	 */
 	public static validateCode(_code: string, _ruleIds: string[] = []): string[] {
 		const violations: string[] = [];
+		
+		// 如果指定了规则ID，只验证特定规则
+		if (_ruleIds.length > 0) {
+			const applicableRules = rulesManager.getAllRules().filter(rule => _ruleIds.includes(rule.id));
+			// 这里可以添加基于特定规则的验证逻辑
+			console.log(`验证 ${applicableRules.length} 条特定规则`);
+		}
+		
 		// 这里可以添加具体的代码验证逻辑
 		// 例如：检查命名约定、代码结构等
 

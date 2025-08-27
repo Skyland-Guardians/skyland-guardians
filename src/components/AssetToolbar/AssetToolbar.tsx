@@ -3,7 +3,7 @@ import { useGameState } from '../../hooks/useGameContext';
 import { AssetButton } from './AssetButton';
 
 export function AssetToolbar() {
-  const { assetAllocations, updateGameState } = useGameState();
+  const { assetAllocations } = useGameState();
   const [activeAssetId, setActiveAssetId] = useState<string | null>(null);
 
   const handleAssetClick = (assetId: string) => {
