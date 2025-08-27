@@ -1,4 +1,7 @@
+import { useGameState } from '../../hooks/useGameContext';
+
 export function LeftSidebar() {
+  const { setCardCollectionOpen } = useGameState();
   return (
     <aside style={{
       width: '12rem', // Increased width for larger buttons
@@ -8,7 +11,8 @@ export function LeftSidebar() {
       gap: '2rem' // Increased gap
     }}>
       {/* MY CARDS Button - Larger size */}
-      <button 
+      <button
+        onClick={() => setCardCollectionOpen(true)}
         style={{
           backgroundColor: 'transparent',
           color: '#1e3a8a',

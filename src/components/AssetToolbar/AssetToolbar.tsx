@@ -3,26 +3,55 @@ import { useGameState } from '../../hooks/useGameContext';
 import { AssetButton } from './AssetButton';
 
 export function AssetToolbar() {
-  const { assetAllocations } = useGameState();
+  const { assetAllocations, addMessage } = useGameState();
   const [activeAssetId, setActiveAssetId] = useState<string | null>(null);
 
   const handleAssetClick = (assetId: string) => {
     setActiveAssetId(activeAssetId === assetId ? null : assetId);
   };
 
+  // Calculate total allocation for validation
+  const totalAllocation = assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0);
+  const isValidAllocation = Math.abs(totalAllocation - 100) < 0.1;
+
   const handleApplyClick = () => {
     // Calculate total allocation
     const total = assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0);
+    
     if (Math.abs(total - 100) < 0.1) {
       setActiveAssetId(null); // Close any open sliders
-      // TODO: Move to next step (Mission Card selection)
-      alert('Ready to proceed to Mission Selection!');
-    } else {
-      alert(`Please adjust allocations to total 100%. Current total: ${total.toFixed(1)}%`);
+      
+      // Create rich portfolio summary message similar to settlement format
+      const portfolioSummary = {
+        type: 'portfolio',
+        title: `PORTFOLIO APPLIED! 📋`,
+        summary: {
+          totalAllocation: total,
+          assetCount: assetAllocations.length
+        },
+        assets: assetAllocations.map((asset) => ({
+          id: asset.id,
+          name: asset.shortName || asset.name,
+          icon: asset.icon,
+          allocation: asset.allocation,
+          theme: asset.theme
+        }))
+      };
+      
+      addMessage({
+        id: `portfolio-${Date.now()}`,
+        sender: 'ai',
+        content: JSON.stringify(portfolioSummary),
+        timestamp: new Date(),
+        type: 'feedback'
+      });
     }
   };
 
+
+
   return (
+    <>
     <div style={{
       background: '#5196DC', // Deeper blue from design specifications
       padding: '2rem 3.25rem', // Increased horizontal padding by 30% (2.5rem * 1.3)
@@ -46,62 +75,81 @@ export function AssetToolbar() {
         margin: '0 auto'
       }}>
         {assetAllocations.slice(0, 4).map((asset) => (
-          <AssetButton 
-            key={asset.id} 
-            asset={asset} 
+          <AssetButton
+            key={asset.id}
+            asset={asset}
             onClick={() => handleAssetClick(asset.id)}
             isActive={activeAssetId === asset.id}
           />
         ))}
         
-        {/* APPLY Button - Centered and wider */}
-        <button 
+        {/* APPLY Button */}
+        <button
           onClick={handleApplyClick}
+          disabled={!isValidAllocation}
           style={{
-            background: '#f5f5dc', // Exact same light beige
-            border: '2px solid rgba(255,255,255,0.5)', // Exact same border
+            background: isValidAllocation ? '#f5f5dc' : '#e0e0e0',
+            border: '2px solid rgba(255,255,255,0.5)',
             borderRadius: '0.75rem',
-            padding: '0.75rem', // Same padding as asset buttons
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Exact same shadow
+            padding: '0.75rem',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
             transition: 'all 0.2s ease',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            minWidth: '16rem', // Wider button
+            gap: '0.25rem',
+            minWidth: '16rem',
             minHeight: '7rem',
-            cursor: 'pointer',
-            transform: 'scale(1)'
+            cursor: isValidAllocation ? 'pointer' : 'not-allowed',
+            transform: 'scale(1)',
+            opacity: isValidAllocation ? 1 : 0.6
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.02)';
-            e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
+            if (isValidAllocation) {
+              e.currentTarget.style.transform = 'scale(1.02)';
+              e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
+            }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+            if (isValidAllocation) {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+            }
           }}
         >
           <span style={{
             fontSize: '2rem',
             fontWeight: '900',
-            color: '#4a5568', // Exact same color as asset names
+            color: isValidAllocation ? '#4a5568' : '#9ca3af',
             textTransform: 'uppercase',
             textAlign: 'center'
           }}>
             APPLY
           </span>
+          {!isValidAllocation && (
+            <span style={{
+              fontSize: '0.8rem',
+              color: '#ef4444',
+              textAlign: 'center',
+              marginTop: '0.25rem'
+            }}>
+              Total: {totalAllocation.toFixed(1)}%
+            </span>
+          )}
         </button>
         
         {assetAllocations.slice(4).map((asset) => (
-          <AssetButton 
-            key={asset.id} 
-            asset={asset} 
+          <AssetButton
+            key={asset.id}
+            asset={asset}
             onClick={() => handleAssetClick(asset.id)}
             isActive={activeAssetId === asset.id}
           />
         ))}
       </div>
     </div>
+
+    </>
   );
 }

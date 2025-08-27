@@ -1,15 +1,30 @@
 import { createContext, useContext } from 'react';
-import type { GameState, UserInfo, AssetType, AIMessage } from '../types/game';
+import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult } from '../types/game';
 
 export interface GameContextType {
   gameState: GameState;
   userInfo: UserInfo;
   assetAllocations: AssetType[];
-  currentAIMessage: AIMessage | null;
+  messages: ChatMessage[];
+  currentMission: Mission | null;
+  missions: Mission[];
+  events: EventCard[];
+  isCardCollectionOpen: boolean;
+  coins?: number;
+  marketMode?: 'simulated' | 'random' | 'real';
+  setMarketMode?: (mode: 'simulated' | 'random' | 'real') => void;
+  marketDayIndex?: number;
+  marketEvents?: any[];
+  triggerEvent?: (eventId: string) => boolean;
   updateGameState: (updates: Partial<GameState>) => void;
   updateUserInfo: (updates: Partial<UserInfo>) => void;
   updateAssetAllocation: (assetId: string, allocation: number) => void;
-  setAIMessage: (message: AIMessage | null) => void;
+  addMessage: (message: ChatMessage) => void;
+  setCurrentMission: (mission: Mission | null) => void;
+  addMission: (mission: Mission) => void;
+  addEvent: (event: EventCard) => void;
+  setCardCollectionOpen: (open: boolean) => void;
+  performNextDaySettlement?: () => SettlementResult | void;
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
