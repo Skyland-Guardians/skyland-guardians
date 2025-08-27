@@ -1,6 +1,4 @@
 // 成就和徽章配置
-import type { Achievement } from '../types/achievement';
-
 export const achievements: Achievement[] = [
   {
     id: 'badge_1',
