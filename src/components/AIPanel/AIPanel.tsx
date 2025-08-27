@@ -2,9 +2,32 @@
 
 import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
+import { marked } from 'marked';
 import { useGameState } from '../../hooks/useGameContext';
 import { useAIPersonality } from '../../hooks/useAIPersonality';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
+import './AIPanel.css';
+
+// Helper component to render markdown text
+const MarkdownMessage = ({ content }: { content: string }) => {
+  const html = marked(content, { 
+    breaks: true,
+    gfm: true
+  });
+  
+  return (
+    <div 
+      style={{ 
+        margin: 0, 
+        fontSize: '0.875rem', 
+        color: '#000', 
+        lineHeight: '1.4'
+      }}
+      dangerouslySetInnerHTML={{ __html: html }}
+      className="markdown-content"
+    />
+  );
+};
 
 // Helper component to render rich settlement and portfolio messages
 const RichMessage = ({ content }: { content: string }) => {
@@ -62,9 +85,9 @@ const RichMessage = ({ content }: { content: string }) => {
       );
     }
   } catch (e) {
-    // Fall back to regular text if JSON parsing fails
+    // Fall back to markdown rendering if JSON parsing fails
   }
-  return <p style={{ margin: 0, fontSize: '0.875rem', color: '#000', whiteSpace: 'pre-line' }}>{content}</p>;
+  return <MarkdownMessage content={content} />;
 };
 
 // Number formatting helper
@@ -76,7 +99,7 @@ const formatCoins = (amount: number): string => {
 };
 
 export function AIPanel() {
-  const { messages, addMessage, gameState, userInfo, assetAllocations, coins = 10000 } = useGameState();
+  const { messages, addMessage, gameState, userInfo, assetAllocations, coins = 10000, performanceHistory } = useGameState();
   const { currentPersonality } = useAIPersonality();
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -122,7 +145,8 @@ export function AIPanel() {
         currentDay: gameState.currentDay,
         stars: gameState.stars,
         level: gameState.level,
-        coins
+        coins,
+        performanceHistory
       });
 
       // Add AI response after a short delay for natural feel
