@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard } from '../types/game';
+import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult } from '../types/game';
 
 export interface GameContextType {
   gameState: GameState;
@@ -24,7 +24,7 @@ export interface GameContextType {
   addMission: (mission: Mission) => void;
   addEvent: (event: EventCard) => void;
   setCardCollectionOpen: (open: boolean) => void;
-  performNextDaySettlement?: () => { portfolioReturn: number; delta: number } | void;
+  performNextDaySettlement?: () => SettlementResult | void;
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);

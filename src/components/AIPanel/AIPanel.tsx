@@ -2,6 +2,50 @@ import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
 
+// Helper component to render rich settlement messages
+const RichMessage = ({ content }: { content: string }) => {
+  try {
+    const data = JSON.parse(content);
+    if (data.type === 'settlement') {
+      return (
+        <div style={{ fontSize: '0.875rem', color: '#000' }}>
+          <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#16a34a' }}>
+            {data.title}
+          </div>
+          <div style={{ marginBottom: '0.75rem', padding: '0.5rem', backgroundColor: '#f3f4f6', borderRadius: '0.375rem' }}>
+            <div>📈 Portfolio: <strong>{(data.summary.portfolioReturn * 100).toFixed(2)}%</strong></div>
+            <div>💰 Total: <strong>{formatCoins(data.summary.totalChange)}</strong></div>
+          </div>
+          <div style={{ display: 'grid', gap: '0.375rem' }}>
+            {data.assets.map((asset: any) => (
+              <div key={asset.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.25rem', backgroundColor: '#fafafa', borderRadius: '0.25rem' }}>
+                <img src={asset.icon} alt="" style={{ width: 20, height: 20, objectFit: 'contain' }} />
+                <div style={{ flex: 1, fontSize: '0.8rem' }}>
+                  <strong>{asset.name}</strong>: {(asset.return * 100).toFixed(2)}%
+                </div>
+                <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: asset.coinDelta >= 0 ? '#16a34a' : '#dc2626' }}>
+                  {formatCoins(asset.coinDelta)}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+  } catch (e) {
+    // Fall back to regular text if JSON parsing fails
+  }
+  return <p style={{ margin: 0, fontSize: '0.875rem', color: '#000', whiteSpace: 'pre-line' }}>{content}</p>;
+};
+
+// Number formatting helper (duplicated from AssetToolbar)
+const formatCoins = (amount: number): string => {
+  const absAmount = Math.abs(amount);
+  const sign = amount >= 0 ? '+' : '-';
+  const formatted = new Intl.NumberFormat('en-US').format(absAmount);
+  return `${sign}${formatted} coin${absAmount === 1 ? '' : 's'}`;
+};
+
 export function AIPanel() {
   const { messages, addMessage } = useGameState();
   const [input, setInput] = useState('');
@@ -92,15 +136,7 @@ export function AIPanel() {
                 maxWidth: '90%'
               }}
             >
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: '0.875rem',
-                  color: '#000'
-                }}
-              >
-                {msg.content}
-              </p>
+              <RichMessage content={msg.content} />
             </div>
           ))}
           <div ref={messagesEndRef} />

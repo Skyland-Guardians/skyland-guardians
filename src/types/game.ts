@@ -54,3 +54,21 @@ export interface EventCard {
   title: string;
   description: string;
 }
+
+export interface SettlementAsset {
+  id: string;
+  name: string;
+  shortName?: string;
+  icon?: string;
+  allocation: number;
+  baseReturn: number; // raw base return for the day
+  adjustedReturn: number; // after events
+  contributionPct: number; // allocation% * adjustedReturn
+  coinDelta: number; // coins gained/lost from this asset (rounded)
+}
+
+export interface SettlementResult {
+  portfolioReturn: number;
+  delta: number;
+  perAsset: SettlementAsset[];
+}

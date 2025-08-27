@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ReactNode } from 'react';
-import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard } from '../../types/game';
+import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult, SettlementAsset } from '../../types/game';
 import { GameContext } from '../../hooks/useGameContext';
 import { SIMULATED_SERIES } from '../../data/simulated-asset-series';
 import { SAMPLE_EVENTS } from '../../data/sample-events';
@@ -96,7 +96,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   };
 
   // Simple settlement logic for "next day" based on current allocations.
-  const performNextDaySettlement = () => {
+  const performNextDaySettlement = (): SettlementResult => {
     const dayIndex = marketDayIndex;
 
     const getBaseReturn = (type: string) => {
@@ -139,14 +139,28 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return ret;
     };
 
-    // compute weighted portfolio return
-    const portfolioReturn = assetAllocations.reduce((sum, a) => {
+    // compute per-asset returns and weighted portfolio return
+    const perAssetResults: SettlementAsset[] = assetAllocations.map((a) => {
       const base = getBaseReturn(a.type);
       const adjusted = applyEventsToReturn(base, a.type);
-      return sum + (a.allocation / 100) * adjusted;
-    }, 0);
+      const contributionPct = (a.allocation / 100) * adjusted;
+      const coinDelta = Math.round(coins * contributionPct);
+      return {
+        id: a.id,
+        name: a.name,
+        shortName: (a as any).shortName,
+        icon: a.icon,
+        allocation: a.allocation,
+        baseReturn: base,
+        adjustedReturn: adjusted,
+        contributionPct,
+        coinDelta
+      };
+    });
 
-    const delta = Math.round(coins * portfolioReturn);
+    const portfolioReturn = perAssetResults.reduce((s, p) => s + p.contributionPct, 0);
+
+    const delta = perAssetResults.reduce((s, p) => s + p.coinDelta, 0);
     setCoins(prev => prev + delta);
 
     // advance day counters
@@ -165,7 +179,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
     ]);
 
-    return { portfolioReturn, delta };
+    return { portfolioReturn, delta, perAsset: perAssetResults };
   };
 
   const triggerEvent = (eventId: string) => {

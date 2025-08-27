@@ -4,7 +4,7 @@ import { AssetButton } from './AssetButton';
 import { MISSIONS } from '../../data/missions';
 
 export function AssetToolbar() {
-  const { assetAllocations, setCurrentMission, performNextDaySettlement } = useGameState();
+  const { assetAllocations, setCurrentMission, performNextDaySettlement, addMessage } = useGameState();
   const [activeAssetId, setActiveAssetId] = useState<string | null>(null);
 
   const handleAssetClick = (assetId: string) => {
@@ -19,9 +19,38 @@ export function AssetToolbar() {
       if (performNextDaySettlement) {
         const res = performNextDaySettlement();
         if (res && typeof res === 'object') {
-          alert(`Day settled: ${ (res.portfolioReturn * 100).toFixed(2) }% → ${res.delta >= 0 ? '+' : ''}${res.delta} coins`);
+          // Create rich message data for AI chat with icons
+          const richContent = {
+            type: 'settlement',
+            title: `SETTLEMENT COMPLETE! 🎯`,
+            summary: {
+              portfolioReturn: res.portfolioReturn,
+              totalChange: res.delta
+            },
+            assets: res.perAsset.map((p: any) => ({
+              id: p.id,
+              name: p.shortName || p.name,
+              icon: p.icon,
+              return: p.adjustedReturn,
+              coinDelta: p.coinDelta
+            }))
+          };
+          
+          addMessage({
+            id: `settlement-${Date.now()}`,
+            sender: 'ai',
+            content: JSON.stringify(richContent), // Store rich data as JSON
+            timestamp: new Date(),
+            type: 'feedback'
+          });
         } else {
-          alert('Day settled.');
+          addMessage({
+            id: `settlement-${Date.now()}`,
+            sender: 'ai',
+            content: 'DAY SETTLEMENT COMPLETED. 📊',
+            timestamp: new Date(),
+            type: 'feedback'
+          });
         }
       } else {
         // Fallback: open a mission as before
@@ -29,11 +58,20 @@ export function AssetToolbar() {
         setCurrentMission(mission);
       }
     } else {
-      alert(`Please adjust allocations to total 100%. Current total: ${total.toFixed(1)}%`);
+      addMessage({
+        id: `error-${Date.now()}`,
+        sender: 'ai',
+        content: `⚠️ ALLOCATION ERROR: Please adjust allocations to total 100%. Current total: ${total.toFixed(1)}%`,
+        timestamp: new Date(),
+        type: 'feedback'
+      });
     }
   };
 
+
+
   return (
+    <>
     <div style={{
       background: '#357ABD', // Deeper blue from design specifications
       padding: '2rem 3.25rem', // Increased horizontal padding by 30% (2.5rem * 1.3)
@@ -115,5 +153,7 @@ export function AssetToolbar() {
         ))}
       </div>
     </div>
+
+    </>
   );
 }
