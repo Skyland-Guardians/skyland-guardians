@@ -7,11 +7,15 @@ export interface GameContextType {
   assetAllocations: AssetType[];
   currentAIMessage: AIMessage | null;
   currentMission: Mission | null;
+  missions: Mission[];
+  isMissionListOpen: boolean;
   updateGameState: (updates: Partial<GameState>) => void;
   updateUserInfo: (updates: Partial<UserInfo>) => void;
   updateAssetAllocation: (assetId: string, allocation: number) => void;
   setAIMessage: (message: AIMessage | null) => void;
   setCurrentMission: (mission: Mission | null) => void;
+  addMission: (mission: Mission) => void;
+  setMissionListOpen: (open: boolean) => void;
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);

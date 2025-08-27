@@ -1,7 +1,7 @@
 import { useGameState } from '../../hooks/useGameContext';
 
 export function MissionCard() {
-  const { currentMission, setCurrentMission, updateGameState, setAIMessage } = useGameState();
+  const { currentMission, setCurrentMission, setAIMessage, addMission } = useGameState();
 
   if (!currentMission) return null;
 
@@ -12,8 +12,8 @@ export function MissionCard() {
       timestamp: new Date(),
       type: 'hint'
     });
+    addMission(currentMission);
     setCurrentMission(null);
-    updateGameState({ currentScreen: 'main' });
   };
 
   return (
@@ -43,6 +43,9 @@ export function MissionCard() {
         <p style={{ marginBottom: '1rem', color: '#374151' }}>{currentMission.background}</p>
         <p style={{ marginBottom: '1rem', color: '#2563eb', fontWeight: 'bold' }}>
           Tip: {currentMission.tip}
+        </p>
+        <p style={{ marginBottom: '1rem', color: '#f59e0b', fontWeight: 'bold' }}>
+          Reward: ⭐ {currentMission.rewardStars}
         </p>
         <button
           onClick={handleAccept}

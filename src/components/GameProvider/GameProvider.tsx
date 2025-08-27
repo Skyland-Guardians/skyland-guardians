@@ -37,6 +37,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
   });
 
   const [currentMission, setCurrentMission] = useState<Mission | null>(null);
+  const [missions, setMissions] = useState<Mission[]>([]);
+  const [isMissionListOpen, setMissionListOpen] = useState(false);
 
   const updateGameState = (updates: Partial<GameState>) => {
     setGameState(prev => ({ ...prev, ...updates }));
@@ -58,6 +60,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setCurrentAIMessage(message);
   };
 
+  const addMission = (mission: Mission) => {
+    setMissions(prev => [...prev, mission]);
+  };
+
   return (
     <GameContext.Provider value={{
       gameState,
@@ -65,11 +71,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
       assetAllocations,
       currentAIMessage,
       currentMission,
+      missions,
+      isMissionListOpen,
       updateGameState,
       updateUserInfo,
       updateAssetAllocation,
       setAIMessage,
-      setCurrentMission
+      setCurrentMission,
+      addMission,
+      setMissionListOpen
     }}>
       {children}
     </GameContext.Provider>

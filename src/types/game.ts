@@ -16,7 +16,7 @@ export interface AssetType {
   id: string;
   name: string;
   icon: string;
-  type: 'sword' | 'shield' | 'forest' | 'askali' | 'apply' | 'golden' | 'fountain' | 'crystal' | 'magic';
+  type: 'sword' | 'shield' | 'forest' | 'askali' | 'golden' | 'fountain' | 'crystal' | 'magic';
   theme: string;
   allocation: number;
 }
@@ -44,4 +44,5 @@ export interface Mission {
   background: string;
   tip: string;
   focus: string;
+  rewardStars: number;
 }
