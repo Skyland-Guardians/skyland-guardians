@@ -16,6 +16,12 @@ export interface GameContextType {
   marketDayIndex?: number;
   marketEvents?: any[];
   triggerEvent?: (eventId: string) => boolean;
+  performanceHistory?: {
+    day: number;
+    portfolioReturn: number;
+    totalValue: number;
+    assetReturns: Record<string, number>;
+  }[];
   updateGameState: (updates: Partial<GameState>) => void;
   updateUserInfo: (updates: Partial<UserInfo>) => void;
   updateAssetAllocation: (assetId: string, allocation: number) => void;

@@ -11,7 +11,7 @@ export function Header() {
       padding: '0.8rem 3rem',
       backgroundColor: 'transparent',
       position: 'relative',
-      zIndex: 3
+      zIndex: 10
     }}>
       {/* Left side - User Info */}
       <div style={{

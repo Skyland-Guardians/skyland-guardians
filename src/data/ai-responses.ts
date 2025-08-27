@@ -58,7 +58,7 @@ export const AI_RESPONSES: AIResponse[] = [
 	}
 ];
 
-// 根据关键词查找匹配的回答
+// Find matching responses based on keywords
 export function findMatchingResponse(question: string): string | null {
 	const lowerQuestion = question.toLowerCase();
 	

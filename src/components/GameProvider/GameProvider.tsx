@@ -7,7 +7,7 @@ import { SAMPLE_EVENTS } from '../../data/sample-events';
 import { DEFAULT_MARKET_CONFIG } from '../../data/asset-market-config';
 import { GAME_ASSETS } from '../../data/game-assets';
 import { sampleReturnForType } from '../../data/asset-return-config';
-import { aiService } from '../../services/ai-service';
+import { gamifiedAIService } from '../../services/gamified-ai-service';
 import type { MarketMode } from '../../data/asset-market-config';
 
 export function GameProvider({ children }: { children: ReactNode }) {
@@ -58,6 +58,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [marketMode, setMarketMode] = useState<MarketMode>(DEFAULT_MARKET_CONFIG.mode);
   const [marketDayIndex, setMarketDayIndex] = useState<number>(0);
   const [marketEvents, setMarketEvents] = useState<any[]>([...SAMPLE_EVENTS]);
+  
+  // Store daily portfolio performance history
+  const [performanceHistory, setPerformanceHistory] = useState<{
+    day: number;
+    portfolioReturn: number;
+    totalValue: number;
+    assetReturns: Record<string, number>;
+  }[]>([]);
 
   const updateGameState = (updates: Partial<GameState>) => {
     setGameState(prev => ({ ...prev, ...updates }));
@@ -161,8 +169,27 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setMarketDayIndex(i => i + 1);
     setGameState(prev => ({ ...prev, currentDay: prev.currentDay + 1 }));
 
+    // Record performance history
+    const newTotalValue = coins + delta;
+    const assetReturns: Record<string, number> = {};
+    perAssetResults.forEach(asset => {
+      assetReturns[asset.id] = asset.adjustedReturn;
+    });
+    
+    setPerformanceHistory(prev => {
+      const newEntry = {
+        day: gameState.currentDay + 1,
+        portfolioReturn,
+        totalValue: newTotalValue,
+        assetReturns
+      };
+      // Keep only last 7 days
+      const updated = [...prev, newEntry].slice(-7);
+      return updated;
+    });
+
     // Generate AI feedback about the settlement
-    const aiEventFeedback = aiService.generateEventFeedback('market settlement', portfolioReturn);
+    const aiEventFeedback = gamifiedAIService.generateEventFeedback('market settlement', portfolioReturn);
     setMessages(prev => [
       ...prev,
       {
@@ -193,7 +220,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       assetAllocations,
       messages,
       coins,
-  performNextDaySettlement,
+      performNextDaySettlement,
       marketMode,
       setMarketMode,
       marketDayIndex,
@@ -203,6 +230,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       missions,
       events,
       isCardCollectionOpen,
+      performanceHistory,
       updateGameState,
       updateUserInfo,
       updateAssetAllocation,

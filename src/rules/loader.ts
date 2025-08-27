@@ -1,9 +1,9 @@
 /**
- * 规则加载器 - 自动加载和应用开发规则
- * 这个文件确保所有规则都能被正确加载和应用
+ * Rules Loader - Automatically load and apply development rules
+ * This file ensures all rules are correctly loaded and applied
  */
 
-export interface Rule {
+interface Rule {
 	id: string;
 	file: string;
 	priority: number;
@@ -37,8 +37,8 @@ export interface RulesConfig {
 }
 
 /**
- * 规则管理器类
- * 负责加载、缓存和应用开发规则
+ * Rules Manager Class
+ * Responsible for loading, caching and applying development rules
  */
 export class RulesManager {
 	private static instance: RulesManager;
@@ -57,7 +57,7 @@ export class RulesManager {
 	}
 
 	/**
-	 * 加载所有规则
+	 * Load all rules
 	 */
 	private async loadRules(): Promise<void> {
 		try {
@@ -72,14 +72,14 @@ export class RulesManager {
 				}
 			}
 
-			console.log(`✅ 成功加载 ${this.rules.size} 条开发规则`);
+			console.log(`✅ Successfully loaded ${this.rules.size} development rules`);
 		} catch (error) {
-			console.error('❌ 加载规则失败:', error);
+			console.error('❌ Failed to load rules:', error);
 		}
 	}
 
 	/**
-	 * 加载单个规则文件内容
+	 * Load content of a single rule file
 	 */
 	private async loadRuleContent(rule: Rule): Promise<void> {
 		try {
@@ -91,12 +91,12 @@ export class RulesManager {
 				content
 			});
 		} catch (error) {
-			console.error(`❌ 加载规则 ${rule.id} 失败:`, error);
+			console.error(`❌ Failed to load rule ${rule.id}:`, error);
 		}
 	}
 
 	/**
-	 * 获取所有规则
+	 * Get all rules
 	 */
 	public getAllRules(): Rule[] {
 		return Array.from(this.rules.values()).sort((a, b) => a.priority - b.priority);

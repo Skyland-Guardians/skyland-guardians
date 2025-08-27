@@ -10,7 +10,7 @@ export function TestScreen() {
         </p>
         <div className="bg-blue-100 p-4 rounded-lg">
           <p className="text-sm text-blue-800">
-            ✅ React + TypeScript + Tailwind CSS 工作正常！
+            ✅ React + TypeScript + Tailwind CSS working properly!
           </p>
           <p className="text-sm text-blue-600 mt-2">
             App successfully loaded and running

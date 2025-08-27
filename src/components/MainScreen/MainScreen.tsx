@@ -14,7 +14,8 @@ export function MainScreen() {
 
   return (
     <div style={{
-      minHeight: '100vh',
+      height: '100vh',
+      overflow: 'hidden',
       background: isChaoMode 
         ? 'linear-gradient(135deg, #1e1b4b 0%, #374151 50%, #1e1b4b 100%)' 
         : 'linear-gradient(135deg, #FDF6E3 0%, #FFF8E1 30%, #F5E6A3 70%, #E8D5A6 100%)', // Warm cream/yellow tones
@@ -34,8 +35,8 @@ export function MainScreen() {
             bottom: 0,
             left: 0,
             right: 0,
-            height: '55%',
-            			background: 'url("./assets/main-screen-1-assets/background-color-block-2.png")',
+            height: '40%',
+            background: 'url("./assets/main-screen-1-assets/background-color-block-2.png")',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
             backgroundPosition: 'bottom center',
@@ -48,8 +49,8 @@ export function MainScreen() {
             left: 0,
             right: 0,
             width: '100%',
-            height: '68%',
-            			background: 'url("./assets/main-screen-1-assets/background-color-1.png")',
+            height: '50%',
+            background: 'url("./assets/main-screen-1-assets/background-color-1.png")',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
             backgroundPosition: 'bottom center',
