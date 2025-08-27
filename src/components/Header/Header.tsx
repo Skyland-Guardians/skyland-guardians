@@ -70,48 +70,71 @@ export function Header() {
         </div>
       </div>
 
-      {/* Right side - Game Status - matching design */}
+      {/* Right side - Game Status - unified design */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '0.75rem'
+        gap: '1rem'
       }}>
+        {/* Coins */}
         <div style={{
-          background: '#f59e0b',
+          background: 'linear-gradient(145deg, #f59e0b, #ea580c)',
           color: 'white',
-          padding: '0.5rem 1rem',
-          borderRadius: '0.5rem',
-          fontWeight: '800'
-        }}>
-          💰 {typeof coins === 'number' ? coins : '--'}
-        </div>
-        <div style={{
-          background: 'transparent',
-          color: '#1e3a8a',
-          padding: '0.75rem 1.5rem',
-          fontWeight: '600',
-          fontSize: '40px'
-        }}>
-          DAY {gameState.currentDay}
-        </div>
-        <div style={{
-          background: '#2571BC',
-          color: 'white',
-          padding: '0.50rem 1.5rem',
-          borderRadius: '0.75rem',
-          fontWeight: '900',
-          fontSize: '1rem',
+          padding: '0.75rem 1.25rem',
+          borderRadius: '1rem',
+          fontWeight: '700',
+          fontSize: '1.1rem',
           display: 'flex',
           alignItems: 'center',
           gap: '0.5rem',
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+          boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
+          border: '2px solid rgba(255, 255, 255, 0.2)',
+          textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
         }}>
-          <span style={{
+          <span style={{ fontSize: '1.2rem' }}>💰</span>
+          <span>{typeof coins === 'number' ? coins.toLocaleString() : '--'}</span>
+        </div>
+        
+        {/* Day */}
+        <div style={{
+          background: 'linear-gradient(145deg, #3b82f6, #1d4ed8)',
+          color: 'white',
+          padding: '0.75rem 1.25rem',
+          borderRadius: '1rem',
+          fontWeight: '700',
+          fontSize: '1.1rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
+          border: '2px solid rgba(255, 255, 255, 0.2)',
+          textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
+        }}>
+          <span style={{ fontSize: '1.2rem' }}>📅</span>
+          <span>DAY {gameState.currentDay}</span>
+        </div>
+        
+        {/* Stars */}
+        <div style={{
+          background: 'linear-gradient(145deg, #8b5cf6, #6d28d9)',
+          color: 'white',
+          padding: '0.75rem 1.25rem',
+          borderRadius: '1rem',
+          fontWeight: '700',
+          fontSize: '1.1rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)',
+          border: '2px solid rgba(255, 255, 255, 0.2)',
+          textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
+        }}>
+          <span style={{ 
             color: '#fde047',
-            fontSize: '40px'
+            fontSize: '1.3rem',
+            textShadow: '0 0 8px rgba(253, 224, 71, 0.6)'
           }}>★</span>
-          <span style={{
-            fontSize: '40px'}}>{gameState.stars}</span>
+          <span>{gameState.stars}</span>
         </div>
       </div>
     </header>
