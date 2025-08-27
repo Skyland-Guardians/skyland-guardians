@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 import type { GameState, UserInfo, AssetType, AIMessage } from '../../types/game';
 import { GameContext } from '../../hooks/useGameContext';

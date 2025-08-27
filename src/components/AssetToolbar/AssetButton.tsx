@@ -8,13 +8,10 @@ interface AssetButtonProps {
 }
 
 export function AssetButton({ asset, onClick, isActive = false }: AssetButtonProps) {
-  const { updateAssetAllocations, assetAllocations } = useGameState();
+  const { updateAssetAllocation } = useGameState();
 
   const handleSliderChange = (newValue: number) => {
-    const updatedAllocations = assetAllocations.map(a => 
-      a.id === asset.id ? { ...a, allocation: newValue } : a
-    );
-    updateAssetAllocations(updatedAllocations);
+    updateAssetAllocation(asset.id, newValue);
   };
   const getThemeColors = (theme: string) => {
     switch (theme) {
