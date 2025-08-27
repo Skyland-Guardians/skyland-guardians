@@ -8,12 +8,6 @@ interface AchievementPanelProps {
 
 import { achievements } from '../../data/achievements';
 
-const trophyIcons: Record<string, string> = {
-  bronze: '/public/assets/main-screen-1-assets/trophy.png',
-  silver: '/public/assets/main-screen-1-assets/top-right-star.png',
-  gold: '/public/assets/main-screen-1-assets/badge-main-icon.png',
-  platinum: '/public/assets/main-screen-1-assets/badge-main-icon.png',
-};
 
 
 import { useState } from 'react';

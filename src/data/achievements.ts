@@ -1,4 +1,5 @@
 // Achievement and badge configuration
+import type { Achievement } from '../types/achievement';
 export const achievements: Achievement[] = [
   {
     id: 'badge_1',
