@@ -12,7 +12,7 @@ export const AI_PERSONALITIES: AIPersonality[] = [
 	{
 		id: 'wise_owl',
 		name: 'Wise Owl',
-		avatar: '/assets/主界面1资源/右边的AI人物.png',
+		avatar: './assets/main-screen-1-assets/right-ai-character.png',
 		prompt: 'You are a wise and warm owl mentor who helps children understand investment concepts with relaxed, encouraging language. Use simple analogies and storytelling language while avoiding complex terminology.',
 		riskTolerance: 'medium',
 		feedbackTemplates: [
@@ -27,7 +27,7 @@ export const AI_PERSONALITIES: AIPersonality[] = [
 	{
 		id: 'fun_fox',
 		name: 'Smart Fox',
-		avatar: '/assets/主界面1资源/右边的AI人物.png',
+		avatar: './assets/main-screen-1-assets/right-ai-character.png',
 		prompt: 'You are a lively and clever fox friend who likes to explain financial problems with humor and jokes. Make learning more enjoyable with fun analogies.',
 		riskTolerance: 'high',
 		feedbackTemplates: [
@@ -40,10 +40,10 @@ export const AI_PERSONALITIES: AIPersonality[] = [
 		]
 	},
 	{
-		id: 'calm_panda',
-		name: 'Calm Panda',
-		avatar: '/assets/主界面1资源/右边的AI人物.png',
-		prompt: 'You are a steady panda coach who answers questions in a concise, rational way. Provide clear analysis and stable advice.',
+		id: 'strategic_bear',
+		name: 'Strategic Bear',
+		avatar: './assets/main-screen-1-assets/right-ai-character.png',
+		prompt: 'You are a professional and authoritative bear mentor focused on risk management and strategic thinking. Use deeper insights while still being family-friendly.',
 		riskTolerance: 'low',
 		feedbackTemplates: [
 			'Current {asset} allocation is {percent}%',

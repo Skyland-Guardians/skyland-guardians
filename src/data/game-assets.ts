@@ -31,7 +31,7 @@ export const GAME_ASSETS: GameAsset[] = [
     volatility: 0.15,
     risk: 'high',
     uiSide: 'left',
-    icon: '/assets/主界面1资源/剑 icon.png'
+    icon: './assets/main-screen-1-assets/sword-icon.png'
   },
   {
     id: 'crystal',
@@ -44,7 +44,7 @@ export const GAME_ASSETS: GameAsset[] = [
     volatility: 0.25,
     risk: 'high',
     uiSide: 'left',
-    icon: '/assets/主界面1资源/水晶icon.png'
+    icon: './assets/main-screen-1-assets/crystal-icon.png'
   },
   {
     id: 'magic',
@@ -57,7 +57,7 @@ export const GAME_ASSETS: GameAsset[] = [
     volatility: 0.20,
     risk: 'high',
     uiSide: 'left',
-    icon: '/assets/主界面1资源/魔杖icon.png'
+    icon: './assets/main-screen-1-assets/wand-icon.png'
   },
   {
     id: 'yield',
@@ -70,7 +70,7 @@ export const GAME_ASSETS: GameAsset[] = [
     volatility: 0.12,
     risk: 'medium',
     uiSide: 'left',
-    icon: '/assets/主界面1资源/喷泉icon.png'
+    icon: './assets/main-screen-1-assets/fountain-icon.png'
   },
   {
     id: 'forest',
@@ -83,7 +83,7 @@ export const GAME_ASSETS: GameAsset[] = [
     volatility: 0.10,
     risk: 'medium',
     uiSide: 'right',
-    icon: '/assets/主界面1资源/森林icon.png'
+    icon: './assets/main-screen-1-assets/forest-icon.png'
   },
   {
     id: 'golden',
@@ -96,7 +96,7 @@ export const GAME_ASSETS: GameAsset[] = [
     volatility: 0.07,
     risk: 'low',
     uiSide: 'right',
-    icon: '/assets/主界面1资源/黄金icon.png'
+    icon: './assets/main-screen-1-assets/gold-icon.png'
   },
   {
     id: 'shield',
@@ -109,7 +109,7 @@ export const GAME_ASSETS: GameAsset[] = [
     volatility: 0.05,
     risk: 'low',
     uiSide: 'right',
-    icon: '/assets/主界面1资源/盾icon.png'
+    icon: './assets/main-screen-1-assets/shield-icon.png'
   },
   {
     id: 'fountain',
@@ -122,7 +122,7 @@ export const GAME_ASSETS: GameAsset[] = [
     volatility: 0.005,
     risk: 'low',
     uiSide: 'right',
-    icon: '/assets/主界面1资源/喷泉icon.png'
+    icon: './assets/main-screen-1-assets/fountain-icon.png'
   }
 ];
 

@@ -19,7 +19,7 @@ export function SkylandIsland() {
       {isChaoMode && (
         <>
           <img 
-            				src="/assets/main-screen-2-assets/lightning-right.png"
+            				src="./assets/main-screen-2-assets/lightning-right.png"
             alt="Lightning"
             style={{
               position: 'absolute',
@@ -31,7 +31,7 @@ export function SkylandIsland() {
             }}
           />
           <img 
-            				src="/assets/main-screen-2-assets/lightning-left.png"
+            				src="./assets/main-screen-2-assets/lightning-left.png"
             alt="Lightning"
             style={{
               position: 'absolute',
@@ -54,7 +54,7 @@ export function SkylandIsland() {
           animation: 'pulse 4s infinite'
         }}>
           <img 
-            				src="/assets/main-screen-1-assets/background-sky-island.png"
+            				src="./assets/main-screen-1-assets/background-sky-island.png"
             alt="Skyland Base"
             style={{
               width: '100%',
