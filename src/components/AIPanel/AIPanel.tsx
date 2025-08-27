@@ -104,24 +104,32 @@ export function AIPanel() {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const hasInitialized = useRef(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Initialize AI service
+  // Initialize AI service and welcome message only once
   useEffect(() => {
-    gamifiedAIService.initialize(gameState, assetAllocations, coins);
-    gamifiedAIService.setPersonality(currentPersonality.id);
-  }, [gameState, assetAllocations, coins, currentPersonality.id]);
-
-  // Initialize with welcome message
-  useEffect(() => {
-    if (messages.length === 0) {
+    if (!hasInitialized.current && messages.length === 0) {
+      gamifiedAIService.initialize(gameState, assetAllocations, coins);
+      gamifiedAIService.setPersonality(currentPersonality.id);
+      
+      // Add welcome message
       const welcomeMessage = gamifiedAIService.generateWelcomeMessage(userInfo.name);
       addMessage(welcomeMessage);
+      
+      hasInitialized.current = true;
     }
-  }, [messages.length, userInfo.name, addMessage]);
+  }, [messages.length, userInfo.name, addMessage, gameState, assetAllocations, coins, currentPersonality.id]);
+
+  // Update AI service when personality changes (but don't send welcome message)
+  useEffect(() => {
+    if (hasInitialized.current) {
+      gamifiedAIService.setPersonality(currentPersonality.id);
+    }
+  }, [currentPersonality.id]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
