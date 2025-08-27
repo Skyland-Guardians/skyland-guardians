@@ -18,7 +18,6 @@ export interface RulesConfig {
 	version: string;
 	description: string;
 	rules: Rule[];
-}
 	metadata: {
 		lastUpdated: string;
 		maintainer: string;

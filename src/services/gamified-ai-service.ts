@@ -1,19 +1,13 @@
 // Gamified AI Service - Game-themed responses with real asset integration
 
-import OpenAI from 'openai';
 import type { ChatMessage } from '../types/game';
 import type { AIPersonality } from '../data/ai-personalities';
 import { AI_PERSONALITIES, DEFAULT_AI_PERSONALITY } from '../data/ai-personalities';
 import { GAME_ASSETS } from '../data/game-assets';
 
-// OpenAI Configuration
-const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
-
-// Initialize OpenAI client
-const openai = OPENAI_API_KEY ? new OpenAI({
-  apiKey: OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true // Required for browser usage
-}) : null;
+// Azure Function App Configuration
+const FUNCTION_APP_URL = import.meta.env.VITE_FUNCTION_APP_URL;
+const FUNCTION_KEY = import.meta.env.VITE_FUNCTION_KEY;
 
 // Asset advice templates with game theming
 const ASSET_ADVICE_TEMPLATES = {
@@ -50,7 +44,7 @@ const GENERAL_RESPONSES = [
 
 export class GamifiedAIService {
   private currentPersonality: AIPersonality = DEFAULT_AI_PERSONALITY;
-  private conversationHistory: Array<{ role: string, content: string }> = [];
+  private sessionId: string = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
   initialize(_gameState: any, _assetAllocations: any[], _coins: number): void {
     // Store for potential future use
@@ -60,34 +54,120 @@ export class GamifiedAIService {
   setPersonality(personalityId: string): void {
     const personality = AI_PERSONALITIES.find(p => p.id === personalityId);
     this.currentPersonality = personality || DEFAULT_AI_PERSONALITY;
-    // Clear conversation history when changing personality
-    this.conversationHistory = [];
+    // Clear conversation context when changing personality
+    this.clearConversationContext();
   }
 
   /**
-   * Call OpenAI API with conversation context
+   * Call Azure Function App chat endpoint
    */
-  private async callOpenAI(messages: { role: string, content: string }[]): Promise<string> {
-    if (!openai) {
-      throw new Error('OpenAI API key not configured. Please set VITE_OPENAI_API_KEY in your .env.local file');
+  private async callFunctionApp(userMessage: string, systemPrompt?: string): Promise<string> {
+    if (!FUNCTION_APP_URL) {
+      throw new Error('Function App URL not configured. Please set VITE_FUNCTION_APP_URL in your .env.local file');
     }
 
     try {
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages: messages as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
-        max_tokens: 150,
-        temperature: 0.8,
+      const requestBody = {
+        message: userMessage,
+        session_id: this.sessionId,
+        ...(systemPrompt && { system_prompt: systemPrompt })
+      };
+
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+
+      // Add function key if provided
+      if (FUNCTION_KEY) {
+        headers['x-functions-key'] = FUNCTION_KEY;
+      }
+
+      const response = await fetch(`${FUNCTION_APP_URL}/api/chat`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(requestBody)
       });
 
-      return completion.choices[0]?.message?.content || 'Sorry, I cannot respond right now.';
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(errorData.error || `HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.response || 'Sorry, I cannot respond right now.';
     } catch (error) {
-      console.error('OpenAI API Error:', error);
+      console.error('Function App API Error:', error);
       if (error instanceof Error && error.message.includes('401')) {
-        throw new Error('OpenAI API key is invalid. Please check your VITE_OPENAI_API_KEY in .env.local');
+        throw new Error('Function App authentication failed. Please check your VITE_FUNCTION_KEY');
       }
       throw new Error('AI service temporarily unavailable, please try again later');
     }
+  }
+
+  /**
+   * Clear conversation context for current session
+   */
+  private async clearConversationContext(): Promise<void> {
+    if (!FUNCTION_APP_URL) return;
+
+    try {
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+
+      if (FUNCTION_KEY) {
+        headers['x-functions-key'] = FUNCTION_KEY;
+      }
+
+      await fetch(`${FUNCTION_APP_URL}/api/chat/clear`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ session_id: this.sessionId })
+      });
+    } catch (error) {
+      console.error('Error clearing conversation context:', error);
+    }
+  }
+
+  /**
+   * Get conversation status from Function App
+   */
+  async getConversationStatus(): Promise<{
+    sessionId: string;
+    contextSize: number;
+    maxContextMessages: number;
+    maxContextTokens: number;
+    hasSystemPrompt: boolean;
+  } | null> {
+    if (!FUNCTION_APP_URL) return null;
+
+    try {
+      const headers: HeadersInit = {};
+
+      if (FUNCTION_KEY) {
+        headers['x-functions-key'] = FUNCTION_KEY;
+      }
+
+      const response = await fetch(`${FUNCTION_APP_URL}/api/chat/status?session_id=${this.sessionId}`, {
+        method: 'GET',
+        headers
+      });
+
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (error) {
+      console.error('Error getting conversation status:', error);
+    }
+    return null;
+  }
+
+  /**
+   * Reset session (create new session ID and clear context)
+   */
+  async resetSession(): Promise<void> {
+    await this.clearConversationContext();
+    this.sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
   private getFallbackResponse(userMessage: string): string {
@@ -137,20 +217,7 @@ Provide investment advice keeping responses under 100 words. Use fantasy-themed 
 Always end with an appropriate emoji. Focus on education and risk management.`;
 
     try {
-      // Add the user message to conversation history
-      this.conversationHistory.push({ role: 'user', content: userMessage });
-      
-      // Create conversation messages with context and history
-      const messages = [
-        { role: 'system', content: systemPrompt },
-        ...this.conversationHistory.slice(-10), // Keep last 10 messages for context
-      ];
-
-      const response = await this.callOpenAI(messages);
-      
-      // Add AI response to conversation history
-      this.conversationHistory.push({ role: 'assistant', content: response });
-      
+      const response = await this.callFunctionApp(userMessage, systemPrompt);
       return response;
     } catch (error) {
       console.error('AI Generation Error:', error);
