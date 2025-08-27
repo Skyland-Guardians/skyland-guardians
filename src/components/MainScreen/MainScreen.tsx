@@ -31,10 +31,10 @@ export function MainScreen() {
           {/* Bottom purple decoration - more rounded arc shape */}
           <div style={{
             position: 'absolute',
-            bottom: 0,
+            bottom: '-20%',
             left: 0,
             right: 0,
-            height: '55%',
+            height: '60%',
             			background: 'url("./assets/main-screen-1-assets/background-color-block-2.png")',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
@@ -44,11 +44,11 @@ export function MainScreen() {
 
           <div style={{
             position: 'absolute',
-            bottom: 0,
+            bottom: '-10%',
             left: 0,
             right: 0,
             width: '100%',
-            height: '68%',
+            height: '70%',
             			background: 'url("./assets/main-screen-1-assets/background-color-1.png")',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',

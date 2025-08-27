@@ -7,7 +7,7 @@ import { SAMPLE_EVENTS } from '../../data/sample-events';
 import { DEFAULT_MARKET_CONFIG } from '../../data/asset-market-config';
 import { GAME_ASSETS } from '../../data/game-assets';
 import { sampleReturnForType } from '../../data/asset-return-config';
-import { aiService } from '../../services/ai-service';
+import { gamifiedAIService } from '../../services/gamified-ai-service';
 import type { MarketMode } from '../../data/asset-market-config';
 
 export function GameProvider({ children }: { children: ReactNode }) {
@@ -162,7 +162,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setGameState(prev => ({ ...prev, currentDay: prev.currentDay + 1 }));
 
     // Generate AI feedback about the settlement
-    const aiEventFeedback = aiService.generateEventFeedback('market settlement', portfolioReturn);
+    const aiEventFeedback = gamifiedAIService.generateEventFeedback('market settlement', portfolioReturn);
     setMessages(prev => [
       ...prev,
       {

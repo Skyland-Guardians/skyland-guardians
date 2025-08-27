@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
 import { useAIPersonality } from '../../hooks/useAIPersonality';
-import { AITestPanel } from '../AIPanel/AITestPanel';
 import { AI_PERSONALITIES } from '../../data/ai-personalities';
 
 export function DebugPanel() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'nextDay' | 'aiTest' | 'aiPersonality' | 'mode'>('nextDay');
+  const [activeTab, setActiveTab] = useState<'nextDay' | 'aiPersonality' | 'mode'>('nextDay');
   const { currentPersonality, changePersonality } = useAIPersonality();
   const { 
     gameState, 
@@ -176,21 +175,6 @@ export function DebugPanel() {
           📅 Next Day
         </button>
         <button
-          onClick={() => setActiveTab('aiTest')}
-          style={{
-            flex: 1,
-            padding: '10px 8px',
-            border: 'none',
-            backgroundColor: activeTab === 'aiTest' ? '#007bff' : 'transparent',
-            color: activeTab === 'aiTest' ? 'white' : '#6c757d',
-            cursor: 'pointer',
-            fontSize: '12px',
-            fontWeight: activeTab === 'aiTest' ? 'bold' : 'normal'
-          }}
-        >
-          🤖 AI Test
-        </button>
-        <button
           onClick={() => setActiveTab('aiPersonality')}
           style={{
             flex: 1,
@@ -285,12 +269,6 @@ export function DebugPanel() {
             }}>
               Note: This will trigger the same logic as the original "Next Day" button
             </p>
-          </div>
-        )}
-
-        {activeTab === 'aiTest' && (
-          <div style={{ padding: '0' }}>
-            <AITestPanel />
           </div>
         )}
 

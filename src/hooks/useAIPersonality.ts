@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { AI_PERSONALITIES } from '../data/ai-personalities';
-import { aiService } from '../services/ai-service';
+import { gamifiedAIService } from '../services/gamified-ai-service';
 
 // Create a global state manager for AI personality
 let globalPersonality = AI_PERSONALITIES[0];
@@ -21,7 +21,7 @@ export function useAIPersonality() {
     const personality = AI_PERSONALITIES.find(p => p.id === personalityId);
     if (personality) {
       globalPersonality = personality;
-      aiService.setPersonality(personalityId);
+      gamifiedAIService.setPersonality(personalityId);
       
       // Update all components using this hook
       globalSetters.forEach(setter => setter(personality));

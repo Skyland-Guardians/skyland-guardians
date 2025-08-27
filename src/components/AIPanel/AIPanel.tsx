@@ -1,8 +1,10 @@
+// AI Panel - Clean interface with essential features
+
 import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
 import { useAIPersonality } from '../../hooks/useAIPersonality';
-import { aiService } from '../../services/ai-service';
+import { gamifiedAIService } from '../../services/gamified-ai-service';
 
 // Helper component to render rich settlement and portfolio messages
 const RichMessage = ({ content }: { content: string }) => {
@@ -65,7 +67,7 @@ const RichMessage = ({ content }: { content: string }) => {
   return <p style={{ margin: 0, fontSize: '0.875rem', color: '#000', whiteSpace: 'pre-line' }}>{content}</p>;
 };
 
-// Number formatting helper (duplicated from AssetToolbar)
+// Number formatting helper
 const formatCoins = (amount: number): string => {
   const absAmount = Math.abs(amount);
   const sign = amount >= 0 ? '+' : '-';
@@ -74,7 +76,7 @@ const formatCoins = (amount: number): string => {
 };
 
 export function AIPanel() {
-  const { messages, addMessage, gameState, userInfo, assetAllocations } = useGameState();
+  const { messages, addMessage, gameState, userInfo, assetAllocations, coins = 10000 } = useGameState();
   const { currentPersonality } = useAIPersonality();
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -84,10 +86,16 @@ export function AIPanel() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Initialize AI service
+  useEffect(() => {
+    gamifiedAIService.initialize(gameState, assetAllocations, coins);
+    gamifiedAIService.setPersonality(currentPersonality.id);
+  }, [gameState, assetAllocations, coins, currentPersonality.id]);
+
   // Initialize with welcome message
   useEffect(() => {
     if (messages.length === 0) {
-      const welcomeMessage = aiService.generateWelcomeMessage(userInfo.name);
+      const welcomeMessage = gamifiedAIService.generateWelcomeMessage(userInfo.name);
       addMessage(welcomeMessage);
     }
   }, [messages.length, userInfo.name, addMessage]);
@@ -109,11 +117,12 @@ export function AIPanel() {
 
     try {
       // Get AI response
-      const response = await aiService.getResponse(trimmed, {
+      const response = await gamifiedAIService.getGameResponse(trimmed, {
         assets: assetAllocations,
         currentDay: gameState.currentDay,
         stars: gameState.stars,
-        level: gameState.level
+        level: gameState.level,
+        coins
       });
 
       // Add AI response after a short delay for natural feel
@@ -133,7 +142,7 @@ export function AIPanel() {
         addMessage({
           id: `ai-error-${Date.now()}`,
           sender: 'ai',
-          content: 'Sorry, I\'m a bit busy right now. Please try again later!',
+          content: 'Sorry, I\'m having trouble connecting to my knowledge crystal right now. Please try again later!',
           timestamp: new Date(),
           type: 'feedback'
         });
@@ -147,12 +156,12 @@ export function AIPanel() {
       style={{
         marginTop: '1rem',
         width: '15vw',
-        padding: '1.2rem', // 减少内边距
+        padding: '1.2rem',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-end',
         position: 'relative',
-        height: '70vh' // 占屏幕高度一半
+        height: '70vh'
       }}
     >
       <div
@@ -163,7 +172,7 @@ export function AIPanel() {
           padding: '0.5rem',
           display: 'flex',
           flexDirection: 'column',
-          height: '80%', // 填满aside高度
+          height: '80%',
           position: 'relative'
         }}
       >
@@ -181,6 +190,17 @@ export function AIPanel() {
           }}
         />
 
+        {/* Simple AI Status Indicator */}
+        <div style={{ 
+          fontSize: '0.7rem', 
+          color: '#374151',
+          marginBottom: '0.5rem',
+          marginTop: '5rem',
+          textAlign: 'center'
+        }}>
+          {currentPersonality.name} • Guardian Advisor
+        </div>
+
         {/* Messages */}
         <div
           style={{
@@ -188,8 +208,7 @@ export function AIPanel() {
             overflowY: 'auto',
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.5rem',
-            marginTop: '5rem'
+            gap: '0.5rem'
           }}
         >
           {messages.map(msg => (
@@ -199,10 +218,10 @@ export function AIPanel() {
                 alignSelf: msg.sender === 'ai' ? 'flex-start' : 'flex-end',
                 backgroundColor: '#ffffff',
                 borderRadius: '0.5rem',
-                padding: '0.4rem 0.8rem', // 稍微减少内边距
+                padding: '0.4rem 0.8rem',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                maxWidth: '95%', // 增加最大宽度占比，适应更窄的容器
-                fontSize: '0.85rem' // 稍微减小字体
+                maxWidth: '95%',
+                fontSize: '0.85rem'
               }}
             >
               <RichMessage content={msg.content} />
@@ -216,15 +235,15 @@ export function AIPanel() {
                 alignSelf: 'flex-start',
                 backgroundColor: '#ffffff',
                 borderRadius: '0.5rem',
-                padding: '0.4rem 0.8rem', // 与消息气泡保持一致
+                padding: '0.4rem 0.8rem',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                maxWidth: '95%', // 与消息气泡保持一致
+                maxWidth: '95%',
                 fontStyle: 'italic',
                 color: '#666',
-                fontSize: '0.85rem' // 与消息气泡保持一致
+                fontSize: '0.85rem'
               }}
             >
-              {currentPersonality.name} is thinking...
+              {currentPersonality.name} is consulting the crystals...
             </div>
           )}
           
@@ -237,15 +256,15 @@ export function AIPanel() {
             type="text"
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder={`Ask ${currentPersonality.name}...`} // 缩短占位符文本
+            placeholder={`Ask ${currentPersonality.name}...`}
             disabled={isTyping}
             style={{
               width: '100%',
-              padding: '0.4rem', // 稍微减少内边距
+              padding: '0.4rem',
               borderRadius: '0.5rem',
               border: '1px solid #cbd5e1',
               opacity: isTyping ? 0.6 : 1,
-              fontSize: '0.85rem' // 减小字体大小
+              fontSize: '0.85rem'
             }}
           />
         </form>
