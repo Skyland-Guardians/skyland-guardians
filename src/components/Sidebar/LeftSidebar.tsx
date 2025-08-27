@@ -142,11 +142,23 @@ export function LeftSidebar() {
               position: 'absolute',
               top: 8,
               right: 8,
-              background: 'transparent',
+              background: '#ef4444', // red-500
+              color: '#fff',
               border: 'none',
-              fontSize: 24,
+              borderRadius: '50%',
+              width: 28,
+              height: 28,
+              fontSize: 20,
               cursor: 'pointer',
-            }} onClick={() => setShowBadges(false)}>&times;</button>
+              boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'background 0.2s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#dc2626')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#ef4444')}
+            onClick={() => setShowBadges(false)}>&times;</button>
             <AchievementPanel summary={achievementService.getSummary()} />
           </div>
         </div>
