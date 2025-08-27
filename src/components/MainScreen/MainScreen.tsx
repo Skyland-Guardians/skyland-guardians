@@ -5,7 +5,7 @@ import { AIPanel } from '../AIPanel/AIPanel';
 import { AssetToolbar } from '../AssetToolbar/AssetToolbar';
 import { useGameState } from '../../hooks/useGameContext';
 import { MissionCard } from '../MissionCard/MissionCard';
-import { MissionList } from '../MissionList/MissionList';
+import { CardCollection } from '../CardCollection/CardCollection';
 
 export function MainScreen() {
   const { gameState } = useGameState();
@@ -81,7 +81,7 @@ export function MainScreen() {
       </div>
 
       <MissionCard />
-      <MissionList />
+      <CardCollection />
       {/* Chaos Mode Overlay Effects */}
       {isChaoMode && (
         <div style={{

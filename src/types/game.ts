@@ -47,3 +47,9 @@ export interface Mission {
   focus: string;
   rewardStars: number;
 }
+
+export interface EventCard {
+  id: number;
+  title: string;
+  description: string;
+}

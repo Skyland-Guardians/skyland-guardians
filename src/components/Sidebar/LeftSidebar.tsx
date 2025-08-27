@@ -1,7 +1,7 @@
 import { useGameState } from '../../hooks/useGameContext';
 
 export function LeftSidebar() {
-  const { setMissionListOpen } = useGameState();
+  const { setCardCollectionOpen } = useGameState();
   return (
     <aside style={{
       width: '12rem', // Increased width for larger buttons
@@ -10,51 +10,9 @@ export function LeftSidebar() {
       flexDirection: 'column',
       gap: '2rem' // Increased gap
     }}>
-      {/* MY MISSION Button */}
-      <button
-        onClick={() => setMissionListOpen(true)}
-        style={{
-          backgroundColor: 'transparent',
-          color: '#1e3a8a',
-          padding: '1.5rem 1rem',
-          borderRadius: '0.75rem',
-          position: 'relative',
-          overflow: 'hidden',
-          transition: 'all 0.2s ease',
-          border: 'none',
-          cursor: 'pointer',
-          width: '100%',
-          minHeight: '5rem'
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.75rem'
-          }}
-        >
-          <img
-            src="/assets/主界面1资源/奖杯.png"
-            alt="Mission"
-            style={{ width: '6rem', height: '8rem' }}
-          />
-          <span
-            style={{
-              fontSize: '0.875rem',
-              fontWeight: 'bold',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em'
-            }}
-          >
-            MY MISSION
-          </span>
-        </div>
-      </button>
-
       {/* MY CARDS Button - Larger size */}
       <button
+        onClick={() => setCardCollectionOpen(true)}
         style={{
           backgroundColor: 'transparent',
           color: '#1e3a8a',

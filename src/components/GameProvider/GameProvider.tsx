@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { ReactNode } from 'react';
-import type { GameState, UserInfo, AssetType, ChatMessage, Mission } from '../../types/game';
+import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard } from '../../types/game';
 import { GameContext } from '../../hooks/useGameContext';
 
 export function GameProvider({ children }: { children: ReactNode }) {
@@ -42,7 +42,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const [currentMission, setCurrentMission] = useState<Mission | null>(null);
   const [missions, setMissions] = useState<Mission[]>([]);
-  const [isMissionListOpen, setMissionListOpen] = useState(false);
+  const [events, setEvents] = useState<EventCard[]>([]);
+  const [isCardCollectionOpen, setCardCollectionOpen] = useState(false);
 
   const updateGameState = (updates: Partial<GameState>) => {
     setGameState(prev => ({ ...prev, ...updates }));
@@ -68,6 +69,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setMissions(prev => [...prev, mission]);
   };
 
+  const addEvent = (event: EventCard) => {
+    setEvents(prev => [...prev, event]);
+  };
+
   return (
     <GameContext.Provider value={{
       gameState,
@@ -76,14 +81,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
       messages,
       currentMission,
       missions,
-      isMissionListOpen,
+      events,
+      isCardCollectionOpen,
       updateGameState,
       updateUserInfo,
       updateAssetAllocation,
       addMessage,
       setCurrentMission,
       addMission,
-      setMissionListOpen
+      addEvent,
+      setCardCollectionOpen
     }}>
       {children}
     </GameContext.Provider>
