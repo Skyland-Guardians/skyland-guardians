@@ -10,6 +10,12 @@ export interface GameContextType {
   missions: Mission[];
   events: EventCard[];
   isCardCollectionOpen: boolean;
+  coins?: number;
+  marketMode?: 'simulated' | 'random' | 'real';
+  setMarketMode?: (mode: 'simulated' | 'random' | 'real') => void;
+  marketDayIndex?: number;
+  marketEvents?: any[];
+  triggerEvent?: (eventId: string) => boolean;
   updateGameState: (updates: Partial<GameState>) => void;
   updateUserInfo: (updates: Partial<UserInfo>) => void;
   updateAssetAllocation: (assetId: string, allocation: number) => void;
@@ -18,6 +24,7 @@ export interface GameContextType {
   addMission: (mission: Mission) => void;
   addEvent: (event: EventCard) => void;
   setCardCollectionOpen: (open: boolean) => void;
+  performNextDaySettlement?: () => { portfolioReturn: number; delta: number } | void;
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);

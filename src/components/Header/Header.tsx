@@ -1,7 +1,7 @@
 import { useGameState } from '../../hooks/useGameContext';
 
 export function Header() {
-  const { gameState, userInfo } = useGameState();
+  const { gameState, userInfo, coins } = useGameState();
 
   return (
     <header style={{
@@ -76,6 +76,15 @@ export function Header() {
         alignItems: 'center',
         gap: '0.75rem'
       }}>
+        <div style={{
+          background: '#f59e0b',
+          color: 'white',
+          padding: '0.5rem 1rem',
+          borderRadius: '0.5rem',
+          fontWeight: '800'
+        }}>
+          💰 {typeof coins === 'number' ? coins : '--'}
+        </div>
         <div style={{
           background: 'transparent',
           color: '#1e3a8a',

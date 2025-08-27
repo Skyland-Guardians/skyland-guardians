@@ -40,3 +40,17 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Asset name ellipsis used by AssetButton */
+.asset-name-ellipsis {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding: 0 0.5rem;
+}
+
+@media (max-width: 520px) {
+  .asset-name-ellipsis {
+    font-size: 0.85rem;
+  }
+}

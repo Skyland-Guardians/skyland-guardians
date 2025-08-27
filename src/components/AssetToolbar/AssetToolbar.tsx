@@ -4,7 +4,7 @@ import { AssetButton } from './AssetButton';
 import { MISSIONS } from '../../data/missions';
 
 export function AssetToolbar() {
-  const { assetAllocations, setCurrentMission } = useGameState();
+  const { assetAllocations, setCurrentMission, performNextDaySettlement } = useGameState();
   const [activeAssetId, setActiveAssetId] = useState<string | null>(null);
 
   const handleAssetClick = (assetId: string) => {
@@ -16,8 +16,18 @@ export function AssetToolbar() {
     const total = assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0);
     if (Math.abs(total - 100) < 0.1) {
       setActiveAssetId(null); // Close any open sliders
-      const mission = MISSIONS[Math.floor(Math.random() * MISSIONS.length)];
-      setCurrentMission(mission);
+      if (performNextDaySettlement) {
+        const res = performNextDaySettlement();
+        if (res && typeof res === 'object') {
+          alert(`Day settled: ${ (res.portfolioReturn * 100).toFixed(2) }% → ${res.delta >= 0 ? '+' : ''}${res.delta} coins`);
+        } else {
+          alert('Day settled.');
+        }
+      } else {
+        // Fallback: open a mission as before
+        const mission = MISSIONS[Math.floor(Math.random() * MISSIONS.length)];
+        setCurrentMission(mission);
+      }
     } else {
       alert(`Please adjust allocations to total 100%. Current total: ${total.toFixed(1)}%`);
     }

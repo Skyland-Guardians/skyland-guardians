@@ -8,13 +8,10 @@ interface AssetButtonProps {
 }
 
 export function AssetButton({ asset, onClick, isActive = false }: AssetButtonProps) {
-  const { updateAssetAllocations, assetAllocations } = useGameState();
+  const { updateAssetAllocation } = useGameState();
 
   const handleSliderChange = (newValue: number) => {
-    const updatedAllocations = assetAllocations.map(a => 
-      a.id === asset.id ? { ...a, allocation: newValue } : a
-    );
-    updateAssetAllocations(updatedAllocations);
+    updateAssetAllocation(asset.id, newValue);
   };
   const getThemeColors = (theme: string) => {
     switch (theme) {
@@ -204,27 +201,30 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
       </div>
       
       {/* Asset Name - Black gray background covering bottom 30% of button */}
-      <div style={{
-        position: 'absolute',
-        bottom: '-2px', // Extend slightly beyond border to eliminate white gap
-        left: '-2px', // Extend slightly beyond border
-        right: '-2px', // Extend slightly beyond border
-        height: 'calc(30% + 2px)', // Compensate for the extended positioning
-        background: '#2d3748', // Dark gray background
-        color: 'white', // White text
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: '1rem', // Larger font size
-        fontWeight: 'bold',
-        textTransform: 'uppercase',
-        overflow: 'hidden',
-        whiteSpace: 'nowrap',
-        textOverflow: 'ellipsis',
-        borderBottomLeftRadius: '0.75rem',
-        borderBottomRightRadius: '0.75rem'
-      }}>
-        {asset.name}
+      <div
+        title={asset.shortName || asset.name}
+        aria-label={asset.shortName || asset.name}
+        className="asset-name-ellipsis"
+        style={{
+          position: 'absolute',
+          bottom: '-2px', // Extend slightly beyond border to eliminate white gap
+          left: '-2px', // Extend slightly beyond border
+          right: '-2px', // Extend slightly beyond border
+          height: 'calc(30% + 2px)', // Compensate for the extended positioning
+          background: '#2d3748', // Dark gray background
+          color: 'white', // White text
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '1rem', // Larger font size
+          fontWeight: 'bold',
+          textTransform: 'uppercase',
+          overflow: 'hidden',
+          borderBottomLeftRadius: '0.75rem',
+          borderBottomRightRadius: '0.75rem'
+        }}
+      >
+        {asset.shortName || asset.name}
       </div>
       </button>
     </div>

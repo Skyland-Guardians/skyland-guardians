@@ -15,8 +15,9 @@ export interface UserInfo {
 export interface AssetType {
   id: string;
   name: string;
+  shortName?: string;
   icon: string;
-  type: 'sword' | 'shield' | 'forest' | 'askali' | 'golden' | 'fountain' | 'crystal' | 'magic';
+  type: 'sword' | 'shield' | 'forest' | 'yield' | 'golden' | 'fountain' | 'crystal' | 'magic';
   theme: string;
   allocation: number;
 }
