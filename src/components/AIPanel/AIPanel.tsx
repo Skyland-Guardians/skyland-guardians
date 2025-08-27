@@ -145,7 +145,8 @@ export function AIPanel() {
   return (
     <aside
       style={{
-        width: '20vw',
+        marginTop: '1rem',
+        width: '15vw',
         padding: '1.2rem', // 减少内边距
         display: 'flex',
         flexDirection: 'column',
@@ -156,14 +157,13 @@ export function AIPanel() {
     >
       <div
         style={{
-          marginTop: '5rem', // 增加顶部边距，避免遮挡上方信息栏
           width: '100%',
           backgroundColor: '#89CFF0',
           borderRadius: '0.5rem',
           padding: '0.5rem',
           display: 'flex',
           flexDirection: 'column',
-          height: '100%', // 填满aside高度
+          height: '80%', // 填满aside高度
           position: 'relative'
         }}
       >
