@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
 import { useAIPersonality } from '../../hooks/useAIPersonality';
 import { AI_PERSONALITIES } from '../../data/ai-personalities';
+import { gamifiedAIService } from '../../services/gamified-ai-service';
 
 export function DebugPanel() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,7 +13,9 @@ export function DebugPanel() {
     updateGameState, 
     performNextDaySettlement, 
     addMessage, 
-    assetAllocations 
+    assetAllocations,
+    coins,
+    performanceHistory
   } = useGameState();
 
   const toggleMode = () => {
@@ -25,7 +28,7 @@ export function DebugPanel() {
     changePersonality(personalityId, addMessage);
   };
 
-  const handleNextDayClick = () => {
+  const handleNextDayClick = async () => {
     // Calculate total allocation
     const total = assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0);
     if (Math.abs(total - 100) < 0.1) {
@@ -56,6 +59,47 @@ export function DebugPanel() {
             timestamp: new Date(),
             type: 'feedback'
           });
+
+          // Add AI thinking message
+          addMessage({
+            id: `ai-thinking-nextday-${Date.now()}`,
+            sender: 'ai',
+            content: '📊 *Analyzing today\'s market performance and your investment results...*',
+            timestamp: new Date(),
+            type: 'feedback'
+          });
+
+          // Get AI feedback on the next day settlement
+          try {
+            const aiFeedback = await gamifiedAIService.generateNextDayFeedback({
+              assets: assetAllocations,
+              currentDay: gameState.currentDay,
+              stars: gameState.stars,
+              level: gameState.level,
+              coins: coins || 1000,
+              performanceHistory: performanceHistory,
+              settlementResult: res
+            });
+
+            // Add AI feedback message
+            addMessage({
+              id: `ai-nextday-feedback-${Date.now()}`,
+              sender: 'ai',
+              content: aiFeedback,
+              timestamp: new Date(),
+              type: 'feedback'
+            });
+          } catch (error) {
+            console.error('Failed to get AI next day feedback:', error);
+            // Add fallback message
+            addMessage({
+              id: `ai-nextday-fallback-${Date.now()}`,
+              sender: 'ai',
+              content: 'Settlement completed! Another day of learning in your investment journey. Keep observing the markets and adjusting your strategy! 📊✨',
+              timestamp: new Date(),
+              type: 'feedback'
+            });
+          }
         } else {
           addMessage({
             id: `settlement-${Date.now()}`,

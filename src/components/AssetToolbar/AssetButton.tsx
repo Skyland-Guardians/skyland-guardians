@@ -1,5 +1,7 @@
 import { useGameState } from '../../hooks/useGameContext';
 import type { AssetType } from '../../types/game';
+import { gamifiedAIService } from '../../services/gamified-ai-service';
+import { GAME_ASSETS } from '../../data/game-assets';
 
 interface AssetButtonProps {
   asset: AssetType;
@@ -8,7 +10,7 @@ interface AssetButtonProps {
 }
 
 export function AssetButton({ asset, onClick, isActive = false }: AssetButtonProps) {
-  const { updateAssetAllocation, assetAllocations } = useGameState();
+  const { updateAssetAllocation, assetAllocations, addMessage, gameState, coins, performanceHistory } = useGameState();
 
   const handleSliderChange = (newValue: number) => {
     // Calculate current total allocation excluding this asset
@@ -44,6 +46,57 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
   const handleStepChange = (step: number) => {
     const newValue = Math.max(0, Math.min(100, asset.allocation + step));
     updateAssetAllocation(asset.id, newValue);
+  };
+
+  const handleAskAI = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent asset button click
+    
+    // Find the asset details from GAME_ASSETS
+    const assetDetails = GAME_ASSETS.find(gameAsset => gameAsset.id === asset.id);
+    
+    if (!assetDetails) return;
+    
+    // Add thinking message
+    addMessage({
+      id: `ai-thinking-asset-${Date.now()}`,
+      sender: 'ai',
+      content: `🤔 *Looking up information about ${assetDetails.gameName}...*`,
+      timestamp: new Date(),
+      type: 'feedback'
+    });
+
+    try {
+      const response = await gamifiedAIService.getGameResponse(
+        `Explain ${assetDetails.gameName} (${assetDetails.realWorld}). What is it? 40 words max.`,
+        {
+          assets: assetAllocations,
+          currentDay: gameState.currentDay,
+          stars: gameState.stars,
+          level: gameState.level,
+          coins: coins || 1000,
+          performanceHistory: performanceHistory
+        }
+      );
+
+      // Add AI explanation
+      addMessage({
+        id: `ai-asset-explain-${Date.now()}`,
+        sender: 'ai',
+        content: response,
+        timestamp: new Date(),
+        type: 'feedback'
+      });
+    } catch (error) {
+      console.error('Failed to get AI asset explanation:', error);
+      // Fallback explanation
+      addMessage({
+        id: `ai-asset-fallback-${Date.now()}`,
+        sender: 'ai',
+        content: `${assetDetails.gameName} represents ${assetDetails.realWorld}. ${assetDetails.description} 📚`,
+        timestamp: new Date(),
+        type: 'feedback'
+      });
+    }
   };
   const getThemeColors = (theme: string) => {
     switch (theme) {
@@ -201,12 +254,52 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
             border: '1px solid #ffeaa7'
           }}>
             <div style={{
-              fontSize: '11px',
-              fontWeight: 'bold',
-              color: '#856404',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
               marginBottom: '0.5rem'
             }}>
-              Editing: {asset.shortName || asset.name}
+              <div style={{
+                fontSize: '11px',
+                fontWeight: 'bold',
+                color: '#856404',
+                flex: 1,
+                textAlign: 'center'
+              }}>
+                Editing: {asset.shortName || asset.name}
+              </div>
+              
+              {/* Ask AI button */}
+              <button
+                onClick={handleAskAI}
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  backgroundColor: '#3b82f6',
+                  border: '1px solid white',
+                  color: 'white',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#2563eb';
+                  e.currentTarget.style.transform = 'scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#3b82f6';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+                title={`Ask AI about ${asset.name}`}
+              >
+                ?
+              </button>
             </div>
             
             <div style={{
