@@ -36,15 +36,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const defaultAllocations: AssetType[] = GAME_ASSETS.map(a => ({
-    id: a.id,
-    name: a.gameName.toUpperCase(),
-    shortName: a.shortName || a.gameName,
-    icon: a.icon || '',
-    type: a.id as any,
-    theme: mapThemeFromRisk(a.risk),
-    allocation: Number((100 / GAME_ASSETS.length).toFixed(2))
-  }));
+  const defaultAllocations: AssetType[] = GAME_ASSETS.map(a => {
+    // Set initial allocation: 50% Tech (sword), 50% Bonds (shield), 0% others
+    let allocation = 0;
+    if (a.id === 'sword') {
+      allocation = 50; // Agile Sword (Technology)
+    } else if (a.id === 'shield') {
+      allocation = 50; // Sturdy Shield (Bonds)
+    }
+    
+    return {
+      id: a.id,
+      name: a.gameName.toUpperCase(),
+      shortName: a.shortName || a.gameName,
+      icon: a.icon || '',
+      type: a.id as any,
+      theme: mapThemeFromRisk(a.risk),
+      allocation: allocation
+    };
+  });
 
   const [assetAllocations, setAssetAllocations] = useState<AssetType[]>(defaultAllocations);
 
