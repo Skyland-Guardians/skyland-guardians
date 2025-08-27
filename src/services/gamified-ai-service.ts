@@ -1,10 +1,19 @@
 // Gamified AI Service - Game-themed responses with real asset integration
 
+import OpenAI from 'openai';
 import type { ChatMessage } from '../types/game';
 import type { AIPersonality } from '../data/ai-personalities';
 import { AI_PERSONALITIES, DEFAULT_AI_PERSONALITY } from '../data/ai-personalities';
 import { GAME_ASSETS } from '../data/game-assets';
-import { findMatchingResponse } from '../data/ai-responses';
+
+// OpenAI Configuration
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+
+// Initialize OpenAI client
+const openai = OPENAI_API_KEY ? new OpenAI({
+  apiKey: OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true // Required for browser usage
+}) : null;
 
 // Asset advice templates with game theming
 const ASSET_ADVICE_TEMPLATES = {
@@ -30,13 +39,6 @@ const ASSET_ADVICE_TEMPLATES = {
   }
 };
 
-// Market sentiment keywords
-const SENTIMENT_KEYWORDS = {
-  bullish: ['bullish', 'bull', 'rising', 'up', 'growth', 'gain', 'increase', 'buy', 'optimistic'],
-  bearish: ['bearish', 'bear', 'falling', 'down', 'decline', 'loss', 'decrease', 'sell', 'pessimistic'],
-  neutral: ['neutral', 'stable', 'sideways', 'hold', 'wait', 'uncertain', 'mixed']
-};
-
 // General investment wisdom responses
 const GENERAL_RESPONSES = [
   "A wise guardian diversifies their treasures across different realms! 🏰",
@@ -48,6 +50,7 @@ const GENERAL_RESPONSES = [
 
 export class GamifiedAIService {
   private currentPersonality: AIPersonality = DEFAULT_AI_PERSONALITY;
+  private conversationHistory: Array<{ role: string, content: string }> = [];
 
   initialize(_gameState: any, _assetAllocations: any[], _coins: number): void {
     // Store for potential future use
@@ -57,22 +60,50 @@ export class GamifiedAIService {
   setPersonality(personalityId: string): void {
     const personality = AI_PERSONALITIES.find(p => p.id === personalityId);
     this.currentPersonality = personality || DEFAULT_AI_PERSONALITY;
+    // Clear conversation history when changing personality
+    this.conversationHistory = [];
   }
 
-  private detectSentiment(message: string): 'bullish' | 'bearish' | 'neutral' {
-    const lowerMessage = message.toLowerCase();
+  /**
+   * Call OpenAI API with conversation context
+   */
+  private async callOpenAI(messages: { role: string, content: string }[]): Promise<string> {
+    if (!openai) {
+      throw new Error('OpenAI API key not configured. Please set VITE_OPENAI_API_KEY in your .env.local file');
+    }
+
+    try {
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: messages as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+        max_tokens: 150,
+        temperature: 0.8,
+      });
+
+      return completion.choices[0]?.message?.content || 'Sorry, I cannot respond right now.';
+    } catch (error) {
+      console.error('OpenAI API Error:', error);
+      if (error instanceof Error && error.message.includes('401')) {
+        throw new Error('OpenAI API key is invalid. Please check your VITE_OPENAI_API_KEY in .env.local');
+      }
+      throw new Error('AI service temporarily unavailable, please try again later');
+    }
+  }
+
+  private getFallbackResponse(userMessage: string): string {
+    const message = userMessage.toLowerCase();
     
-    const bullishCount = SENTIMENT_KEYWORDS.bullish.filter(keyword => 
-      lowerMessage.includes(keyword)
-    ).length;
+    // Check for asset-specific questions
+    for (const [assetKey, templates] of Object.entries(ASSET_ADVICE_TEMPLATES)) {
+      const asset = GAME_ASSETS.find(a => a.id === assetKey);
+      if (asset && (message.includes(asset.gameName.toLowerCase()) || message.includes(assetKey))) {
+        const advice = templates.neutral;
+        return `${advice}\n\nReal world equivalent: ${asset.realWorld}`;
+      }
+    }
     
-    const bearishCount = SENTIMENT_KEYWORDS.bearish.filter(keyword => 
-      lowerMessage.includes(keyword)
-    ).length;
-    
-    if (bullishCount > bearishCount) return 'bullish';
-    if (bearishCount > bullishCount) return 'bearish';
-    return 'neutral';
+    // Fallback to general advice
+    return GENERAL_RESPONSES[Math.floor(Math.random() * GENERAL_RESPONSES.length)];
   }
 
   async getGameResponse(userMessage: string, gameContext: {
@@ -83,61 +114,48 @@ export class GamifiedAIService {
     coins: number;
   }): Promise<string> {
     
-    const message = userMessage.toLowerCase();
-    const sentiment = this.detectSentiment(message);
+    // Build context for AI
+    const gameContextStr = `Game Day: ${gameContext.currentDay}, Level: ${gameContext.level}, Coins: ${gameContext.coins}`;
+    const assetContextStr = gameContext.assets.length > 0 ? 
+      `Current assets: ${gameContext.assets.map(a => a.type || 'unknown').join(', ')}` : 
+      'No assets allocated yet';
     
-    // Check for asset-specific questions
-    for (const [assetKey, templates] of Object.entries(ASSET_ADVICE_TEMPLATES)) {
-      const asset = GAME_ASSETS.find(a => a.id === assetKey);
-      if (asset && (message.includes(asset.gameName.toLowerCase()) || message.includes(assetKey))) {
-        const advice = templates[sentiment];
-        return `${advice}\n\nReal world equivalent: ${asset.realWorld}`;
-      }
-    }
-    
-    // Portfolio analysis
-    if (message.includes('portfolio') || message.includes('allocation')) {
-      return this.generatePortfolioAdvice(gameContext);
-    }
-    
-    // General market questions
-    if (message.includes('market') || message.includes('invest')) {
-      const randomAdvice = GENERAL_RESPONSES[Math.floor(Math.random() * GENERAL_RESPONSES.length)];
-      return `${this.currentPersonality.name} says: ${randomAdvice}`;
-    }
-    
-    // Fallback to personality-based response
-    const personalityResponse = findMatchingResponse(userMessage);
-    if (personalityResponse) {
-      return personalityResponse;
-    }
-    
-    // Final fallback
-    return `${this.currentPersonality.name} reflects on your question... ${GENERAL_RESPONSES[Math.floor(Math.random() * GENERAL_RESPONSES.length)]}`;
-  }
+    // Create system prompt
+    const systemPrompt = `You are ${this.currentPersonality.name} in the fantasy investment game "Skyland Guardians". 
 
-  private generatePortfolioAdvice(gameContext: {
-    assets: any[];
-    currentDay: number;
-    stars: number;
-    level: number;
-    coins: number;
-  }): string {
-    const allocatedAssets = gameContext.assets.filter((a: any) => a.allocation > 0);
-    
-    if (allocatedAssets.length === 0) {
-      return "Your treasure chest is empty! Start your investment journey by allocating to different asset types. A balanced approach serves guardians well! 🎯";
+Base personality: ${this.currentPersonality.prompt}
+
+Game Context: ${gameContextStr}
+Portfolio: ${assetContextStr}
+
+Provide investment advice keeping responses under 100 words. Use fantasy-themed language while giving real investment education. Map game assets to real investments:
+- Sword (Agile Sword) = Tech ETFs/Stocks
+- Crystal (Mystic Crystal) = Cryptocurrency  
+- Magic (Stellar Wand) = Innovation/Small-cap investments
+- Shield (Sturdy Shield) = Bonds/Stable investments
+
+Always end with an appropriate emoji. Focus on education and risk management.`;
+
+    try {
+      // Add the user message to conversation history
+      this.conversationHistory.push({ role: 'user', content: userMessage });
+      
+      // Create conversation messages with context and history
+      const messages = [
+        { role: 'system', content: systemPrompt },
+        ...this.conversationHistory.slice(-10), // Keep last 10 messages for context
+      ];
+
+      const response = await this.callOpenAI(messages);
+      
+      // Add AI response to conversation history
+      this.conversationHistory.push({ role: 'assistant', content: response });
+      
+      return response;
+    } catch (error) {
+      console.error('AI Generation Error:', error);
+      return this.getFallbackResponse(userMessage);
     }
-    
-    if (allocatedAssets.length === 1) {
-      return "You've chosen a single path, brave guardian! While focus can be powerful, consider diversifying your magic across different realms for better protection! 🛡️";
-    }
-    
-    if (allocatedAssets.length >= 4) {
-      return "Excellent diversification, wise guardian! Your portfolio spans multiple realms. Remember to rebalance occasionally as the winds of fortune shift! ⚖️";
-    }
-    
-    return `Your portfolio shows ${allocatedAssets.length} asset types. Consider adding more diversity to strengthen your defenses against market storms! 🌪️`;
   }
 
   generateWelcomeMessage(userName: string): ChatMessage {
