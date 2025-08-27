@@ -1,5 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
+import { CharacterMessage } from './CharacterMessage';
 
 export function AIPanel() {
   const { messages, addMessage } = useGameState();
@@ -64,27 +65,36 @@ export function AIPanel() {
         }}
       >
         {messages.map(msg => (
-          <div
-            key={msg.id}
-            style={{
-              alignSelf: msg.sender === 'ai' ? 'flex-start' : 'flex-end',
-              backgroundColor: '#ffffff',
-              borderRadius: '0.5rem',
-              padding: '0.5rem 1rem',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-              maxWidth: '16rem'
-            }}
-          >
-            <p
+          msg.sender === 'ai' ? (
+            <div key={msg.id} style={{ alignSelf: 'flex-start' }}>
+              <CharacterMessage
+                avatar="/assets/主界面1资源/AI人物icon.png"
+                message={msg.content}
+              />
+            </div>
+          ) : (
+            <div
+              key={msg.id}
               style={{
-                margin: 0,
-                fontSize: '0.875rem',
-                color: msg.sender === 'ai' ? '#1e3a8a' : '#4a5568'
+                alignSelf: 'flex-end',
+                backgroundColor: '#ffffff',
+                borderRadius: '0.5rem',
+                padding: '0.5rem 1rem',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                maxWidth: '16rem'
               }}
             >
-              {msg.content}
-            </p>
-          </div>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: '0.875rem',
+                  color: '#4a5568'
+                }}
+              >
+                {msg.content}
+              </p>
+            </div>
+          )
         ))}
         <form onSubmit={handleSubmit} style={{ alignSelf: 'stretch' }}>
           <input
