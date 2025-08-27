@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
+import { useAIPersonality } from '../../hooks/useAIPersonality';
 import { aiService } from '../../services/ai-service';
-import { AI_PERSONALITIES } from '../../data/ai-personalities';
 
 // Helper component to render rich settlement messages
 const RichMessage = ({ content }: { content: string }) => {
@@ -50,9 +50,9 @@ const formatCoins = (amount: number): string => {
 
 export function AIPanel() {
   const { messages, addMessage, gameState, userInfo, assetAllocations } = useGameState();
+  const { currentPersonality } = useAIPersonality();
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [currentPersonality, setCurrentPersonality] = useState(AI_PERSONALITIES[0]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -117,23 +117,6 @@ export function AIPanel() {
     }
   };
 
-  const handlePersonalityChange = (personalityId: string) => {
-    const personality = AI_PERSONALITIES.find(p => p.id === personalityId);
-    if (personality) {
-      setCurrentPersonality(personality);
-      aiService.setPersonality(personalityId);
-      
-      // Add personality switch message
-      addMessage({
-        id: `personality-${Date.now()}`,
-        sender: 'ai',
-        content: `Hi! I'm ${personality.name}, your new AI investment companion! What investment questions would you like to explore?`,
-        timestamp: new Date(),
-        type: 'greeting'
-      });
-    }
-  };
-
   return (
     <aside
       style={{
@@ -148,7 +131,7 @@ export function AIPanel() {
     >
       <div
         style={{
-          marginTop: '1rem',
+          marginTop: '5rem', // 增加顶部边距，避免遮挡上方信息栏
           width: '100%',
           backgroundColor: '#89CFF0',
           borderRadius: '0.5rem',
@@ -173,33 +156,9 @@ export function AIPanel() {
           }}
         />
 
-        {/* AI Personality Selector */}
-        <div style={{ 
-          display: 'flex', 
-          gap: '0.5rem', 
-          marginBottom: '0.5rem',
-          justifyContent: 'center',
-          flexWrap: 'wrap'
-        }}>
-          {AI_PERSONALITIES.map(personality => (
-            <button
-              key={personality.id}
-              onClick={() => handlePersonalityChange(personality.id)}
-              style={{
-                padding: '0.25rem 0.5rem',
-                fontSize: '0.75rem',
-                borderRadius: '0.25rem',
-                border: 'none',
-                backgroundColor: currentPersonality.id === personality.id ? '#ffffff' : 'rgba(255,255,255,0.7)',
-                color: '#000',
-                cursor: 'pointer',
-                fontWeight: currentPersonality.id === personality.id ? 'bold' : 'normal'
-              }}
-            >
-              {personality.name}
-            </button>
-          ))}
-        </div>
+
+
+
 
         {/* Messages */}
         <div

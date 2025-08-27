@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
+import { useAIPersonality } from '../../hooks/useAIPersonality';
 import { AITestPanel } from '../AIPanel/AITestPanel';
+import { AI_PERSONALITIES } from '../../data/ai-personalities';
 
 export function DebugPanel() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'nextDay' | 'aiTest' | 'mode'>('nextDay');
+  const [activeTab, setActiveTab] = useState<'nextDay' | 'aiTest' | 'aiPersonality' | 'mode'>('nextDay');
+  const { currentPersonality, changePersonality } = useAIPersonality();
   const { 
     gameState, 
     updateGameState, 
@@ -17,6 +20,10 @@ export function DebugPanel() {
     updateGameState({
       mode: gameState.mode === 'normal' ? 'chaos' : 'normal'
     });
+  };
+
+  const handlePersonalityChange = (personalityId: string) => {
+    changePersonality(personalityId, addMessage);
   };
 
   const handleNextDayClick = () => {
@@ -184,6 +191,21 @@ export function DebugPanel() {
           🤖 AI Test
         </button>
         <button
+          onClick={() => setActiveTab('aiPersonality')}
+          style={{
+            flex: 1,
+            padding: '10px 8px',
+            border: 'none',
+            backgroundColor: activeTab === 'aiPersonality' ? '#007bff' : 'transparent',
+            color: activeTab === 'aiPersonality' ? 'white' : '#6c757d',
+            cursor: 'pointer',
+            fontSize: '12px',
+            fontWeight: activeTab === 'aiPersonality' ? 'bold' : 'normal'
+          }}
+        >
+          🧠 AI Character
+        </button>
+        <button
           onClick={() => setActiveTab('mode')}
           style={{
             flex: 1,
@@ -252,7 +274,7 @@ export function DebugPanel() {
                 e.currentTarget.style.transform = 'scale(1)';
               }}
             >
-              � Execute Next Day
+              Execute Next Day
             </button>
             
             <p style={{ 
@@ -269,6 +291,79 @@ export function DebugPanel() {
         {activeTab === 'aiTest' && (
           <div style={{ padding: '0' }}>
             <AITestPanel />
+          </div>
+        )}
+
+        {activeTab === 'aiPersonality' && (
+          <div style={{ padding: '20px' }}>
+            <h4 style={{ marginTop: 0, marginBottom: '16px' }}>AI Personality</h4>
+            <p style={{ 
+              fontSize: '14px', 
+              color: '#666', 
+              marginBottom: '16px',
+              lineHeight: '1.4'
+            }}>
+              Choose the AI character's personality and interaction style.
+            </p>
+            
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column',
+              gap: '8px',
+              marginBottom: '16px'
+            }}>
+              {AI_PERSONALITIES.map(personality => (
+                <button
+                  key={personality.id}
+                  onClick={() => handlePersonalityChange(personality.id)}
+                  style={{
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid #ddd',
+                    backgroundColor: currentPersonality.id === personality.id ? '#007bff' : '#f8f9fa',
+                    color: currentPersonality.id === personality.id ? 'white' : '#333',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    fontSize: '14px',
+                    fontWeight: currentPersonality.id === personality.id ? 'bold' : 'normal',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (currentPersonality.id !== personality.id) {
+                      e.currentTarget.style.backgroundColor = '#e9ecef';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (currentPersonality.id !== personality.id) {
+                      e.currentTarget.style.backgroundColor = '#f8f9fa';
+                    }
+                  }}
+                >
+                  <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+                    {personality.name}
+                  </div>
+                  <div style={{ 
+                    fontSize: '12px', 
+                    opacity: 0.8,
+                    lineHeight: '1.3'
+                  }}>
+                    Risk: {personality.riskTolerance} | ID: {personality.id}
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div style={{
+              fontSize: '14px',
+              color: '#666',
+              borderTop: '1px solid #eee',
+              paddingTop: '16px'
+            }}>
+              <div><strong>Current AI:</strong> {currentPersonality.name}</div>
+              <div style={{ fontSize: '12px', marginTop: '4px', fontStyle: 'italic' }}>
+                Risk Tolerance: {currentPersonality.riskTolerance}
+              </div>
+            </div>
           </div>
         )}
 
