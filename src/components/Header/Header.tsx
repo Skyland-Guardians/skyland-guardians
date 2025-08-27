@@ -8,7 +8,7 @@ export function Header() {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: '1.5rem 3rem',
+      padding: '0.8rem 3rem',
       backgroundColor: 'transparent',
       position: 'relative',
       zIndex: 3

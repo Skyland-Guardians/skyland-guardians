@@ -145,7 +145,8 @@ export function AIPanel() {
   return (
     <aside
       style={{
-        width: '20vw',
+        marginTop: '1rem',
+        width: '15vw',
         padding: '1.2rem', // 减少内边距
         display: 'flex',
         flexDirection: 'column',
