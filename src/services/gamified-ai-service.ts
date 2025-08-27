@@ -72,33 +72,59 @@ export class GamifiedAIService {
         session_id: this.sessionId,
         ...(systemPrompt && { system_prompt: systemPrompt })
       };
+      
+      // Print system prompt for testing purposes
+      if (systemPrompt) {
+        console.log('System Prompt:', systemPrompt);
+      }
+      console.log('User Message:', userMessage);
 
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       };
 
-      // Add function key if provided
+      // Build URL with function key as code parameter
+      let url = `${FUNCTION_APP_URL}/api/chat`;
       if (FUNCTION_KEY) {
-        headers['x-functions-key'] = FUNCTION_KEY;
+        url += `?code=${encodeURIComponent(FUNCTION_KEY)}`;
       }
 
-      const response = await fetch(`${FUNCTION_APP_URL}/api/chat`, {
+      const response = await fetch(url, {
         method: 'POST',
         headers,
         body: JSON.stringify(requestBody)
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(errorData.error || `HTTP ${response.status}`);
+        const errorText = await response.text();
+        console.error('❌ Function App Error:', response.status, errorText);
+        
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText || 'Unknown error' };
+        }
+        
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
+      console.log('✅ AI Response:', data.response);
+      
       return data.response || 'Sorry, I cannot respond right now.';
     } catch (error) {
-      console.error('Function App API Error:', error);
-      if (error instanceof Error && error.message.includes('401')) {
-        throw new Error('Function App authentication failed. Please check your VITE_FUNCTION_KEY');
+      console.error('💥 Function App Error:', error);
+      if (error instanceof Error) {
+        if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+          throw new Error('Function App authentication failed. Please check your VITE_FUNCTION_KEY');
+        }
+        if (error.message.includes('404')) {
+          throw new Error('Function App endpoint not found. Please check your VITE_FUNCTION_APP_URL');
+        }
+        if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
+          throw new Error('CORS error: Function App needs CORS configuration.\n\nTo fix this:\n1. Go to Azure Portal\n2. Find your Function App\n3. Go to CORS settings\n4. Add "http://localhost:5174" and "https://skyland-guardians.github.io"\n5. Save the settings');
+        }
       }
       throw new Error('AI service temporarily unavailable, please try again later');
     }
@@ -115,11 +141,13 @@ export class GamifiedAIService {
         'Content-Type': 'application/json',
       };
 
+      // Build URL with function key as code parameter
+      let url = `${FUNCTION_APP_URL}/api/chat/clear`;
       if (FUNCTION_KEY) {
-        headers['x-functions-key'] = FUNCTION_KEY;
+        url += `?code=${encodeURIComponent(FUNCTION_KEY)}`;
       }
 
-      await fetch(`${FUNCTION_APP_URL}/api/chat/clear`, {
+      await fetch(url, {
         method: 'POST',
         headers,
         body: JSON.stringify({ session_id: this.sessionId })
@@ -144,11 +172,13 @@ export class GamifiedAIService {
     try {
       const headers: HeadersInit = {};
 
+      // Build URL with session_id and code parameters
+      let url = `${FUNCTION_APP_URL}/api/chat/status?session_id=${encodeURIComponent(this.sessionId)}`;
       if (FUNCTION_KEY) {
-        headers['x-functions-key'] = FUNCTION_KEY;
+        url += `&code=${encodeURIComponent(FUNCTION_KEY)}`;
       }
 
-      const response = await fetch(`${FUNCTION_APP_URL}/api/chat/status?session_id=${this.sessionId}`, {
+      const response = await fetch(url, {
         method: 'GET',
         headers
       });
