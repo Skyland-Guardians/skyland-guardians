@@ -1,4 +1,3 @@
-// ...existing code...
 import type { AchievementSummary } from '../../types/achievement';
 
 interface AchievementPanelProps {
