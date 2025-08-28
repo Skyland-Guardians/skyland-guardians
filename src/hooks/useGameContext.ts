@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect } from 'react';
 import { achievementService } from '../services/achievement-service';
-import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult } from '../types/game';
+import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult, PlayerCard } from '../types/game';
 
 export interface GameContextType {
   gameState: GameState;
@@ -34,6 +34,11 @@ export interface GameContextType {
   setCardCollectionOpen: (open: boolean) => void;
   setBadgesOpen?: (open: boolean) => void;
   performNextDaySettlement?: () => SettlementResult | void;
+  // 新的事件管理函数
+  triggerNewCards?: (action: 'apply' | 'nextDay' | 'init') => void;
+  acceptCard?: (card: PlayerCard) => void;
+  declineCard?: (card: PlayerCard) => void;
+  updateActiveCards?: () => void;
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);

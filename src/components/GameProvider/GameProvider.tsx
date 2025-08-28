@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ReactNode } from 'react';
-import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult, SettlementAsset } from '../../types/game';
+import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult, SettlementAsset, PlayerCard } from '../../types/game';
 import { GameContext } from '../../hooks/useGameContext';
 import { SIMULATED_SERIES } from '../../data/simulated-asset-series';
 import { SAMPLE_EVENTS } from '../../data/sample-events';
@@ -8,6 +8,7 @@ import { DEFAULT_MARKET_CONFIG } from '../../data/asset-market-config';
 import { GAME_ASSETS } from '../../data/game-assets';
 import { sampleReturnForType } from '../../data/asset-return-config';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
+import { eventManager } from '../../services/event-manager';
 import type { MarketMode } from '../../data/asset-market-config';
 
 export function GameProvider({ children }: { children: ReactNode }) {
@@ -16,7 +17,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     stars: 15,
     level: 1,
     mode: 'normal',
-    currentScreen: 'main'
+    currentScreen: 'main',
+    playerCards: [],
+    activeMissions: [],
+    activeEvents: [],
+    pendingCards: []
   });
 
   const [userInfo, setUserInfo] = useState<UserInfo>({
@@ -61,8 +66,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const [currentMission, setCurrentMission] = useState<Mission | null>(null);
-  const [missions, setMissions] = useState<Mission[]>([]);
-  const [events, setEvents] = useState<EventCard[]>([]);
   const [isCardCollectionOpen, setCardCollectionOpen] = useState(false);
   const [isBadgesOpen, setBadgesOpen] = useState(false);
   const [coins, setCoins] = useState<number>(1000); // initial money the player holds
@@ -92,6 +95,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
         asset.id === assetId ? { ...asset, allocation } : asset
       );
       
+      // 在APPLY操作后触发新事件
+      setTimeout(() => {
+        triggerNewCards('apply');
+        updateActiveCards();
+      }, 100);
+      
       return updated;
     });
   };
@@ -100,12 +109,43 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setMessages(prev => [...prev, message]);
   };
 
-  const addMission = (mission: Mission) => {
-    setMissions(prev => [...prev, mission]);
+  // 触发新的事件和任务
+  const triggerNewCards = (action: 'apply' | 'nextDay' | 'init') => {
+    const context = {
+      currentDay: gameState.currentDay,
+      assetAllocations,
+      activeMissions: gameState.activeMissions,
+      activeEvents: gameState.activeEvents,
+      lastAction: action
+    };
+
+    const newCards = eventManager.checkForNewCards(context);
+    if (newCards.length > 0) {
+      setGameState(prev => ({
+        ...prev,
+        pendingCards: [...prev.pendingCards, ...newCards]
+      }));
+    }
   };
 
-  const addEvent = (event: EventCard) => {
-    setEvents(prev => [...prev, event]);
+  // 接受卡片
+  const acceptCard = (card: PlayerCard) => {
+    const updates = eventManager.acceptCard(card, gameState);
+    setGameState(prev => ({ ...prev, ...updates }));
+  };
+
+  // 拒绝卡片
+  const declineCard = (card: PlayerCard) => {
+    const updates = eventManager.declineCard(card, gameState);
+    setGameState(prev => ({ ...prev, ...updates }));
+  };
+
+  // 更新活跃的事件和任务状态
+  const updateActiveCards = () => {
+    const updates = eventManager.updateActiveCards(gameState, assetAllocations);
+    if (Object.keys(updates).length > 0) {
+      setGameState(prev => ({ ...prev, ...updates }));
+    }
   };
 
   // Simple settlement logic for "next day" based on current allocations.
@@ -124,8 +164,26 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return sampleReturnForType(type);
     };
 
-    // find events that apply today
-    const todaysEvents = marketEvents.filter(ev => ev.dayIndex === dayIndex || ev.dayIndex === 'all');
+    // find events that apply today (including active events)
+    const todaysEvents = [...marketEvents.filter(ev => ev.dayIndex === dayIndex || ev.dayIndex === 'all')];
+    
+    // Add active events from game state
+    gameState.activeEvents.forEach(activeEvent => {
+      if (activeEvent.effects) {
+        todaysEvents.push({
+          id: `active-${activeEvent.id}`,
+          title: activeEvent.title,
+          description: activeEvent.description,
+          dayIndex: dayIndex,
+          targets: activeEvent.effects.targets,
+          effect: {
+            type: activeEvent.effects.type,
+            value: activeEvent.effects.value
+          },
+          duration: 1
+        });
+      }
+    });
 
     const applyEventsToReturn = (base: number, type: string) => {
       // Apply add effects first, then mul, then volatility adjustments
@@ -212,6 +270,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
     ]);
 
+    // 在下一天后触发新事件
+    setTimeout(() => {
+      triggerNewCards('nextDay');
+      updateActiveCards();
+    }, 100);
+
     return { portfolioReturn, delta, perAsset: perAssetResults };
   };
 
@@ -238,21 +302,35 @@ export function GameProvider({ children }: { children: ReactNode }) {
       marketEvents,
       triggerEvent,
       currentMission,
-      missions,
-      events,
-  isCardCollectionOpen,
-  isBadgesOpen,
+      missions: gameState.activeMissions, // 为了兼容性
+      events: gameState.activeEvents, // 为了兼容性
+      isCardCollectionOpen,
+      isBadgesOpen,
       performanceHistory,
       updateGameState,
       updateUserInfo,
       updateAssetAllocation,
       addMessage,
       setCurrentMission,
-      addMission,
-      addEvent,
-      setCardCollectionOpen
-      ,
-      setBadgesOpen
+      addMission: (mission: Mission) => { // 为了兼容性
+        setGameState(prev => ({
+          ...prev,
+          activeMissions: [...prev.activeMissions, mission]
+        }));
+      },
+      addEvent: (event: EventCard) => { // 为了兼容性
+        setGameState(prev => ({
+          ...prev,
+          activeEvents: [...prev.activeEvents, event]
+        }));
+      },
+      setCardCollectionOpen,
+      setBadgesOpen,
+      // 新的事件管理函数
+      triggerNewCards,
+      acceptCard,
+      declineCard,
+      updateActiveCards
     }}>
       {children}
     </GameContext.Provider>

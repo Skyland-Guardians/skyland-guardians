@@ -55,43 +55,42 @@ export function SkylandIsland() {
       <div style={{ 
         position: 'relative',
         width: '100%',
-  maxWidth: '820px', // 島嶼主体最大宽度，缩小以更好匹配父容器
+        maxWidth: '820px', // 島嶼主体最大宽度，缩小以更好匹配父容器
         height: '100%' // 使用父容器的高度（由 aspect-ratio 决定），避免硬编码
       }}>
-        {/* Island with floating animation */}
-        <div style={{
-          position: 'relative',
-          width: '100%',
-          height: '100%',
-          animation: 'pulse 4s infinite'
-        }}>
-          <img 
-            src="./assets/main-screen-1-assets/background-sky-island.png"
-            alt="Skyland Base"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-              filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.25)) brightness(110%)'
-            }}
-          />
-          
-          {/* Floating glow effect */}
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'linear-gradient(to top, rgba(251, 146, 60, 0.3), transparent, rgba(147, 197, 253, 0.3))',
-            opacity: 0.3,
-            borderRadius: '50%',
-            filter: 'blur(3rem)',
-            animation: 'pulse 3s infinite'
-          }}></div>
-        </div>
+        {/* Island image with floating animation */}
+        <img 
+          src="./assets/main-screen-1-assets/background-sky-island.png"
+          alt="Skyland Base"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.25)) brightness(110%)',
+            border: 'none',
+            outline: 'none',
+            boxSizing: 'content-box',
+            display: 'block',
+            animation: 'pulse 4s ease-in-out infinite'
+          }}
+        />
         
-        {/* Particle effects - positioned relative to container */}
+        {/* Floating glow effect - behind the island */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '80%',
+          height: '60%',
+          background: 'linear-gradient(to top, rgba(251, 146, 60, 0.3), transparent, rgba(147, 197, 253, 0.3))',
+          opacity: 0.3,
+          borderRadius: '50%',
+          filter: 'blur(3rem)',
+          animation: 'pulse 3s ease-in-out infinite',
+          pointerEvents: 'none',
+          zIndex: -1
+        }}></div>        {/* Particle effects - positioned relative to container */}
         <div style={{
           position: 'absolute',
           top: '20%',
@@ -101,7 +100,8 @@ export function SkylandIsland() {
           backgroundColor: '#93c5fd',
           borderRadius: '50%',
           opacity: 0.5,
-          animation: 'ping 1s infinite 1s'
+          animation: 'ping 1s ease-out infinite 1s',
+          pointerEvents: 'none'
         }}></div>
         <div style={{
           position: 'absolute',
@@ -112,7 +112,8 @@ export function SkylandIsland() {
           backgroundColor: '#fdba74',
           borderRadius: '50%',
           opacity: 0.6,
-          animation: 'ping 1s infinite 2s'
+          animation: 'ping 1s ease-out infinite 2s',
+          pointerEvents: 'none'
         }}></div>
       </div>
     </div>

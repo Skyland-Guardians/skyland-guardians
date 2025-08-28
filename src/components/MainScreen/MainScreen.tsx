@@ -4,8 +4,7 @@ import { SkylandIsland } from '../Island/SkylandIsland';
 import { AIPanel } from '../AIPanel/AIPanel';
 import { AssetToolbar } from '../AssetToolbar/AssetToolbar';
 import { useGameState } from '../../hooks/useGameContext';
-import { MissionCard } from '../MissionCard/MissionCard';
-import { CardCollection } from '../CardCollection/CardCollection';
+
 import { BadgesPanel } from '../BadgesPanel/BadgesPanel';
 import { DebugPanel } from '../DebugPanel/DebugPanel';
 import './Layout.css';
@@ -88,7 +87,6 @@ export function MainScreen() {
         {/* Main Content - transparent to show background */}
         <main className="layout-main-content">
           {/* Content area is now transparent */}
-          <CardCollection />
           <BadgesPanel />
         </main>
         
@@ -104,7 +102,6 @@ export function MainScreen() {
 
         {/* Floating Modal Components - highest z-index */}
         <div className="modal-container">
-          <MissionCard />
           <DebugPanel />
         </div>
         
