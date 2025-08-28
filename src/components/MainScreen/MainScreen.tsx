@@ -6,6 +6,7 @@ import { AssetToolbar } from '../AssetToolbar/AssetToolbar';
 import { useGameState } from '../../hooks/useGameContext';
 
 import { BadgesPanel } from '../BadgesPanel/BadgesPanel';
+import { EventManager } from '../EventManager';
 import { DebugPanel } from '../DebugPanel/DebugPanel';
 import './Layout.css';
 
@@ -88,6 +89,8 @@ export function MainScreen() {
         <main className="layout-main-content">
           {/* Content area is now transparent */}
           <BadgesPanel />
+          {/* Event manager lives inside main content so its modals won't cover footer */}
+          <EventManager />
         </main>
         
         {/* Right Panel - fixed width, full height of main area */}

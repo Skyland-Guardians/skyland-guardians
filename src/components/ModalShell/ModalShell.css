@@ -1,0 +1,116 @@
+.shared-modal,
+.card-choice-modal,
+.my-cards-modal,
+.panel-card {
+  background: linear-gradient(145deg, #2a2a3e, #1e1e2e);
+  border-radius: 14px;
+  border: 2px solid #4a4a6a;
+  width: min(36rem, 88%); /* narrower to avoid clipping */
+  max-width: 680px;
+  height: min(55vh, calc(100vh - 260px));
+  max-height: calc(100vh - 260px);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  box-shadow: 0 16px 36px rgba(0,0,0,0.45);
+  position: relative; /* ensure absolute-positioned children are anchored to the modal */
+}
+
+/* If overlay has .no-backdrop, don't render the dark backdrop */
+.panel-overlay.no-backdrop {
+  background: transparent !important;
+}
+
+/* Prefer close button inside header: when header contains close, use header placement */
+.my-cards-header .my-cards-close,
+.card-choice-header .card-choice-close,
+.panel-card .panel-close {
+  position: static;
+  margin-left: 12px;
+}
+
+/* Header styles — reuse existing header class names */
+.card-choice-header,
+.my-cards-header,
+.shared-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #4a4a6a;
+  background: linear-gradient(145deg, #3a3a4e, #2a2a3e);
+}
+
+/* Content area should scroll when overflow */
+.card-choice-content,
+.my-cards-content,
+.shared-modal-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+/* Footer / actions area */
+.card-choice-actions,
+.shared-modal-actions {
+  padding: 16px 20px;
+  border-top: 1px solid #4a4a6a;
+  background: rgba(0,0,0,0.12);
+  display: flex;
+  gap: 12px;
+}
+
+/* Close button shared look */
+.panel-close,
+.card-choice-close,
+.my-cards-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  color: #aaa;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.panel-close:hover,
+.card-choice-close:hover,
+.my-cards-close:hover {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+}
+
+/* Make sure card-item inside these modals keeps its spacing */
+.card-item {
+  background: linear-gradient(145deg, #3a3a4e, #2a2a3e);
+  border: 2px solid #5a5a7a;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.card-item.declined {
+  opacity: 0.7;
+}
+
+/* Responsive tweak: ensure modals are narrower on small screens */
+@media (max-width: 768px) {
+  .card-choice-modal,
+  .my-cards-modal,
+  .panel-card {
+    width: 95%;
+    height: 80vh;
+    max-height: 90vh;
+  }
+}

@@ -1,0 +1,40 @@
+.achievement-toggle-btn {
+  margin-bottom: 0;
+  padding: 8px 22px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(145deg, #4caf50, #45a049);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 8px rgba(76,175,80,0.18);
+}
+
+.achievement-toggle-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* reuse card-item styles visually but tweak index */
+.badge-index {
+  font-weight: bold;
+  color: #3b82f6;
+  font-size: 18px;
+  margin-right: 18px;
+  min-width: 32px;
+  text-align: center;
+}
+
+/* reduce visual contrast for locked badges */
+.card-item.declined {
+  opacity: 0.6;
+  transform: none;
+}
+
+/* Ensure image sizing inside badge rows */
+.card-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+}

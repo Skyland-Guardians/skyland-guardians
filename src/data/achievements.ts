@@ -28,17 +28,17 @@ export const achievements: Achievement[] = [
     if ([0,1,3,4,5,6,7].includes(i)) {
       badgeIcon =
         grades[(4) % grades.length] === 'bronze'
-          ? '/public/assets/main-screen-1-assets/trophy.png'
+          ? './assets/main-screen-1-assets/trophy.png'
           : grades[(4) % grades.length] === 'silver'
-          ? '/public/assets/main-screen-1-assets/top-right-star.png'
-          : '/public/assets/main-screen-1-assets/badge-main-icon.png';
+          ? './assets/main-screen-1-assets/top-right-star.png'
+          : './assets/main-screen-1-assets/badge-main-icon.png';
     } else {
       badgeIcon =
         grade === 'bronze'
-          ? '/public/assets/main-screen-1-assets/trophy.png'
+          ? './assets/main-screen-1-assets/trophy.png'
           : grade === 'silver'
-          ? '/public/assets/main-screen-1-assets/top-right-star.png'
-          : '/public/assets/main-screen-1-assets/badge-main-icon.png';
+          ? './assets/main-screen-1-assets/top-right-star.png'
+          : './assets/main-screen-1-assets/badge-main-icon.png';
     }
     return {
       id: `badge_${i + 3}`,

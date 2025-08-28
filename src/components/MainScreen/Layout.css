@@ -69,10 +69,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  will-change: transform;
 }
 
 .left-action-btn:hover {
   transform: translateY(-3px) scale(1.03);
+}
+
+.left-action-btn:active {
+  transform: translateY(0) scale(0.995);
 }
 
 .left-action-content {
@@ -256,40 +261,53 @@
 
 /* Generic panel overlay/card used by badges and card collection when rendered inside main content */
 .panel-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.35);
+  /* position inside layout-main-content so footer remains visible */
+  position: absolute;
+  inset: 0; /* fill parent area */
+  background: rgba(0,0,0,0.45);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 5100;
+  pointer-events: auto; /* allow overlay to block/handle clicks */
 }
 
 .panel-card {
-  background: transparent;
-  width: 540px;
+  /* Match dark rounded modal style used elsewhere */
+  background: linear-gradient(145deg, #2a2a3e, #1e1e2e);
+  border-radius: 16px;
+  border: 2px solid #4a4a6a;
+  width: min(48rem, 95%);
+  max-width: 800px;
   max-height: calc(100vh - 200px);
   height: min(70vh, calc(100vh - 200px));
-  border-radius: 16px;
-  padding: 0;
+  padding: 0; /* child components supply their own padding */
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
   position: relative;
+  animation: slideIn 0.25s cubic-bezier(.2,.8,.2,1);
 }
 
 .panel-close {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: #ef4444;
-  color: #fff;
+  background: none;
+  color: #aaa;
   border: none;
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   font-size: 20px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.panel-close:hover {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
 }
 
 /* Card Collection inline panel */

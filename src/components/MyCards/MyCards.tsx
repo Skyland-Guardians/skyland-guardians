@@ -3,6 +3,7 @@ import { useGameState } from '../../hooks/useGameContext';
 import { useAIPersonality } from '../../hooks/useAIPersonality';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
 import './MyCards.css';
+import '../ModalShell/ModalShell.css';
 
 interface MyCardsProps {
   isOpen: boolean;
