@@ -148,6 +148,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // 清除新卡片标志
+  const clearNewCardFlags = () => {
+    setGameState(prev => ({
+      ...prev,
+      playerCards: prev.playerCards.map(card => ({ ...card, isNew: false }))
+    }));
+  };
+
   // Simple settlement logic for "next day" based on current allocations.
   const performNextDaySettlement = (): SettlementResult => {
     const dayIndex = marketDayIndex;
@@ -330,7 +338,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       triggerNewCards,
       acceptCard,
       declineCard,
-      updateActiveCards
+      updateActiveCards,
+      clearNewCardFlags
     }}>
       {children}
     </GameContext.Provider>

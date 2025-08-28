@@ -39,6 +39,7 @@ export interface GameContextType {
   acceptCard?: (card: PlayerCard) => void;
   declineCard?: (card: PlayerCard) => void;
   updateActiveCards?: () => void;
+  clearNewCardFlags?: () => void;
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);

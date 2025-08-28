@@ -130,7 +130,7 @@
 .card-item.active {
   border-color: #2196f3;
   background: linear-gradient(145deg, #2a3a4e, #1a2a3e);
-  animation: pulse 2s infinite;
+  animation: pulse-glow 2s infinite;
 }
 
 .card-item.declined {
@@ -253,7 +253,7 @@
   border-left: 3px solid #ffd700;
 }
 
-@keyframes pulse {
+@keyframes pulse-glow {
   0%, 100% { 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   }

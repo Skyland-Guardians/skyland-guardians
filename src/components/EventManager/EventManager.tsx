@@ -15,7 +15,8 @@ export function EventManager() {
     declineCard,
     updateActiveCards,
     setCardCollectionOpen,
-    isCardCollectionOpen
+    isCardCollectionOpen,
+    clearNewCardFlags
   } = useGameState();
 
   const [currentPendingCard, setCurrentPendingCard] = useState<PlayerCard | null>(null);
@@ -52,6 +53,18 @@ export function EventManager() {
       setProcessedCompletions(prev => new Set([...prev, mission.id]));
     }
   }, [gameState.activeMissions, processedCompletions]);
+
+  // Auto-clear new card flags after 5 seconds
+  useEffect(() => {
+    const newCardsCount = gameState.playerCards.filter(card => card.isNew).length;
+    if (newCardsCount > 0 && clearNewCardFlags) {
+      const timer = setTimeout(() => {
+        clearNewCardFlags();
+      }, 5000); // Clear after 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [gameState.playerCards, clearNewCardFlags]);
 
   // Update active cards status periodically
   useEffect(() => {
@@ -110,6 +123,15 @@ export function EventManager() {
     setCompletedMission(null);
   };
 
+  const handleNewCardsClick = () => {
+    if (clearNewCardFlags) {
+      clearNewCardFlags();
+    }
+    if (setCardCollectionOpen) {
+      setCardCollectionOpen(true);
+    }
+  };
+
   // Show card queue notifications
   const pendingCount = gameState.pendingCards.length;
   const newCardsCount = gameState.playerCards.filter(card => card.isNew).length;
@@ -156,7 +178,7 @@ export function EventManager() {
             </div>
           )}
           {newCardsCount > 0 && (
-            <div className="notification new-cards" onClick={() => setCardCollectionOpen && setCardCollectionOpen(true)}>
+            <div className="notification new-cards" onClick={handleNewCardsClick}>
               <span className="notification-icon">✨</span>
               <span className="notification-text">
                 {newCardsCount} new card{newCardsCount > 1 ? 's' : ''} in collection

@@ -202,11 +202,11 @@ export function AIPanel() {
           src={currentPersonality.avatar}
           alt={currentPersonality.name}
           style={{
-            width: '8rem',
-            height: '12rem',
+            width: '6rem',
+            height: '8rem',
             objectFit: 'contain',
             position: 'absolute',
-            top: '-6rem',
+            top: '-3rem',
             alignSelf: 'center'
           }}
         />

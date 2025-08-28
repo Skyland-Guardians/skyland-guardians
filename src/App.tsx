@@ -1,6 +1,6 @@
 import { GameProvider } from './components/GameProvider/GameProvider';
 import { MainScreen } from './components/MainScreen/MainScreen';
-import { EventManager } from './components/EventManager/EventManager';
+import { EventManager } from './components/EventManager';
 
 function App() {
   return (
