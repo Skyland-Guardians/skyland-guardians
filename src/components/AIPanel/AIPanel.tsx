@@ -206,7 +206,7 @@ export function AIPanel() {
             height: '8rem',
             objectFit: 'contain',
             position: 'absolute',
-            top: '-3rem',
+            top: '-3npm run buildnpm run buildrem',
             alignSelf: 'center'
           }}
         />
