@@ -8,7 +8,7 @@ import { gamifiedAIService } from '../../services/gamified-ai-service';
 
 export function DebugPanel() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'nextDay' | 'aiPersonality' | 'mode' | 'events'>('nextDay');
+  const [activeTab, setActiveTab] = useState<'nextDay' | 'aiPersonality' | 'mode' | 'events' | 'achievements'>('nextDay');
   const { currentPersonality, changePersonality } = useAIPersonality();
   const { 
     gameState, 
@@ -19,7 +19,9 @@ export function DebugPanel() {
     coins,
     performanceHistory,
     triggerTestMission,
-    triggerTestEvent
+    triggerTestEvent,
+    checkAchievements,
+    resetAchievements
   } = useGameState();
 
   const toggleMode = () => {
@@ -279,6 +281,21 @@ export function DebugPanel() {
           }}
         >
           🎯 Events
+        </button>
+        <button
+          onClick={() => setActiveTab('achievements')}
+          style={{
+            flex: 1,
+            padding: '10px 8px',
+            border: 'none',
+            backgroundColor: activeTab === 'achievements' ? '#007bff' : 'transparent',
+            color: activeTab === 'achievements' ? 'white' : '#6c757d',
+            cursor: 'pointer',
+            fontSize: '12px',
+            fontWeight: activeTab === 'achievements' ? 'bold' : 'normal'
+          }}
+        >
+          🏆 Badges
         </button>
       </div>
 
@@ -573,6 +590,129 @@ export function DebugPanel() {
             }}>
               Active: {gameState.activeMissions.length} missions, {gameState.activeEvents.length} events<br/>
               Pending: {gameState.pendingCards.length} cards
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'achievements' && (
+          <div style={{ padding: '20px' }}>
+            <h4 style={{ marginTop: 0, marginBottom: '16px' }}>🏆 Test Achievements</h4>
+            
+            <p style={{ 
+              fontSize: '14px', 
+              color: '#666', 
+              marginBottom: '16px',
+              lineHeight: '1.4'
+            }}>
+              Test achievement triggers and animations.
+            </p>
+            
+            {/* 显示当前分配总和 */}
+            <div style={{
+              background: assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0) === 100 ? '#d4edda' : '#f8d7da',
+              border: `1px solid ${assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0) === 100 ? '#c3e6cb' : '#f5c6cb'}`,
+              borderRadius: '6px',
+              padding: '12px',
+              marginBottom: '16px',
+              fontSize: '14px'
+            }}>
+              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+                Current Allocation Total: {assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0).toFixed(1)}%
+              </div>
+              <div style={{ fontSize: '12px', color: '#666' }}>
+                {assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0) === 100 
+                  ? '✅ Ready for achievement checking' 
+                  : '⚠️ Must equal 100% to check achievements'}
+              </div>
+            </div>
+            
+            <div style={{ marginBottom: '20px' }}>
+              <button
+                onClick={() => checkAchievements && checkAchievements()}
+                disabled={assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0) !== 100}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  backgroundColor: assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0) === 100 ? '#fbbf24' : '#9ca3af',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0) === 100 ? 'pointer' : 'not-allowed',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  transition: 'all 0.2s ease',
+                  marginBottom: '12px',
+                  opacity: assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0) === 100 ? 1 : 0.6
+                }}
+                onMouseEnter={(e) => {
+                  if (assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0) === 100) {
+                    e.currentTarget.style.backgroundColor = '#f59e0b';
+                    e.currentTarget.style.transform = 'scale(1.02)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (assetAllocations.reduce((sum, asset) => sum + asset.allocation, 0) === 100) {
+                    e.currentTarget.style.backgroundColor = '#fbbf24';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }
+                }}
+              >
+                🔍 Check Achievements Now
+              </button>
+              
+              <button
+                style={{
+                  backgroundColor: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  marginTop: '8px',
+                  width: '100%',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  transition: 'background-color 0.2s, transform 0.1s'
+                }}
+                onClick={() => resetAchievements && resetAchievements()}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#c82333';
+                  e.currentTarget.style.transform = 'scale(1.02)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#dc3545';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                🧹 Reset All Achievements
+              </button>
+              
+              <div style={{
+                fontSize: '12px',
+                color: '#999',
+                textAlign: 'center',
+                fontStyle: 'italic'
+              }}>
+                This will check current allocations and stars for new achievements.<br/>
+                <strong>Note:</strong> Asset allocations must total exactly 100%.
+              </div>
+            </div>
+
+            <div style={{
+              fontSize: '14px',
+              color: '#666',
+              borderTop: '1px solid #eee',
+              paddingTop: '16px'
+            }}>
+              <div><strong>Tips to trigger achievements:</strong></div>
+              <ul style={{ fontSize: '12px', marginTop: '8px', paddingLeft: '20px' }}>
+                <li><strong>First:</strong> Ensure allocations total 100%</li>
+                <li>Balance Apprentice: Keep all assets below 50%</li>
+                <li>Diversification Explorer: Use 3+ different assets</li>
+                <li>Star Collector: Complete missions to earn 10+ stars</li>
+                <li>Risk Manager: Keep 40%+ in safe assets (shield, golden, crystal)</li>
+                <li>Growth Seeker: Allocate 50%+ to growth assets (sword, forest)</li>
+              </ul>
             </div>
           </div>
         )}

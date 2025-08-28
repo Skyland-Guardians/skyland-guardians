@@ -5,6 +5,12 @@ import { achievements } from '../data/achievements';
 export class AchievementService {
   private userAchievements: UserAchievement[] = [];
 
+  // 重置所有成就（用于调试）
+  reset(): void {
+    this.userAchievements = [];
+    console.log('🧹 All achievements reset');
+  }
+
   // 用户完成成就
   achieve(achievementId: string, starRating: number, trophyGrade: 'bronze' | 'silver' | 'gold' | 'platinum') {
     const exist = this.userAchievements.find(a => a.achievementId === achievementId);

@@ -4,49 +4,81 @@ export const achievements: Achievement[] = [
   {
     id: 'badge_1',
     name: 'BALANCE APPRENTICE',
-    description: 'THE PROPORTION OF A SINGLE DIVINE ARTIFACT DOES NOT EXCEED 50%',
-    badgeIcon: './assets/badges/badge2.png',
+    description: 'Keep any single asset allocation below 50%',
+    badgeIcon: '/assets/badges/badge2.png',
     starRating: 1,
     trophyGrade: 'bronze',
   },
   {
     id: 'badge_2',
     name: 'DIVERSIFICATION EXPLORER',
-    description: 'INVEST IN MORE THAN THREE KINDS OF MAGICAL TOOLS SIMULTANEOUSLY',
-    badgeIcon: './assets/badges/badge1.png',
+    description: 'Invest in 3 or more different asset types',
+    badgeIcon: '/assets/badges/badge1.png',
     starRating: 2,
     trophyGrade: 'silver',
   },
-  // Only keep 8 example badges
-  ...Array.from({ length: 8 }).map((_, i) => {
-    const grades = ['bronze', 'silver', 'gold', 'platinum'] as const;
-    const grade = grades[(i + 2) % grades.length];
-    // badge_3 用 badge_5 的图标
-    let badgeIcon;
-    // badge_3 用 badge_5 的图标（i===0）
-    // badge_4,6,7,8,9,10 用 badge_5 的图标（i===1,3,4,5,6,7）
-    if ([0,1,3,4,5,6,7].includes(i)) {
-      badgeIcon =
-        grades[(4) % grades.length] === 'bronze'
-          ? '/public/assets/main-screen-1-assets/trophy.png'
-          : grades[(4) % grades.length] === 'silver'
-          ? '/public/assets/main-screen-1-assets/top-right-star.png'
-          : '/public/assets/main-screen-1-assets/badge-main-icon.png';
-    } else {
-      badgeIcon =
-        grade === 'bronze'
-          ? '/public/assets/main-screen-1-assets/trophy.png'
-          : grade === 'silver'
-          ? '/public/assets/main-screen-1-assets/top-right-star.png'
-          : '/public/assets/main-screen-1-assets/badge-main-icon.png';
-    }
-    return {
-      id: `badge_${i + 3}`,
-      name: `BADGE ${i + 3}`,
-      description: `Unlock this badge by completing challenge ${i + 3}.`,
-      badgeIcon,
-      starRating: ((i + 2) % 5) + 1,
-      trophyGrade: grade,
-    };
-  })
+  {
+    id: 'badge_3',
+    name: 'PORTFOLIO BALANCE MASTER',
+    description: 'Maintain balanced allocations across assets',
+    badgeIcon: '/assets/main-screen-1-assets/trophy.png',
+    starRating: 3,
+    trophyGrade: 'gold',
+  },
+  {
+    id: 'badge_4',
+    name: 'LONG TERM STRATEGIST',
+    description: 'Allocate 25% or more to stable bond assets',
+    badgeIcon: '/assets/main-screen-1-assets/trophy.png',
+    starRating: 2,
+    trophyGrade: 'silver',
+  },
+  {
+    id: 'badge_5',
+    name: 'RISK MANAGER',
+    description: 'Keep 40% or more in safe, low-risk assets',
+    badgeIcon: '/assets/main-screen-1-assets/trophy.png',
+    starRating: 3,
+    trophyGrade: 'gold',
+  },
+  {
+    id: 'badge_6',
+    name: 'GROWTH SEEKER',
+    description: 'Allocate 50% or more to high-growth assets',
+    badgeIcon: '/assets/main-screen-1-assets/trophy.png',
+    starRating: 2,
+    trophyGrade: 'bronze',
+  },
+  {
+    id: 'badge_7',
+    name: 'STAR COLLECTOR',
+    description: 'Earn your first 10 stars',
+    badgeIcon: '/assets/main-screen-1-assets/trophy.png',
+    starRating: 3,
+    trophyGrade: 'silver',
+  },
+  {
+    id: 'badge_8',
+    name: 'CONSTELLATION MASTER',
+    description: 'Accumulate 25 stars through achievements',
+    badgeIcon: '/assets/main-screen-1-assets/trophy.png',
+    starRating: 4,
+    trophyGrade: 'gold',
+  },
+  {
+    id: 'badge_9',
+    name: 'STELLAR LEGEND',
+    description: 'Reach the milestone of 50 stars',
+    badgeIcon: '/assets/main-screen-1-assets/trophy.png',
+    starRating: 5,
+    trophyGrade: 'platinum',
+  },
+  {
+    id: 'badge_10',
+    name: 'COSMIC GUARDIAN',
+    description: 'Achieve the ultimate goal of 100 stars',
+    badgeIcon: '/assets/main-screen-1-assets/trophy.png',
+    starRating: 5,
+    trophyGrade: 'platinum',
+  }
 ];

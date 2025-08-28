@@ -1,0 +1,436 @@
+/* 成就获得动画样式 */
+.achievement-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  animation: none;
+}
+
+.achievement-overlay.enter {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.achievement-overlay.display {
+  opacity: 1;
+}
+
+.achievement-overlay.exit {
+  animation: fadeOut 0.5s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.achievement-container {
+  position: relative;
+  max-width: 500px;
+  width: 90%;
+  perspective: 1000px;
+}
+
+.achievement-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 120%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.3) 0%, rgba(251, 191, 36, 0.1) 50%, transparent 70%);
+  border-radius: 50%;
+  animation: glowPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes glowPulse {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.3;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.6;
+  }
+}
+
+.achievement-content {
+  position: relative;
+  background: linear-gradient(135deg, #1f2937 0%, #374151 50%, #4b5563 100%);
+  border: 3px solid #fbbf24;
+  border-radius: 20px;
+  padding: 40px 30px;
+  text-align: center;
+  color: white;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: slideInUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+}
+
+.achievement-close-button {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.achievement-close-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100px) rotateX(-30deg);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+.achievement-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #fbbf24;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  animation: titlePulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes titlePulse {
+  from {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  to {
+    text-shadow: 0 2px 8px rgba(251, 191, 36, 0.5), 0 0 20px rgba(251, 191, 36, 0.3);
+  }
+}
+
+.achievement-badge-container {
+  position: relative;
+  display: inline-block;
+  margin: 20px 0;
+}
+
+.achievement-badge-icon {
+  width: 120px;
+  height: 120px;
+  border-radius: 15px;
+  border: 4px solid #fbbf24;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  animation: badgeBounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes badgeBounce {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(-90deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.achievement-badge-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 140px;
+  height: 140px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: badgeGlow 2s ease-in-out infinite alternate;
+  z-index: 1;
+}
+
+@keyframes badgeGlow {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.4;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1.3);
+    opacity: 0.8;
+  }
+}
+
+.achievement-name {
+  font-size: 24px;
+  font-weight: bold;
+  color: #f9fafb;
+  margin: 20px 0 10px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  animation: nameSlideIn 0.6s ease-out 0.3s both;
+}
+
+@keyframes nameSlideIn {
+  from {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.achievement-description {
+  font-size: 16px;
+  color: #d1d5db;
+  margin: 10px 0 20px;
+  line-height: 1.4;
+  animation: descriptionSlideIn 0.6s ease-out 0.5s both;
+}
+
+@keyframes descriptionSlideIn {
+  from {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.achievement-details {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+  animation: detailsFadeIn 0.6s ease-out 0.7s both;
+}
+
+@keyframes detailsFadeIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.achievement-stars {
+  display: flex;
+  gap: 4px;
+}
+
+.achievement-star {
+  display: inline-block;
+  animation: starTwinkle 0.5s ease-in-out infinite alternate;
+  animation-delay: calc(var(--star-index, 0) * 0.1s);
+}
+
+@keyframes starTwinkle {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.2);
+  }
+}
+
+.achievement-trophy {
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.achievement-progress {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  animation: progressFadeIn 0.6s ease-out 0.9s both;
+}
+
+@keyframes progressFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.achievement-progress-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #6b7280;
+  transition: all 0.3s ease;
+}
+
+.achievement-progress-dot.active {
+  background: #fbbf24;
+  transform: scale(1.3);
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+}
+
+.achievement-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
+  animation: controlsFadeIn 0.6s ease-out 1.2s both;
+}
+
+@keyframes controlsFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.achievement-control-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.achievement-control-button.next {
+  background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.achievement-control-button.next:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.achievement-control-button.close {
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.achievement-control-button.close:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.achievement-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #fbbf24;
+  border-radius: 50%;
+  animation: particleFloat 3s ease-in-out infinite;
+  opacity: 0;
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .achievement-content {
+    padding: 30px 20px;
+  }
+  
+  .achievement-title {
+    font-size: 24px;
+  }
+  
+  .achievement-badge-icon {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .achievement-badge-glow {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .achievement-name {
+    font-size: 20px;
+  }
+  
+  .achievement-description {
+    font-size: 14px;
+  }
+}

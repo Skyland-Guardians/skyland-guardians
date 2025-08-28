@@ -52,6 +52,11 @@ export interface GameContextType {
     progressPercentage: number;
   };
   getAllLevels?: () => any[];
+  // 成就相关函数
+  newAchievements?: string[];
+  checkAchievements?: (allocations?: AssetType[]) => void;
+  resetAchievements?: () => void;
+  onAchievementAnimationComplete?: () => void;
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
