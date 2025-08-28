@@ -13,6 +13,9 @@ interface AssetButtonProps {
 export function AssetButton({ asset, onClick, isActive = false }: AssetButtonProps) {
   const { updateAssetAllocation, assetAllocations, addMessage, gameState, coins, performanceHistory } = useGameState();
   const { currentPersonality } = useAIPersonality();
+  // Lookup meta from GAME_ASSETS to get risk for styling
+  const assetMeta = GAME_ASSETS.find(gameAsset => gameAsset.id === asset.id);
+  const riskColor = assetMeta?.risk === 'high' ? '#ef4444' : assetMeta?.risk === 'medium' ? '#f59e0b' : '#10b981';
 
   const handleSliderChange = (newValue: number) => {
     // Set the asset allocation to the exact value selected by the user.
@@ -135,8 +138,8 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
           background: 'white',
           borderRadius: '0.5rem',
           padding: '0.75rem',
-          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-          border: `2px solid ${colors.border}`,
+          boxShadow: `0 10px 25px ${riskColor}20`,
+          border: `3px solid ${riskColor}`,
           minWidth: '200px',
           marginBottom: '0.5rem',
           zIndex: 50, /* Above asset toolbar(15) */
@@ -429,7 +432,7 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
             height: 0,
             borderLeft: '6px solid transparent',
             borderRight: '6px solid transparent',
-            borderTop: `6px solid ${colors.border}`
+            borderTop: `6px solid ${riskColor}`
           }}></div>
         </div>
       )}
@@ -438,10 +441,10 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
       onClick={onClick}
       style={{
         background: '#f5f5dc', // Light beige color matching design
-        border: isActive ? `3px solid ${colors.border}` : '2px solid rgba(255,255,255,0.5)',
+        border: isActive ? `3px solid ${riskColor}` : '2px solid rgba(255,255,255,0.5)',
         borderRadius: '0.75rem',
         padding: '0.75rem',
-        boxShadow: isActive ? `0 4px 12px ${colors.border}40` : '0 2px 4px rgba(0, 0, 0, 0.1)',
+        boxShadow: isActive ? `0 4px 12px ${riskColor}40` : '0 2px 4px rgba(0, 0, 0, 0.1)',
         transition: 'all 0.2s ease',
         display: 'flex',
         flexDirection: 'column',
