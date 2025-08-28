@@ -32,8 +32,12 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px;
-  border-bottom: 1px solid #4a4a6a;
-  background: linear-gradient(145deg, #3a3a4e, #2a2a3e);
+  /* Make header visually part of the rounded modal */
+  border-bottom: 1px solid rgba(74, 74, 106, 0.9);
+  background: linear-gradient(145deg, #2a2a3e, #1e1e2e);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  overflow: hidden;
 }
 
 .my-cards-title {
