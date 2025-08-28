@@ -4,7 +4,7 @@ import { AssetButton } from './AssetButton';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
 
 export function AssetToolbar() {
-  const { assetAllocations, addMessage, gameState, coins, performanceHistory } = useGameState();
+  const { assetAllocations, addMessage, gameState, coins, performanceHistory, updateActiveCards, triggerNewCards } = useGameState();
   const [activeAssetId, setActiveAssetId] = useState<string | null>(null);
 
   const handleAssetClick = (assetId: string) => {
@@ -22,15 +22,28 @@ export function AssetToolbar() {
     if (Math.abs(total - 100) < 0.1) {
       setActiveAssetId(null); // Close any open sliders
       
+      // Store current allocations for consistent use throughout this function
+      const currentAllocations = [...assetAllocations];
+      
+      // First, check for any completed missions with the new allocation
+      if (updateActiveCards) {
+        updateActiveCards(currentAllocations);
+      }
+      
+      // Then, check if this action triggers any new cards (missions/events)
+      if (triggerNewCards) {
+        triggerNewCards('apply');
+      }
+
       // Create rich portfolio summary message similar to settlement format
       const portfolioSummary = {
         type: 'portfolio',
         title: `PORTFOLIO APPLIED! 📋`,
         summary: {
           totalAllocation: total,
-          assetCount: assetAllocations.length
+          assetCount: currentAllocations.length
         },
-        assets: assetAllocations.map((asset) => ({
+        assets: currentAllocations.map((asset) => ({
           id: asset.id,
           name: asset.shortName || asset.name,
           icon: asset.icon,
@@ -59,7 +72,7 @@ export function AssetToolbar() {
       // Get AI feedback on the portfolio allocation
       try {
         const aiFeedback = await gamifiedAIService.generateApplyFeedback({
-          assets: assetAllocations,
+          assets: currentAllocations,
           currentDay: gameState.currentDay,
           stars: gameState.stars,
           level: gameState.level,
@@ -92,20 +105,16 @@ export function AssetToolbar() {
 
 
   return (
-    <>
     <div style={{
       background: '#5196DC', // Deeper blue from design specifications
-      padding: '2rem 3.25rem', // Increased horizontal padding by 30% (2.5rem * 1.3)
+      padding: '1.5rem 3.5rem', // Reduced padding to fit in grid
       borderTopLeftRadius: '2.5rem', // Much larger rounded corners
       borderTopRightRadius: '2.5rem',
       boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-      position: 'fixed',
-      bottom: '6vh',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      zIndex: 3,
+      position: 'relative',
       width: 'fit-content', // Shrink to content size
-      borderRadius: '2.5rem' // Make all corners rounded since it's now centered
+      borderRadius: '1.5rem', // Make all corners rounded since it's now centered
+      margin: '0 auto' // Center within grid area
     }}>
       <div style={{
         display: 'flex',
@@ -190,7 +199,5 @@ export function AssetToolbar() {
         ))}
       </div>
     </div>
-
-    </>
   );
 }

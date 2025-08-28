@@ -4,6 +4,10 @@ export interface GameState {
   level: number;
   mode: 'normal' | 'chaos';
   currentScreen: 'main' | 'allocation' | 'mission' | 'results';
+  playerCards: PlayerCard[]; // 玩家卡包
+  activeMissions: Mission[]; // 当前进行中的任务
+  activeEvents: EventCard[]; // 当前生效的事件
+  pendingCards: PlayerCard[]; // 等待玩家决定的卡片
 }
 
 export interface UserInfo {
@@ -47,12 +51,34 @@ export interface Mission {
   tip: string;
   focus: string;
   rewardStars: number;
+  status?: 'pending' | 'active' | 'completed' | 'declined';
+  acceptedAt?: number; // day when accepted
+  completedAt?: number; // day when completed
+  targetAssets?: string[]; // required assets for completion
+  targetAllocation?: number; // required allocation percentage
+  completionDescription?: string; // user-friendly completion criteria
 }
 
 export interface EventCard {
   id: number;
   title: string;
   description: string;
+  status?: 'pending' | 'active' | 'declined';
+  acceptedAt?: number;
+  duration?: number; // how many days the event lasts
+  effects?: {
+    type: 'add' | 'mul' | 'volatility';
+    value: number;
+    targets: string[];
+  };
+}
+
+export interface PlayerCard {
+  id: string;
+  type: 'mission' | 'event';
+  data: Mission | EventCard;
+  obtainedAt: number; // day when obtained
+  isNew?: boolean;
 }
 
 export interface SettlementAsset {

@@ -70,7 +70,7 @@ export const GAME_ASSETS: GameAsset[] = [
     volatility: 0.12,
     risk: 'medium',
     uiSide: 'left',
-    icon: './assets/main-screen-1-assets/fountain-icon.png'
+    icon: './assets/main-screen-1-assets/yield-icon.png'
   },
   {
     id: 'forest',

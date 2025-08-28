@@ -1,0 +1,423 @@
+/* Clean Layout Grid System with Scrolling for Skyland Guardians */
+
+/* Base grid layout with scrollable middle section */
+/* Main game layout container */
+.main-game-layout {
+  display: grid;
+  grid-template-rows: 100px 1fr 180px;
+  grid-template-columns: minmax(200px, 250px) 1fr minmax(300px, 400px);
+  grid-template-areas:
+    "header header header"
+    "left-panel main-content right-panel"
+    "asset-toolbar asset-toolbar asset-toolbar";
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Grid areas with unified scrolling behavior */
+.layout-header {
+  grid-area: header;
+  height: 100px; /* Increased height */
+  min-height: 100px;
+  max-height: 100px;
+  z-index: 10; /* Above island(5), below modals(1000+) */
+  position: relative;
+  background: transparent; /* fully transparent to show background */
+  overflow: hidden;
+}
+
+.layout-left-panel {
+  grid-area: left-panel;
+  z-index: 12; /* Above header(10), below modals(1000+) */
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 1rem;
+  min-width: 200px;
+  max-width: 250px;
+  /* Use full available height in the grid row */
+  height: 100%;
+  background: transparent; /* fully transparent */
+  /* Custom scrollbar matching main content */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+}
+
+/* Left sidebar action group - center the two primary buttons */
+.left-action-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* horizontal center of buttons */
+  justify-content: center; /* vertical center in the left panel */
+  gap: 1rem;
+  width: 100%;
+  height: 100%;
+}
+
+.left-action-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  padding: 0.75rem 1rem; /* more padding to enlarge hit target */
+  width: 88%; /* wider buttons for stronger presence */
+  border-radius: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.left-action-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+}
+
+.left-action-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem; /* larger gap between icon and label */
+}
+
+.left-action-icon {
+  width: 4.5rem; /* bigger icon */
+  height: 4.5rem;
+  object-fit: contain;
+}
+
+.left-action-label {
+  font-size: 0.95rem; /* larger label for readability */
+  font-weight: 700;
+  color: #1e3a8a;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+/* Responsive tweak: slightly smaller buttons/icon on narrow screens */
+@media (max-width: 768px) {
+  .left-action-btn { width: 60%; padding: 0.5rem 0.75rem; }
+  .left-action-icon { width: 3.25rem; height: 3.25rem; }
+  .left-action-label { font-size: 0.8rem; }
+}
+
+/* Remove focus outline / shadow to avoid border-like appearance */
+.left-action-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.layout-left-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.layout-left-panel::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.layout-left-panel::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.layout-left-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.layout-main-content {
+  grid-area: main-content;
+  z-index: 11; /* Above header(10), below panels(12+) */
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  /* Use full available height in the grid row */
+  height: 100%;
+  padding: 1rem;
+  background: transparent; /* 完全透明 */
+  /* Custom scrollbar for main content */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.layout-main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.layout-main-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.layout-main-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.layout-main-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.layout-right-panel {
+  grid-area: right-panel;
+  z-index: 13; /* Above other panels, below modals(1000+) */
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-width: 300px;
+  max-width: 400px;
+  /* Use full available height in the grid row */
+  height: 100%;
+  padding: 2rem 1rem; /* Increased top/bottom padding */
+  background: transparent; /* fully transparent */
+  /* Custom scrollbar matching others */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+}
+
+.layout-right-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.layout-right-panel::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.layout-right-panel::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.layout-right-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.layout-asset-toolbar {
+  grid-area: asset-toolbar;
+  height: 180px; /* Increased height to fit content */
+  min-height: 180px;
+  max-height: 180px;
+  z-index: 15; /* Above all panels, below modals(1000+) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  position: fixed; /* pin to bottom of viewport */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent; /* fully transparent */
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: visible; /* Allow slider popups to show */
+}
+
+/* Island container that can grow with content */
+.island-container {
+  width: 100%;
+  max-width: 1300px; /* 进一步提高上限以支持更大岛屿 */
+  min-height: 800px; /* 增加最小高度以容纳更大岛屿 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+/* Background elements */
+.background-decoration {
+  position: absolute;
+  pointer-events: none;
+  z-index: -2;
+}
+
+/* Modal overlay container */
+.modal-container {
+  /* Make modal container a fixed overlay so it doesn't take up grid/layout space
+     and won't push or cover other grid areas. Keep it non-interactive by
+     default so floating controls don't block underlying UI; individual
+     modal components should enable pointer events when needed. */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5000; /* Above all UI elements */
+  pointer-events: none;
+}
+
+/* Generic panel overlay/card used by badges and card collection when rendered inside main content */
+.panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5100;
+}
+
+.panel-card {
+  background: transparent;
+  width: 540px;
+  max-height: calc(100vh - 200px);
+  height: min(70vh, calc(100vh - 200px));
+  border-radius: 16px;
+  padding: 0;
+  position: relative;
+}
+
+.panel-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Card Collection inline panel */
+.card-collection-panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.card-collection-card {
+  background-color: #f5f5dc; /* badges/modal visual style */
+  padding: 1.5rem;
+  border-radius: 1rem;
+  width: min(48rem, 95%);
+  max-height: 70vh;
+  display: flex;
+  gap: 1.5rem;
+  position: relative;
+}
+
+.two-column-wrap {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+.two-column-wrap .col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.two-column-wrap .col h2 { text-align: center; color: #1e3a8a; margin-bottom: 0.5rem }
+.col-scroll { overflow-y: auto; padding-right: 0.5rem }
+.card-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem }
+.card-item { background: #fff; padding: 0.5rem 1rem; border-radius: 0.5rem; display:flex; justify-content:space-between }
+
+/* Responsive breakpoints */
+@media (max-width: 1200px) {
+  .main-game-layout {
+    grid-template-columns: 180px 1fr 280px;
+  }
+  
+  .layout-left-panel {
+    min-width: 180px;
+    max-width: 180px;
+    padding: 0.5rem;
+  }
+  
+  .layout-right-panel {
+    min-width: 280px;
+    max-width: 280px;
+  }
+  
+  .island-container {
+    margin: 1rem 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-game-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr auto auto;
+    grid-template-areas: 
+      "header"
+      "left-panel"
+      "main-content"
+      "right-panel"
+      "asset-toolbar";
+  }
+  
+  .layout-left-panel,
+  .layout-right-panel {
+    min-width: unset;
+    max-width: unset;
+    padding: 0.5rem;
+    flex-direction: row;
+    justify-content: space-around;
+    max-height: 150px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  
+  .layout-main-content {
+    padding: 0.5rem;
+  }
+  
+  .layout-asset-toolbar {
+    height: 100px;
+    min-height: 80px;
+  }
+  
+  .island-container {
+    margin: 1rem 0;
+    min-height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .layout-header {
+    min-height: 60px;
+    max-height: 80px;
+  }
+  
+  .layout-asset-toolbar {
+    height: 80px;
+    min-height: 60px;
+    padding: 0.25rem;
+  }
+  
+  .layout-left-panel,
+  .layout-right-panel {
+    max-height: 120px;
+  }
+  
+  .island-container {
+    min-height: 250px;
+    margin: 0.5rem 0;
+  }
+}
+
+/* Smooth scrolling for better UX */
+@media (prefers-reduced-motion: no-preference) {
+  .layout-main-content,
+  .layout-left-panel,
+  .layout-right-panel {
+    scroll-behavior: smooth;
+  }
+}

@@ -4,121 +4,131 @@ import { SkylandIsland } from '../Island/SkylandIsland';
 import { AIPanel } from '../AIPanel/AIPanel';
 import { AssetToolbar } from '../AssetToolbar/AssetToolbar';
 import { useGameState } from '../../hooks/useGameContext';
-import { MissionCard } from '../MissionCard/MissionCard';
-import { CardCollection } from '../CardCollection/CardCollection';
+
+import { BadgesPanel } from '../BadgesPanel/BadgesPanel';
 import { DebugPanel } from '../DebugPanel/DebugPanel';
+import './Layout.css';
 
 export function MainScreen() {
   const { gameState } = useGameState();
   const isChaoMode = gameState.mode === 'chaos';
 
   return (
-    <div style={{
-      height: '100vh',
-      overflow: 'hidden',
-      background: isChaoMode 
-        ? 'linear-gradient(135deg, #1e1b4b 0%, #374151 50%, #1e1b4b 100%)' 
-        : 'linear-gradient(135deg, #FDF6E3 0%, #FFF8E1 30%, #F5E6A3 70%, #E8D5A6 100%)', // Warm cream/yellow tones
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-      fontFamily: 'Arial, sans-serif',
-      position: 'relative'
-    }}>
-      
-      {/* Background decorative elements */}
+    <>
+      {/* Background decorative elements - outside main container */}
       {!isChaoMode && (
         <>
-          {/* Bottom purple decoration - more rounded arc shape */}
+          {/* Sky Island as background element */}
           <div style={{
-            position: 'absolute',
+            position: 'fixed',
+            top: '55%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 'min(900px, 70vw)', // 缩小响应式宽度上限并增加视口占比控制
+            aspectRatio: '11 / 8', // 与岛屿组件保持一致的宽高比
+            zIndex: -1, // 设为负值，在所有UI元素之下但在背景色块之上
+            pointerEvents: 'none' // 确保不阻挡任何交互
+          }}>
+            <SkylandIsland />
+          </div>
+          
+          <div style={{
+            position: 'fixed',
             bottom: 0,
             left: 0,
             right: 0,
-            height: '40%',
+            height: '60%',
             background: 'url("./assets/main-screen-1-assets/background-color-block-2.png")',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
             backgroundPosition: 'bottom center',
-            zIndex: 2
+            zIndex: -10,
+            pointerEvents: 'none'
           }} />
 
           <div style={{
-            position: 'absolute',
+            position: 'fixed',
             bottom: 0,
             left: 0,
             right: 0,
-            width: '100%',
-            height: '50%',
+            height: '70%',
             background: 'url("./assets/main-screen-1-assets/background-color-1.png")',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
             backgroundPosition: 'bottom center',
-            zIndex: 1,
+            zIndex: -11,
+            pointerEvents: 'none'
           }} />
-          
-
-          
-
         </>
       )}
       
-      {/* Header */}
-      <Header />
-      
-      {/* Main Content Area */}
-      <main style={{
-        display: 'flex',
+      <div className="main-game-layout" style={{
+        background: isChaoMode 
+          ? 'linear-gradient(135deg, rgba(30,27,75,0.9) 0%, rgba(55,65,81,0.9) 50%, rgba(30,27,75,0.9) 100%)' 
+          : 'transparent', // 完全透明让背景显示
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        fontFamily: 'Arial, sans-serif',
         position: 'relative',
-        zIndex: 2
+        zIndex: 1
       }}>
-        {/* Left Sidebar */}
-        <LeftSidebar />
         
-        {/* Central Island Area */}
-        <SkylandIsland />
+        {/* Header - spans full width, fixed height */}
+        <header className="layout-header">
+          <Header />
+        </header>
         
-        {/* Right AI Panel */}
-        <AIPanel />
-      </main>
-      
-      {/* Bottom Asset Toolbar - moved up to overlay 1/4 of island */}
-      <div style={{
-        position: 'fixed',
-        bottom: '15vh', // Moved down further from 20vh
-        left: 0,
-        right: 0,
-        zIndex: 10 // Ensure it's above the island
-      }}>
-        <AssetToolbar />
-      </div>
+        {/* Left Panel - fixed width, full height of main area */}
+        <aside className="layout-left-panel">
+          <LeftSidebar />
+        </aside>
+        
+        {/* Main Content - transparent to show background */}
+        <main className="layout-main-content">
+          {/* Content area is now transparent */}
+          <BadgesPanel />
+        </main>
+        
+        {/* Right Panel - fixed width, full height of main area */}
+        <aside className="layout-right-panel">
+          <AIPanel />
+        </aside>
+        
+        {/* Asset Toolbar - spans full width, fixed height */}
+        <footer className="layout-asset-toolbar">
+          <AssetToolbar />
+        </footer>
 
-      <MissionCard />
-      <CardCollection />
-      <DebugPanel />
-      {/* Chaos Mode Overlay Effects */}
-      {isChaoMode && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          pointerEvents: 'none',
-          zIndex: 10
-        }}>
-          {/* Screen shake effect */}
+        {/* Floating Modal Components - highest z-index */}
+        <div className="modal-container">
+          <DebugPanel />
+        </div>
+        
+        {/* Chaos Mode Overlay Effects */}
+        {isChaoMode && (
           <div style={{
-            position: 'absolute',
+            position: 'fixed',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(239, 68, 68, 0.05)',
-            animation: 'pulse 2s infinite'
-          }}></div>
-        </div>
-      )}
-    </div>
+            pointerEvents: 'none',
+            zIndex: 10
+          }}>
+            {/* Screen shake effect */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(239, 68, 68, 0.05)',
+              animation: 'pulse 2s infinite'
+            }}></div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

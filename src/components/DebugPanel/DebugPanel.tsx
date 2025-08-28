@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useGameState } from '../../hooks/useGameContext';
 import { useAIPersonality } from '../../hooks/useAIPersonality';
 import { AI_PERSONALITIES } from '../../data/ai-personalities';
+import { MISSION_CONFIGS } from '../../data/missions';
+import { EVENT_CONFIGS } from '../../data/events';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
 
 export function DebugPanel() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'nextDay' | 'aiPersonality' | 'mode'>('nextDay');
+  const [activeTab, setActiveTab] = useState<'nextDay' | 'aiPersonality' | 'mode' | 'events'>('nextDay');
   const { currentPersonality, changePersonality } = useAIPersonality();
   const { 
     gameState, 
@@ -15,7 +17,9 @@ export function DebugPanel() {
     addMessage, 
     assetAllocations,
     coins,
-    performanceHistory
+    performanceHistory,
+    triggerTestMission,
+    triggerTestEvent
   } = useGameState();
 
   const toggleMode = () => {
@@ -127,12 +131,19 @@ export function DebugPanel() {
         position: 'fixed',
         bottom: '20px',
         left: '20px',
-        zIndex: 1000
+        zIndex: 1000,
+        /* keep this wrapper minimal so it doesn't cover other UI */
+        width: '40px',
+        height: '40px',
+        pointerEvents: 'none'
       }}>
         <button
           onClick={() => setIsOpen(true)}
           style={{
-            padding: '12px 16px',
+            /* make the button itself interactive but keep wrapper non-interactive */
+            padding: 0,
+            width: '40px',
+            height: '40px',
             backgroundColor: '#6c757d',
             color: 'white',
             border: 'none',
@@ -141,7 +152,11 @@ export function DebugPanel() {
             fontSize: '14px',
             fontWeight: 'bold',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-            transition: 'all 0.2s ease'
+            transition: 'all 0.2s ease',
+            pointerEvents: 'auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = '#5a6268';
@@ -152,7 +167,7 @@ export function DebugPanel() {
             e.currentTarget.style.transform = 'scale(1)';
           }}
         >
-          🛠️ Debug
+          🛠️
         </button>
       </div>
     );
@@ -170,6 +185,8 @@ export function DebugPanel() {
       borderRadius: '12px',
       boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
       zIndex: 1000,
+      /* ensure the open panel is interactive even though modal-container is pointer-events:none */
+      pointerEvents: 'auto',
       overflow: 'hidden'
     }}>
       {/* Header */}
@@ -247,6 +264,21 @@ export function DebugPanel() {
           }}
         >
           🎮 Mode
+        </button>
+        <button
+          onClick={() => setActiveTab('events')}
+          style={{
+            flex: 1,
+            padding: '10px 8px',
+            border: 'none',
+            backgroundColor: activeTab === 'events' ? '#007bff' : 'transparent',
+            color: activeTab === 'events' ? 'white' : '#6c757d',
+            cursor: 'pointer',
+            fontSize: '12px',
+            fontWeight: activeTab === 'events' ? 'bold' : 'normal'
+          }}
+        >
+          🎯 Events
         </button>
       </div>
 
@@ -434,6 +466,113 @@ export function DebugPanel() {
               <div><strong>Day:</strong> {gameState.currentDay}</div>
               <div><strong>Stars:</strong> {gameState.stars}</div>
               <div><strong>Level:</strong> {gameState.level}</div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'events' && (
+          <div style={{ padding: '20px' }}>
+            <h4 style={{ marginTop: 0, marginBottom: '16px' }}>Test Events & Missions</h4>
+            
+            {/* Missions Section */}
+            <div style={{ marginBottom: '24px' }}>
+              <h5 style={{ marginBottom: '12px', color: '#333' }}>🎯 Trigger Mission</h5>
+              <div style={{ 
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '8px',
+                marginBottom: '16px'
+              }}>
+                {MISSION_CONFIGS.slice(0, 6).map(mission => (
+                  <button
+                    key={mission.id}
+                    onClick={() => triggerTestMission && triggerTestMission(mission.id)}
+                    style={{
+                      padding: '8px 12px',
+                      border: '1px solid #ddd',
+                      borderRadius: '6px',
+                      backgroundColor: '#f8f9fa',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      transition: 'all 0.2s ease',
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#e9ecef';
+                      e.currentTarget.style.borderColor = '#007bff';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f8f9fa';
+                      e.currentTarget.style.borderColor = '#ddd';
+                    }}
+                  >
+                    <div style={{ fontWeight: 'bold', marginBottom: '2px' }}>
+                      {mission.title}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#666' }}>
+                      ⭐ {mission.rewardStars} stars
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Events Section */}
+            <div style={{ marginBottom: '16px' }}>
+              <h5 style={{ marginBottom: '12px', color: '#333' }}>⚡ Trigger Event</h5>
+              <div style={{ 
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                {EVENT_CONFIGS.map(event => (
+                  <button
+                    key={event.id}
+                    onClick={() => triggerTestEvent && triggerTestEvent(event.id)}
+                    style={{
+                      padding: '12px',
+                      border: '1px solid #ddd',
+                      borderRadius: '6px',
+                      backgroundColor: '#fff3cd',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      transition: 'all 0.2s ease',
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#ffeaa7';
+                      e.currentTarget.style.borderColor = '#ffc107';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#fff3cd';
+                      e.currentTarget.style.borderColor = '#ddd';
+                    }}
+                  >
+                    <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+                      {event.title}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#666', marginBottom: '4px' }}>
+                      {event.description}
+                    </div>
+                    <div style={{ fontSize: '10px', color: '#999' }}>
+                      Targets: {event.targets.join(', ')} | Duration: {event.duration} day(s)
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Status */}
+            <div style={{
+              fontSize: '12px',
+              color: '#666',
+              borderTop: '1px solid #eee',
+              paddingTop: '12px',
+              textAlign: 'center',
+              fontStyle: 'italic'
+            }}>
+              Active: {gameState.activeMissions.length} missions, {gameState.activeEvents.length} events<br/>
+              Pending: {gameState.pendingCards.length} cards
             </div>
           </div>
         )}

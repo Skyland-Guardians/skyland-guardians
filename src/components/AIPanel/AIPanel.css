@@ -1,3 +1,9 @@
+/* AI Panel Container - High z-index to stay above card modals */
+.ai-panel-container {
+  position: relative;
+  z-index: 1050; /* Above card modals (1000) but below highest modals (5000+) */
+}
+
 /* AI Panel Markdown Styles */
 .markdown-content {
   font-family: inherit;

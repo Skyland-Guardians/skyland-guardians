@@ -1,0 +1,289 @@
+.card-choice-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+  pointer-events: none;
+}
+
+.card-choice-modal {
+  background: linear-gradient(145deg, #2a2a3e, #1e1e2e);
+  border-radius: 16px;
+  border: 2px solid #4a4a6a;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  animation: slideIn 0.3s ease-out;
+  pointer-events: auto;
+}
+
+.card-choice-content {
+  padding: 0;
+}
+
+.card-choice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #4a4a6a;
+  background: linear-gradient(145deg, #3a3a4e, #2a2a3e);
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ask-ai-btn-modal {
+  background: linear-gradient(145deg, #3b82f6, #2563eb);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.ask-ai-btn-modal:hover {
+  background: linear-gradient(145deg, #2563eb, #1d4ed8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.ask-ai-btn-modal:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.ask-ai-btn-modal img {
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.card-choice-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+  margin: 0;
+}
+
+.card-choice-close {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.card-choice-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.mission-card-display,
+.event-card-display {
+  padding: 24px;
+}
+
+.mission-card-placeholder,
+.event-card-placeholder {
+  background: linear-gradient(145deg, #3a3a4e, #2a2a3e);
+  border: 2px solid #5a5a7a;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.mission-icon,
+.event-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.mission-title,
+.event-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #fff;
+  margin: 0 0 12px 0;
+}
+
+.mission-background,
+.event-description {
+  color: #ddd;
+  line-height: 1.5;
+  margin-bottom: 16px;
+  font-size: 1rem;
+}
+
+.mission-details {
+  text-align: left;
+  margin-top: 16px;
+}
+
+.mission-tip {
+  color: #ffd700;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.mission-completion {
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-left: 3px solid #4caf50;
+}
+
+.completion-label {
+  display: block;
+  color: #4caf50;
+  font-size: 0.75rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.completion-description {
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.mission-focus {
+  color: #87ceeb;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+.mission-reward {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.stars {
+  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  color: #333;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.event-duration {
+  color: #ffa500;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+.event-effects {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 12px;
+  text-align: left;
+}
+
+.effects-label {
+  color: #ff6b6b;
+  font-weight: bold;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.effects-detail {
+  color: #fff;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.effects-targets {
+  color: #aaa;
+  font-size: 0.8rem;
+}
+
+.card-choice-actions {
+  display: flex;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid #4a4a6a;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.card-choice-btn {
+  flex: 1;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.card-choice-btn.decline {
+  background: linear-gradient(145deg, #666, #555);
+  color: #ddd;
+}
+
+.card-choice-btn.decline:hover {
+  background: linear-gradient(145deg, #777, #666);
+  transform: translateY(-1px);
+}
+
+.card-choice-btn.accept {
+  background: linear-gradient(145deg, #4caf50, #45a049);
+  color: white;
+}
+
+.card-choice-btn.accept:hover {
+  background: linear-gradient(145deg, #5cbf60, #4caf50);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.card-choice-btn.full-width {
+  flex: none;
+  width: 100%;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

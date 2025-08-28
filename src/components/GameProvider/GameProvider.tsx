@@ -1,22 +1,28 @@
 import { useState } from 'react';
 import type { ReactNode } from 'react';
-import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult, SettlementAsset } from '../../types/game';
+import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult, SettlementAsset, PlayerCard } from '../../types/game';
 import { GameContext } from '../../hooks/useGameContext';
 import { SIMULATED_SERIES } from '../../data/simulated-asset-series';
-import { SAMPLE_EVENTS } from '../../data/sample-events';
+import { EVENT_CONFIGS } from '../../data/events';
 import { DEFAULT_MARKET_CONFIG } from '../../data/asset-market-config';
 import { GAME_ASSETS } from '../../data/game-assets';
 import { sampleReturnForType } from '../../data/asset-return-config';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
+import { eventManager } from '../../services/event-manager';
+import { LevelManager } from '../../data/level-config';
 import type { MarketMode } from '../../data/asset-market-config';
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const [gameState, setGameState] = useState<GameState>({
     currentDay: 1,
-    stars: 15,
+    stars: 0,
     level: 1,
     mode: 'normal',
-    currentScreen: 'main'
+    currentScreen: 'main',
+    playerCards: [],
+    activeMissions: [],
+    activeEvents: [],
+    pendingCards: []
   });
 
   const [userInfo, setUserInfo] = useState<UserInfo>({
@@ -37,12 +43,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
   };
 
   const defaultAllocations: AssetType[] = GAME_ASSETS.map(a => {
-    // Set initial allocation: 50% Tech (sword), 50% Bonds (shield), 0% others
+    // Set initial allocation: 60% Tech (sword), 40% Bonds (shield), 0% others
+    // This configuration doesn't complete any missions by default:
+    // - Task 1: sword=60% (>=40%), doesn't complete 
+    // - Task 3: shield=40% (<35%), doesn't complete
     let allocation = 0;
     if (a.id === 'sword') {
-      allocation = 50; // Agile Sword (Technology)
+      allocation = 60; // Agile Sword (Technology)
     } else if (a.id === 'shield') {
-      allocation = 50; // Sturdy Shield (Bonds)
+      allocation = 40; // Sturdy Shield (Bonds)
     }
     
     return {
@@ -61,13 +70,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const [currentMission, setCurrentMission] = useState<Mission | null>(null);
-  const [missions, setMissions] = useState<Mission[]>([]);
-  const [events, setEvents] = useState<EventCard[]>([]);
   const [isCardCollectionOpen, setCardCollectionOpen] = useState(false);
+  const [isBadgesOpen, setBadgesOpen] = useState(false);
   const [coins, setCoins] = useState<number>(1000); // initial money the player holds
   const [marketMode, setMarketMode] = useState<MarketMode>(DEFAULT_MARKET_CONFIG.mode);
   const [marketDayIndex, setMarketDayIndex] = useState<number>(0);
-  const [marketEvents, setMarketEvents] = useState<any[]>([...SAMPLE_EVENTS]);
+  const [marketEvents, setMarketEvents] = useState<any[]>([...EVENT_CONFIGS]);
   
   // Store daily portfolio performance history
   const [performanceHistory, setPerformanceHistory] = useState<{
@@ -78,7 +86,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }[]>([]);
 
   const updateGameState = (updates: Partial<GameState>) => {
-    setGameState(prev => ({ ...prev, ...updates }));
+    setGameState(prev => {
+      const newState = { ...prev, ...updates };
+      
+      // 如果星星数发生变化，检查是否需要升级
+      if (updates.stars !== undefined && updates.stars !== prev.stars) {
+        const levelCheck = LevelManager.checkLevelUp(prev.stars, updates.stars);
+        if (levelCheck.leveledUp) {
+          console.log(`🎉 Level up! ${levelCheck.oldLevel} → ${levelCheck.newLevel}`);
+          newState.level = levelCheck.newLevel;
+          
+          // TODO: 可以在这里添加升级庆祝动画或通知
+          if (levelCheck.newLevelConfig) {
+            console.log(`🌟 Reached ${levelCheck.newLevelConfig.title}: ${levelCheck.newLevelConfig.description}`);
+          }
+        }
+      }
+      
+      return newState;
+    });
   };
 
   const updateUserInfo = (updates: Partial<UserInfo>) => {
@@ -90,7 +116,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       const updated = prev.map(asset => 
         asset.id === assetId ? { ...asset, allocation } : asset
       );
-      
       return updated;
     });
   };
@@ -99,12 +124,100 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setMessages(prev => [...prev, message]);
   };
 
-  const addMission = (mission: Mission) => {
-    setMissions(prev => [...prev, mission]);
+  // 触发新的事件和任务
+  const triggerNewCards = (action: 'apply' | 'nextDay' | 'init') => {
+    // 检查是否有新的任务或事件需要触发
+    const newCard = eventManager.checkForNewCards(gameState, action, assetAllocations);
+    if (newCard) {
+      setGameState(prev => ({
+        ...prev,
+        pendingCards: [...prev.pendingCards, {
+          id: `${newCard.type}-${newCard.card.id}-${Date.now()}`,
+          type: newCard.type,
+          data: newCard.card,
+          obtainedAt: prev.currentDay,
+          isNew: true
+        }]
+      }));
+    }
   };
 
-  const addEvent = (event: EventCard) => {
-    setEvents(prev => [...prev, event]);
+  // 接受卡片
+  const acceptCard = (card: PlayerCard) => {
+    const updates = eventManager.acceptCard(card, gameState);
+    setGameState(prev => ({ ...prev, ...updates }));
+  };
+
+  // 拒绝卡片
+  const declineCard = (card: PlayerCard) => {
+    const updates = eventManager.declineCard(card, gameState);
+    setGameState(prev => ({ ...prev, ...updates }));
+  };
+
+  // 更新活跃的事件和任务状态
+  const updateActiveCards = (allocations: AssetType[] = assetAllocations) => {
+    const updates = eventManager.updateActiveCards(gameState, allocations);
+    if (Object.keys(updates).length > 0) {
+      setGameState(prev => ({ ...prev, ...updates }));
+      
+      // 返回更新信息，包括完成的任务
+      return updates;
+    }
+    return null;
+  };
+
+  // 清除新卡片标志
+  const clearNewCardFlags = () => {
+    setGameState(prev => ({
+      ...prev,
+      playerCards: prev.playerCards.map(card => ({ ...card, isNew: false }))
+    }));
+  };
+
+  // Debug 测试方法
+  const triggerTestMission = (missionId: number) => {
+    const mission = eventManager.triggerSpecificMission(missionId);
+    if (mission) {
+      const newCard: PlayerCard = {
+        id: `mission-${mission.id}-${Date.now()}`,
+        type: 'mission',
+        data: mission,
+        obtainedAt: gameState.currentDay,
+        isNew: true
+      };
+
+      setGameState(prev => ({
+        ...prev,
+        pendingCards: [...prev.pendingCards, newCard]
+      }));
+    }
+  };
+
+  const triggerTestEvent = (eventId: string) => {
+    const event = eventManager.triggerSpecificEvent(eventId);
+    if (event) {
+      const newCard: PlayerCard = {
+        id: `event-${event.id}-${Date.now()}`,
+        type: 'event',
+        data: event,
+        obtainedAt: gameState.currentDay,
+        isNew: true
+      };
+
+      setGameState(prev => ({
+        ...prev,
+        pendingCards: [...prev.pendingCards, newCard]
+      }));
+    }
+  };
+
+  // 等级相关函数
+  const getLevelProgress = () => {
+    return LevelManager.getLevelProgress(gameState.stars);
+  };
+
+  const getAllLevels = () => {
+    return LevelManager.getAllLevels();
   };
 
   // Simple settlement logic for "next day" based on current allocations.
@@ -123,8 +236,26 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return sampleReturnForType(type);
     };
 
-    // find events that apply today
-    const todaysEvents = marketEvents.filter(ev => ev.dayIndex === dayIndex || ev.dayIndex === 'all');
+    // find events that apply today (including active events)
+    const todaysEvents = [...marketEvents.filter(ev => ev.dayIndex === dayIndex || ev.dayIndex === 'all')];
+    
+    // Add active events from game state
+    gameState.activeEvents.forEach(activeEvent => {
+      if (activeEvent.effects) {
+        todaysEvents.push({
+          id: `active-${activeEvent.id}`,
+          title: activeEvent.title,
+          description: activeEvent.description,
+          dayIndex: dayIndex,
+          targets: activeEvent.effects.targets,
+          effect: {
+            type: activeEvent.effects.type,
+            value: activeEvent.effects.value
+          },
+          duration: 1
+        });
+      }
+    });
 
     const applyEventsToReturn = (base: number, type: string) => {
       // Apply add effects first, then mul, then volatility adjustments
@@ -211,6 +342,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
     ]);
 
+    // 在下一天后触发新事件
+    setTimeout(() => {
+      triggerNewCards('nextDay');
+      updateActiveCards();
+    }, 100);
+
     return { portfolioReturn, delta, perAsset: perAssetResults };
   };
 
@@ -237,18 +374,42 @@ export function GameProvider({ children }: { children: ReactNode }) {
       marketEvents,
       triggerEvent,
       currentMission,
-      missions,
-      events,
+      missions: gameState.activeMissions, // 为了兼容性
+      events: gameState.activeEvents, // 为了兼容性
       isCardCollectionOpen,
+      isBadgesOpen,
       performanceHistory,
       updateGameState,
       updateUserInfo,
       updateAssetAllocation,
       addMessage,
       setCurrentMission,
-      addMission,
-      addEvent,
-      setCardCollectionOpen
+      addMission: (mission: Mission) => { // 为了兼容性
+        setGameState(prev => ({
+          ...prev,
+          activeMissions: [...prev.activeMissions, mission]
+        }));
+      },
+      addEvent: (event: EventCard) => { // 为了兼容性
+        setGameState(prev => ({
+          ...prev,
+          activeEvents: [...prev.activeEvents, event]
+        }));
+      },
+      setCardCollectionOpen,
+      setBadgesOpen,
+      // 新的事件管理函数
+      triggerNewCards,
+      acceptCard,
+      declineCard,
+      updateActiveCards,
+      clearNewCardFlags,
+      // Debug 测试方法
+      triggerTestMission,
+      triggerTestEvent,
+      // 等级相关函数
+      getLevelProgress,
+      getAllLevels
     }}>
       {children}
     </GameContext.Provider>

@@ -1,0 +1,129 @@
+.level-display {
+  background: linear-gradient(145deg, #2a2a3e, #1e1e2e);
+  border: 2px solid #4a4a6a;
+  border-radius: 12px;
+  padding: 12px;
+  min-width: 200px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.level-display-content {
+  padding: 0;
+  min-width: 250px;
+}
+
+.level-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.level-badge {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.level-number {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.level-title {
+  color: #87ceeb;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stars-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.stars-count {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.stars-to-next {
+  color: #aaa;
+  font-size: 0.7rem;
+}
+
+.level-progress {
+  margin-top: 8px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50, #81c784);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  color: #ddd;
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+.max-level {
+  margin-top: 8px;
+  text-align: center;
+}
+
+.max-level-text {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.level-description {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #4a4a6a;
+}
+
+.description-text {
+  color: #ddd;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin: 0;
+  text-align: center;
+  font-style: italic;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .level-display {
+    min-width: 150px;
+    padding: 8px;
+  }
+  
+  .level-info {
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .stars-info {
+    align-items: center;
+  }
+}

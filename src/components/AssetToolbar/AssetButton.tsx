@@ -1,4 +1,5 @@
 import { useGameState } from '../../hooks/useGameContext';
+import { useAIPersonality } from '../../hooks/useAIPersonality';
 import type { AssetType } from '../../types/game';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
 import { GAME_ASSETS } from '../../data/game-assets';
@@ -11,29 +12,16 @@ interface AssetButtonProps {
 
 export function AssetButton({ asset, onClick, isActive = false }: AssetButtonProps) {
   const { updateAssetAllocation, assetAllocations, addMessage, gameState, coins, performanceHistory } = useGameState();
+  const { currentPersonality } = useAIPersonality();
 
   const handleSliderChange = (newValue: number) => {
-    // Calculate current total allocation excluding this asset
-    const otherAssetsTotal = assetAllocations
-      .filter(a => a.id !== asset.id)
-      .reduce((sum, a) => sum + a.allocation, 0);
-    
-    // Calculate what the total would be with the new value
-    const potentialTotal = otherAssetsTotal + newValue;
-    
-    // If the potential total is less than 100%, auto-adjust to make it 100%
-    // But only if the user is dragging upward (increasing allocation)
-    let finalValue = newValue;
-    if (potentialTotal < 100 && newValue > asset.allocation) {
-      // Auto-adjust to fill up to 100%
-      finalValue = 100 - otherAssetsTotal;
-      // Ensure we don't exceed 100%
-      finalValue = Math.min(finalValue, 100);
-      // Ensure we don't go below 0%
-      finalValue = Math.max(finalValue, 0);
-    }
-    
-    updateAssetAllocation(asset.id, finalValue);
+    // Set the asset allocation to the exact value selected by the user.
+    // Previously we auto-filled the remainder which caused preset clicks
+    // (e.g. 25%) to jump to unexpected values (e.g. 35%). Keep logic simple
+    // here — other consistency checks should live in a single place
+    // (e.g. on APPLY) if needed.
+    const clamped = Math.max(0, Math.min(100, newValue));
+    updateAssetAllocation(asset.id, clamped);
   };
 
   const handleDirectInput = (value: string) => {
@@ -151,7 +139,7 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
           border: `2px solid ${colors.border}`,
           minWidth: '200px',
           marginBottom: '0.5rem',
-          zIndex: 30,
+          zIndex: 50, /* Above asset toolbar(15) */
           animation: 'slideUp 0.2s ease'
         }}>
           {/* Other Assets Overview */}
@@ -269,36 +257,39 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
                 Editing: {asset.shortName || asset.name}
               </div>
               
-              {/* Ask AI button */}
+              {/* Ask AI avatar button - match card style */}
               <button
                 onClick={handleAskAI}
+                className="ask-ai-btn"
+                title={`Ask AI about ${asset.name}`}
                 style={{
-                  width: '24px',
-                  height: '24px',
+                  /* inline fallback to ensure consistent look even if card CSS isn't loaded */
+                  background: 'linear-gradient(145deg, #3b82f6, #2563eb)',
+                  border: 'none',
                   borderRadius: '50%',
-                  backgroundColor: '#3b82f6',
-                  border: '1px solid white',
-                  color: 'white',
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
+                  width: '32px',
+                  height: '32px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
                   boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                  transition: 'all 0.2s ease'
+                  flexShrink: 0
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#2563eb';
-                  e.currentTarget.style.transform = 'scale(1.1)';
+                  // maintain hover effect
+                  (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#3b82f6';
-                  e.currentTarget.style.transform = 'scale(1)';
+                  (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
                 }}
-                title={`Ask AI about ${asset.name}`}
               >
-                ?
+                <img
+                  src={currentPersonality?.avatar || './assets/main-screen-1-assets/ai-character-icon.png'}
+                  alt={`Ask ${currentPersonality?.name || 'AI'}`}
+                  style={{ width: '20px', height: '20px', objectFit: 'cover', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.3)' }}
+                />
               </button>
             </div>
             
