@@ -8,8 +8,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease-out;
+  /* High z-index for MyCards/Badges modals */
+  z-index: 15000;
+  /* Match animation timing and easing used across modals */
+  animation: fadeIn 0.28s ease-out;
   pointer-events: none;
 }
 
@@ -19,11 +21,13 @@
   border: 2px solid #4a4a6a;
   width: 90%;
   max-width: 800px;
-  max-height: 80vh;
+  /* Fixed, responsive modal height so My Cards and Badges match exactly */
+  height: 72vh;
   display: flex;
   flex-direction: column;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-  animation: slideIn 0.3s ease-out;
+  /* Use same slideIn timing/easing as other modals */
+  animation: slideIn 0.28s cubic-bezier(.2,.8,.2,1);
   pointer-events: auto;
 }
 
@@ -351,7 +355,8 @@
 @media (max-width: 768px) {
   .my-cards-modal {
     width: 95%;
-    max-height: 90vh;
+    /* Use more of the viewport on smaller screens */
+    height: 90vh;
   }
   
   .cards-grid {

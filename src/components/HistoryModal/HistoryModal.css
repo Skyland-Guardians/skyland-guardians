@@ -1,0 +1,215 @@
+.history-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* High z-index for history modal - higher than modal-container (5000) and panel-overlay (14000) */
+  z-index: 16000;
+  /* Match animation timing and easing used across modals */
+  animation: fadeIn 0.28s ease-out;
+  pointer-events: none;
+}
+
+.history-modal {
+  background: linear-gradient(145deg, #2a2a3e, #1e1e2e);
+  border-radius: 16px;
+  border: 2px solid #4a4a6a;
+  width: 90%;
+  max-width: 900px;
+  /* Fixed, responsive modal height to match MyCards */
+  height: 72vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  /* Use same slideIn timing/easing as other modals */
+  animation: slideIn 0.28s cubic-bezier(.2,.8,.2,1);
+  pointer-events: auto;
+}
+
+.history-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  /* Make header visually part of the rounded modal */
+  border-bottom: 1px solid rgba(74, 74, 106, 0.9);
+  background: linear-gradient(145deg, #2a2a3e, #1e1e2e);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  overflow: hidden;
+}
+
+.history-modal-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.history-modal-close {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.history-modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.history-modal-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.chart-section {
+  background: linear-gradient(145deg, #3a3a4e, #2a2a3e);
+  border: 2px solid #5a5a7a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.chart-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.chart-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.chart-svg {
+  background: linear-gradient(145deg, #2a2a3e, #1e1e2e);
+  border: 1px solid #4a4a6a;
+  border-radius: 8px;
+}
+
+.no-data-message {
+  text-align: center;
+  color: #aaa;
+  padding: 2rem;
+  font-size: 1rem;
+}
+
+.summary-section {
+  background: linear-gradient(145deg, #3a3a4e, #2a2a3e);
+  border: 2px solid #5a5a7a;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.summary-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-label {
+  font-size: 0.8rem;
+  color: #87ceeb;
+  margin-bottom: 0.25rem;
+}
+
+.summary-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.summary-value.positive {
+  color: #4caf50;
+}
+
+.summary-value.negative {
+  color: #ef4444;
+}
+
+.summary-value.neutral {
+  color: #fff;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .history-modal {
+    width: 95%;
+    /* Use more of the viewport on smaller screens */
+    height: 90vh;
+  }
+  
+  .history-modal-header {
+    padding: 16px 20px;
+  }
+  
+  .history-modal-title {
+    font-size: 1.2rem;
+  }
+  
+  .history-modal-content {
+    padding: 20px;
+  }
+  
+  .chart-svg {
+    width: 100%;
+    height: auto;
+  }
+  
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}

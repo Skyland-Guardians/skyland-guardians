@@ -9,6 +9,8 @@ import { GAME_ASSETS, UI_ASSET_ORDER } from '../../data/game-assets';
 import { sampleReturnForType } from '../../data/asset-return-config';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
 import { eventManager } from '../../services/event-manager';
+import { achievementChecker } from '../../services/achievement-checker';
+import { achievementService } from '../../services/achievement-service';
 import { LevelManager } from '../../data/level-config';
 import type { MarketMode } from '../../data/asset-market-config';
 
@@ -27,7 +29,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const [userInfo, setUserInfo] = useState<UserInfo>({
     name: 'JAMES',
-    		avatar: './assets/main-screen-1-assets/child-avatar-icon.png',
+    avatar: './assets/main-screen-1-assets/child-avatar-icon.png',
     level: 1
   });
 
@@ -70,9 +72,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   });
 
   const [assetAllocations, setAssetAllocations] = useState<AssetType[]>(defaultAllocations);
-
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-
   const [currentMission, setCurrentMission] = useState<Mission | null>(null);
   const [isCardCollectionOpen, setCardCollectionOpen] = useState(false);
   const [isBadgesOpen, setBadgesOpen] = useState(false);
@@ -88,6 +88,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
     totalValue: number;
     assetReturns: Record<string, number>;
   }[]>([]);
+
+  // 新成就状态
+  const [newAchievements, setNewAchievements] = useState<string[]>([]);
+
+  // 检查成就
+  const checkAchievements = (allocations: AssetType[] = assetAllocations) => {
+    const newlyUnlocked = achievementChecker.checkAchievements(allocations, gameState.stars);
+    if (newlyUnlocked.length > 0) {
+      setNewAchievements(prev => [...prev, ...newlyUnlocked]);
+    }
+  };
+
+  // 重置成就（调试用）
+  const resetAchievements = () => {
+    achievementService.reset();
+    setNewAchievements([]);
+  };
+
+  // 移除初始化时的成就检查，避免游戏开始时就解锁成就
 
   const updateGameState = (updates: Partial<GameState>) => {
     setGameState(prev => {
@@ -105,6 +124,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
             console.log(`🌟 Reached ${levelCheck.newLevelConfig.title}: ${levelCheck.newLevelConfig.description}`);
           }
         }
+        
+        // 星星数变化时检查成就
+        setTimeout(() => {
+          checkAchievements(assetAllocations);
+        }, 100);
       }
       
       return newState;
@@ -120,12 +144,23 @@ export function GameProvider({ children }: { children: ReactNode }) {
       const updated = prev.map(asset => 
         asset.id === assetId ? { ...asset, allocation } : asset
       );
+      
+      // 检查成就
+      setTimeout(() => {
+        checkAchievements(updated);
+      }, 100);
+      
       return updated;
     });
   };
 
   const addMessage = (message: ChatMessage) => {
     setMessages(prev => [...prev, message]);
+  };
+
+  // 完成成就动画后的回调
+  const onAchievementAnimationComplete = () => {
+    setNewAchievements([]);
   };
 
   // 触发新的事件和任务
@@ -413,7 +448,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       triggerTestEvent,
       // 等级相关函数
       getLevelProgress,
-      getAllLevels
+      getAllLevels,
+      // 成就相关函数
+      newAchievements,
+      checkAchievements,
+      resetAchievements,
+      onAchievementAnimationComplete
     }}>
       {children}
     </GameContext.Provider>

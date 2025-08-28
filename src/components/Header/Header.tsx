@@ -1,7 +1,10 @@
 import { useGameState } from '../../hooks/useGameContext';
+import HistoryModal from '../HistoryModal/HistoryModal';
+import { useState } from 'react';
 
 export function Header() {
   const { gameState, userInfo, coins, addMessage, assetAllocations, performanceHistory, getLevelProgress } = useGameState();
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   
   // 获取等级信息，如果没有getLevelProgress则使用默认值
   const levelInfo = getLevelProgress ? getLevelProgress() : {
@@ -269,7 +272,48 @@ export function Header() {
           <span style={{ fontSize: '1.2rem' }}>🎮</span>
           <span>How to Play</span>
         </button>
+        
+        {/* History Data Button */}
+        <button
+          onClick={() => setShowHistoryModal(true)}
+          style={{
+            background: 'linear-gradient(145deg, #7c3aed, #5b21b6)',
+            color: 'white',
+            padding: '0.75rem 1rem',
+            borderRadius: '1rem',
+            fontWeight: '700',
+            fontSize: '1rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            boxShadow: '0 4px 12px rgba(124, 58, 237, 0.3)',
+            border: '2px solid rgba(255, 255, 255, 0.2)',
+            textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'linear-gradient(145deg, #5b21b6, #4c1d95)';
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'linear-gradient(145deg, #7c3aed, #5b21b6)';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+          title="View asset performance history"
+        >
+          <span style={{ fontSize: '1.2rem' }}>📈</span>
+          <span>History</span>
+        </button>
       </div>
+      
+      {/* History Modal */}
+      <HistoryModal
+        isOpen={showHistoryModal}
+        onClose={() => setShowHistoryModal(false)}
+        performanceHistory={performanceHistory || []}
+        currentDay={gameState.currentDay}
+      />
     </header>
   );
 }
