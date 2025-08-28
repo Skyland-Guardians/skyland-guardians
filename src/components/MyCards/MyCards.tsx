@@ -217,7 +217,16 @@ export function MyCards({ isOpen, onClose, playerCards, activeMissions, activeEv
 
   const sortedCards = [...playerCards].sort((a, b) => b.obtainedAt - a.obtainedAt);
   const missionCards = sortedCards.filter(card => card.type === 'mission');
-  const eventCards = sortedCards.filter(card => card.type === 'event');
+  const eventCards = sortedCards.filter(card => {
+    if (card.type !== 'event') return false;
+    const event = card.data as EventCard;
+    // If the event was accepted and has a duration, hide it when expired
+    if (event.acceptedAt && event.duration) {
+      const expired = currentDay - event.acceptedAt >= event.duration;
+      return !expired;
+    }
+    return true;
+  });
 
   return (
     <div className="my-cards-overlay">
