@@ -129,12 +129,17 @@ export function LeftSidebar() {
           onClick={() => setShowBadges(false)}
         >
           <div style={{
-            background: '#fff',
+            // make outer wrapper transparent so the inner panel's rounded dark background is visible
+            background: 'transparent',
             borderRadius: 16,
-            padding: 32,
-            minWidth: 320,
-            boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+            padding: 0,
+            width: '540px', // slimmer
+            height: '72vh', // taller and fixed
+            boxShadow: 'none',
             position: 'relative',
+            display: 'flex',
+            alignItems: 'stretch',
+            justifyContent: 'center',
           }}
             onClick={e => e.stopPropagation()}
           >

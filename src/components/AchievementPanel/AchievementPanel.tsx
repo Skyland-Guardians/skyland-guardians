@@ -18,7 +18,7 @@ export const AchievementPanel: React.FC<AchievementPanelProps> = ({ summary }) =
   const unlocked = achievements.filter(a => summary.badges.includes(a.badgeIcon));
   const allList = viewAll ? achievements : unlocked;
   return (
-    <div className="achievement-panel" style={{ minWidth: 600, background: 'linear-gradient(135deg, #23304a 0%, #2d3e5e 100%)', borderRadius: 20, padding: '36px 32px', color: '#fff', boxShadow: '0 8px 32px rgba(0,0,0,0.18)', position: 'relative' }}>
+    <div className="achievement-panel" style={{ width: '100%', height: '80%', maxHeight: '100%', boxSizing: 'border-box', background: 'linear-gradient(135deg, #23304a 0%, #2d3e5e 100%)', borderRadius: 20, padding: '28px 24px', color: '#fff', boxShadow: '0 8px 32px rgba(0,0,0,0.18)', position: 'relative', display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
         <div style={{ flex: 1, textAlign: 'center', fontWeight: 'bold', fontSize: 30, letterSpacing: 2, background: 'rgba(255,255,255,0.95)', color: '#23304a', borderRadius: 14, padding: '12px 0', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>BADGES GAINED</div>
         {/* Close button will be rendered by parent */}
@@ -26,11 +26,11 @@ export const AchievementPanel: React.FC<AchievementPanelProps> = ({ summary }) =
       <button style={{ marginBottom: 18, padding: '8px 22px', borderRadius: 10, border: 'none', background: 'linear-gradient(90deg,#f8fafc 0%,#e0e7ef 100%)', color: '#23304a', fontWeight: 'bold', cursor: 'pointer', fontSize: 17, boxShadow: '0 1px 4px rgba(0,0,0,0.07)' }} onClick={() => setViewAll(v => !v)}>
         {viewAll ? 'Show Unlocked Only' : 'View All Badges'}
       </button>
-      <div style={{ maxHeight: 340, overflowY: 'auto', paddingRight: 8 }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingRight: 8 }}>
         {allList.length === 0 ? (
           <div style={{ color: '#888', textAlign: 'center' }}>No badges yet</div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18, paddingBottom: 12 }}>
             {allList.map((a, idx) => (
               <div
                 key={a.id}
