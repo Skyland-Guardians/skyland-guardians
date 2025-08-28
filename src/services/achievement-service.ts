@@ -5,6 +5,11 @@ import { achievements } from '../data/achievements';
 export class AchievementService {
   private userAchievements: UserAchievement[] = [];
 
+  constructor() {
+    // 自动重置成就状态，避免开发时的缓存问题
+    this.reset();
+  }
+
   // 重置所有成就（用于调试）
   reset(): void {
     this.userAchievements = [];
@@ -21,6 +26,9 @@ export class AchievementService {
         starRating,
         trophyGrade,
       });
+      console.log(`✅ Achievement Service: Added ${achievementId}. Total: ${this.userAchievements.length}`);
+    } else {
+      console.log(`⚠️ Achievement Service: ${achievementId} already exists`);
     }
   }
 
@@ -41,6 +49,9 @@ export class AchievementService {
       grade,
       count: this.userAchievements.filter(a => a.trophyGrade === grade).length
     }));
+    
+    console.log(`📊 Achievement Summary: ${this.userAchievements.length} unlocked achievements`);
+    
     return { totalStars, badges, trophies };
   }
 
