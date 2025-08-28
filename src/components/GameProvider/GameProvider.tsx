@@ -145,11 +145,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
         asset.id === assetId ? { ...asset, allocation } : asset
       );
       
-      // 检查成就
-      setTimeout(() => {
-        checkAchievements(updated);
-      }, 100);
-      
       return updated;
     });
   };
@@ -381,10 +376,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
     ]);
 
-    // 在下一天后触发新事件
+    // 在下一天后触发新事件和检查成就
     setTimeout(() => {
       triggerNewCards('nextDay');
       updateActiveCards();
+      checkAchievements(); // 下一天时检查成就
     }, 100);
 
     return { portfolioReturn, delta, perAsset: perAssetResults };

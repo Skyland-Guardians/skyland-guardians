@@ -4,7 +4,7 @@ import { AssetButton } from './AssetButton';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
 
 export function AssetToolbar() {
-  const { assetAllocations, addMessage, gameState, coins, performanceHistory, updateActiveCards, triggerNewCards } = useGameState();
+  const { assetAllocations, addMessage, gameState, coins, performanceHistory, updateActiveCards, triggerNewCards, checkAchievements } = useGameState();
   const [activeAssetId, setActiveAssetId] = useState<string | null>(null);
 
   const handleAssetClick = (assetId: string) => {
@@ -33,6 +33,13 @@ export function AssetToolbar() {
       // Then, check if this action triggers any new cards (missions/events)
       if (triggerNewCards) {
         triggerNewCards('apply');
+      }
+      
+      // 点击apply时检查成就
+      if (checkAchievements) {
+        setTimeout(() => {
+          checkAchievements(currentAllocations);
+        }, 100);
       }
 
       // Create rich portfolio summary message similar to settlement format
