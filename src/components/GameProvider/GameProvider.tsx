@@ -5,7 +5,7 @@ import { GameContext } from '../../hooks/useGameContext';
 import { SIMULATED_SERIES } from '../../data/simulated-asset-series';
 import { EVENT_CONFIGS } from '../../data/events';
 import { DEFAULT_MARKET_CONFIG } from '../../data/asset-market-config';
-import { GAME_ASSETS } from '../../data/game-assets';
+import { GAME_ASSETS, UI_ASSET_ORDER } from '../../data/game-assets';
 import { sampleReturnForType } from '../../data/asset-return-config';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
 import { eventManager } from '../../services/event-manager';
@@ -42,7 +42,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const defaultAllocations: AssetType[] = GAME_ASSETS.map(a => {
+  // Build allocations in UI order (leftGroup then rightGroup) to match toolbar layout
+  const orderedIds = [...(UI_ASSET_ORDER.leftGroup || []), ...(UI_ASSET_ORDER.rightGroup || [])];
+  const orderedAssets = orderedIds.map(id => GAME_ASSETS.find(a => a.id === id)).filter(Boolean) as typeof GAME_ASSETS;
+
+  const defaultAllocations: AssetType[] = orderedAssets.map(a => {
     // Set initial allocation: 60% Tech (sword), 40% Bonds (shield), 0% others
     // This configuration doesn't complete any missions by default:
     // - Task 1: sword=60% (>=40%), doesn't complete 

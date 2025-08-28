@@ -52,7 +52,7 @@ export const GAME_ASSETS: GameAsset[] = [
     shortName: 'Wand',
     loreName: 'Stellar Wand · Innovation Realm',
     realWorld: 'Thematic / small-cap / innovation assets (higher volatility)',
-    description: 'Theme-driven assets with exploration upside and notable volatility.',
+    description: 'Theme-driven, speculative assets with potentially large upside but higher downside risk and notable volatility.',
     expectedReturn: 0.10,
     volatility: 0.20,
     risk: 'high',
@@ -65,7 +65,7 @@ export const GAME_ASSETS: GameAsset[] = [
     shortName: 'Yield',
     loreName: 'Temple of Yield · Prosperity Shrine',
     realWorld: 'Yield-bearing assets / DeFi yields (AAVE, COMP, yield products)',
-    description: 'Assets that generate passive yield; moderate risk with recurring returns.',
+    description: 'Assets that generate recurring yield; generally moderate risk but can be sensitive to interest-rate and protocol risk.',
     expectedReturn: 0.07,
     volatility: 0.12,
     risk: 'medium',
@@ -130,6 +130,8 @@ export const GAME_ASSETS: GameAsset[] = [
 // that appear to the left of the NEXT DAY button; rightGroup contains
 // the more stable assets.
 export const UI_ASSET_ORDER = {
+  // Left: higher risk/return assets (typically 4 items to display nicely)
   leftGroup: ['sword', 'crystal', 'magic', 'yield'],
+  // Right: medium & low risk assets
   rightGroup: ['forest', 'golden', 'shield', 'fountain']
 };
