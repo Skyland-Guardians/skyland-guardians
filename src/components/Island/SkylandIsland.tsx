@@ -5,56 +5,67 @@ export function SkylandIsland() {
   const isChaoMode = gameState.mode === 'chaos';
 
   return (
-    <div style={{
-      position: 'relative',
-      flex: 1,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      transition: 'all 1s ease',
-      backgroundColor: 'transparent' // Remove the blue/purple background
-    }}>
+    <div
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '400px', // Reduced from 500px
+        maxWidth: '500px', // Reduced from 600px
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: '0 auto'
+      }}
+    >
 
       {/* Lightning effects for chaos mode */}
       {isChaoMode && (
         <>
           <img 
-            				src="./assets/main-screen-2-assets/lightning-right.png"
+            src="./assets/main-screen-2-assets/lightning-right.png"
             alt="Lightning"
             style={{
               position: 'absolute',
-              top: '4rem',
-              right: '5rem',
+              top: '10%',
+              right: '10%',
               width: '4rem',
               height: '8rem',
-              animation: 'pulse 2s infinite'
+              animation: 'pulse 2s infinite',
+              zIndex: 1
             }}
           />
           <img 
-            				src="./assets/main-screen-2-assets/lightning-left.png"
+            src="./assets/main-screen-2-assets/lightning-left.png"
             alt="Lightning"
             style={{
               position: 'absolute',
-              top: '3rem',
-              left: '6rem',
+              top: '15%',
+              left: '15%',
               width: '3rem',
               height: '7rem',
-              animation: 'pulse 2s infinite 0.5s'
+              animation: 'pulse 2s infinite 0.5s',
+              zIndex: 1
             }}
           />
         </>
       )}
 
       {/* Main Island Container */}
-      <div style={{ position: 'relative' }}>
+      <div style={{ 
+        position: 'relative',
+        width: '100%',
+        maxWidth: '400px', // Reduced from 600px
+        height: '320px' // Reduced from 400px
+      }}>
         {/* Island with floating animation */}
         <div style={{
-          position: 'relative', // 80% of viewport width
-          height: '80vh', // 80% of viewport height
+          position: 'relative',
+          width: '100%',
+          height: '100%',
           animation: 'pulse 4s infinite'
         }}>
           <img 
-            				src="./assets/main-screen-1-assets/background-sky-island.png"
+            src="./assets/main-screen-1-assets/background-sky-island.png"
             alt="Skyland Base"
             style={{
               width: '100%',
@@ -79,11 +90,11 @@ export function SkylandIsland() {
           }}></div>
         </div>
         
-        {/* Particle effects */}
+        {/* Particle effects - positioned relative to container */}
         <div style={{
           position: 'absolute',
-          top: '8rem',
-          right: '4rem',
+          top: '20%',
+          right: '15%',
           width: '0.25rem',
           height: '0.25rem',
           backgroundColor: '#93c5fd',
@@ -93,8 +104,8 @@ export function SkylandIsland() {
         }}></div>
         <div style={{
           position: 'absolute',
-          bottom: '5rem',
-          left: '8rem',
+          bottom: '25%',
+          left: '20%',
           width: '0.375rem',
           height: '0.375rem',
           backgroundColor: '#fdba74',

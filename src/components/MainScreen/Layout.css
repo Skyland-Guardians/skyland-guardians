@@ -1,0 +1,272 @@
+/* Clean Layout Grid System with Scrolling for Skyland Guardians */
+
+/* Base grid layout with scrollable middle section */
+/* Main game layout container */
+.main-game-layout {
+  display: grid;
+  grid-template-rows: 100px 1fr 180px;
+  grid-template-columns: minmax(200px, 250px) 1fr minmax(300px, 400px);
+  grid-template-areas:
+    "header header header"
+    "left-panel main-content right-panel"
+    "asset-toolbar asset-toolbar asset-toolbar";
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Grid areas with unified scrolling behavior */
+.layout-header {
+  grid-area: header;
+  height: 100px; /* Increased height */
+  min-height: 100px;
+  max-height: 100px;
+  z-index: 5;
+  position: relative;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.layout-left-panel {
+  grid-area: left-panel;
+  z-index: 3;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 1rem;
+  min-width: 200px;
+  max-width: 250px;
+  /* Use full available height in the grid row */
+  height: 100%;
+  /* Custom scrollbar matching main content */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+}
+
+.layout-left-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.layout-left-panel::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.layout-left-panel::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.layout-left-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.layout-main-content {
+  grid-area: main-content;
+  z-index: 2;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  /* Use full available height in the grid row */
+  height: 100%;
+  padding: 1rem;
+  /* Custom scrollbar for main content */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.layout-main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.layout-main-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.layout-main-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.layout-main-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.layout-right-panel {
+  grid-area: right-panel;
+  z-index: 3;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-width: 300px;
+  max-width: 400px;
+  /* Use full available height in the grid row */
+  height: 100%;
+  padding: 2rem 1rem; /* Increased top/bottom padding */
+  /* Custom scrollbar matching others */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+}
+
+.layout-right-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.layout-right-panel::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.layout-right-panel::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.layout-right-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.layout-asset-toolbar {
+  grid-area: asset-toolbar;
+  height: 180px; /* Increased height to fit content */
+  min-height: 180px;
+  max-height: 180px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  position: relative;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: visible; /* Allow slider popups to show */
+}
+
+/* Island container that can grow with content */
+.island-container {
+  width: 100%;
+  max-width: 800px;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+/* Background elements */
+.background-decoration {
+  position: absolute;
+  pointer-events: none;
+  z-index: -2;
+}
+
+/* Modal overlay container */
+.modal-container {
+  z-index: 1000;
+  position: relative;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1200px) {
+  .main-game-layout {
+    grid-template-columns: 180px 1fr 280px;
+  }
+  
+  .layout-left-panel {
+    min-width: 180px;
+    max-width: 180px;
+    padding: 0.5rem;
+  }
+  
+  .layout-right-panel {
+    min-width: 280px;
+    max-width: 280px;
+  }
+  
+  .island-container {
+    margin: 1rem 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-game-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr auto auto;
+    grid-template-areas: 
+      "header"
+      "left-panel"
+      "main-content"
+      "right-panel"
+      "asset-toolbar";
+  }
+  
+  .layout-left-panel,
+  .layout-right-panel {
+    min-width: unset;
+    max-width: unset;
+    padding: 0.5rem;
+    flex-direction: row;
+    justify-content: space-around;
+    max-height: 150px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  
+  .layout-main-content {
+    padding: 0.5rem;
+  }
+  
+  .layout-asset-toolbar {
+    height: 100px;
+    min-height: 80px;
+  }
+  
+  .island-container {
+    margin: 1rem 0;
+    min-height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .layout-header {
+    min-height: 60px;
+    max-height: 80px;
+  }
+  
+  .layout-asset-toolbar {
+    height: 80px;
+    min-height: 60px;
+    padding: 0.25rem;
+  }
+  
+  .layout-left-panel,
+  .layout-right-panel {
+    max-height: 120px;
+  }
+  
+  .island-container {
+    min-height: 250px;
+    margin: 0.5rem 0;
+  }
+}
+
+/* Smooth scrolling for better UX */
+@media (prefers-reduced-motion: no-preference) {
+  .layout-main-content,
+  .layout-left-panel,
+  .layout-right-panel {
+    scroll-behavior: smooth;
+  }
+}

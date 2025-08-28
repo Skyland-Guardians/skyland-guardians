@@ -92,20 +92,17 @@ export function AssetToolbar() {
 
 
   return (
-    <>
     <div style={{
       background: '#5196DC', // Deeper blue from design specifications
-      padding: '2rem 3.25rem', // Increased horizontal padding by 30% (2.5rem * 1.3)
+      padding: '1.5rem 2.5rem', // Reduced padding to fit in grid
       borderTopLeftRadius: '2.5rem', // Much larger rounded corners
       borderTopRightRadius: '2.5rem',
       boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-      position: 'fixed',
-      bottom: '6vh',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      zIndex: 3,
+      position: 'relative', // Use relative positioning within grid
+      zIndex: 5, // Higher z-index to show above slider popups
       width: 'fit-content', // Shrink to content size
-      borderRadius: '2.5rem' // Make all corners rounded since it's now centered
+      borderRadius: '2.5rem', // Make all corners rounded since it's now centered
+      margin: '0 auto' // Center within grid area
     }}>
       <div style={{
         display: 'flex',
@@ -190,7 +187,5 @@ export function AssetToolbar() {
         ))}
       </div>
     </div>
-
-    </>
   );
 }

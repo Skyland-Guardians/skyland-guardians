@@ -7,46 +7,39 @@ export function LeftSidebar() {
   const { setCardCollectionOpen } = useGameState();
   const [showBadges, setShowBadges] = useState(false);
   return (
-    <aside style={{
-      width: '12rem', // Increased width for larger buttons
-      padding: '1.5rem 1rem',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '2rem' // Increased gap
-    }}>
-      {/* MY CARDS Button - Larger size */}
+    <>
+      {/* MY CARDS Button */}
       <button
         onClick={() => setCardCollectionOpen(true)}
         style={{
           backgroundColor: 'transparent',
           color: '#1e3a8a',
-          padding: '1.5rem 1rem', // Increased padding
+          padding: '0.75rem',
           borderRadius: '0.75rem',
-          position: 'relative',
-          overflow: 'hidden',
-          transition: 'all 0.2s ease',
           border: 'none',
           cursor: 'pointer',
-          width: '100%', // Full width of sidebar
-          minHeight: '5rem' // Minimum height
+          width: '100%',
+          marginBottom: '1rem',
+          transition: 'all 0.2s ease'
         }}
       >
         <div style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '0.75rem'
+          gap: '0.25rem'
         }}>
           <img 
-            				src="./assets/main-screen-1-assets/card-main-icon.png" 
+            src="./assets/main-screen-1-assets/card-main-icon.png" 
             alt="Cards"
             style={{
-              width: '9rem', // Slightly narrower
-              height: '12rem' // Same height as badge
+              width: '4rem',
+              height: '5rem',
+              objectFit: 'contain'
             }}
           />
           <span style={{
-            fontSize: '0.875rem', // Larger text
+            fontSize: '0.75rem',
             fontWeight: 'bold',
             textTransform: 'uppercase',
             letterSpacing: '0.05em'
@@ -54,17 +47,17 @@ export function LeftSidebar() {
             MY CARDS
           </span>
         </div>
-
       </button>
 
-      {/* BADGES Button - Larger size */}
-  <button style={{
-        position: 'relative',
+      {/* BADGES Button */}
+      <button style={{
         backgroundColor: 'transparent',
         border: 'none',
         cursor: 'pointer',
         transition: 'all 0.2s ease',
-        padding: '0.5rem 1rem',
+        padding: '0.75rem',
+        width: '100%',
+        borderRadius: '0.75rem'
       }}
       onClick={() => setShowBadges(true)}
       onMouseEnter={(e) => {
@@ -74,43 +67,31 @@ export function LeftSidebar() {
         e.currentTarget.style.transform = 'scale(1)';
       }}>
         <div style={{
-          width: '9rem', // Increased from 6rem to 8rem
-          height: '9rem',
-          margin: '0 auto',
-          position: 'relative'
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '0.25rem'
         }}>
-          {/* Badge main interface image */}
-          <div style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
+          <img 
+            src="./assets/main-screen-1-assets/badge-main-icon.png" 
+            alt="Badge"
+            style={{
+              width: '4rem',
+              height: '4rem',
+              objectFit: 'contain'
+            }}
+          />
+          <span style={{
+            fontSize: '0.75rem',
+            fontWeight: 'bold',
+            color: '#1e3a8a',
+            textAlign: 'center',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
           }}>
-            <img 
-              				src="./assets/main-screen-1-assets/badge-main-icon.png" 
-              alt="Badge"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'contain'
-              }}
-            />
-          </div>
+            BADGES
+          </span>
         </div>
-        
-        <span style={{
-          display: 'block',
-          fontSize: '0.875rem', // Larger text
-          fontWeight: 'bold',
-          color: '#1e3a8a',
-          textAlign: 'center',
-          marginTop: '0.75rem', // More spacing
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em'
-        }}>
-          BADGES
-        </span>
       </button>
       {/* BADGES 弹窗 */}
       {showBadges && (
@@ -121,7 +102,7 @@ export function LeftSidebar() {
           width: '100vw',
           height: '100vh',
           background: 'rgba(0,0,0,0.4)',
-          zIndex: 9999,
+          zIndex: 10000,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -129,12 +110,12 @@ export function LeftSidebar() {
           onClick={() => setShowBadges(false)}
         >
           <div style={{
-            // make outer wrapper transparent so the inner panel's rounded dark background is visible
             background: 'transparent',
             borderRadius: 16,
             padding: 0,
-            width: '540px', // slimmer
-            height: '72vh', // taller and fixed
+            width: '540px',
+            maxHeight: 'calc(100vh - 120px - 80px)', // Account for asset toolbar and header
+            height: 'min(70vh, calc(100vh - 200px))',
             boxShadow: 'none',
             position: 'relative',
             display: 'flex',
@@ -147,7 +128,7 @@ export function LeftSidebar() {
               position: 'absolute',
               top: 8,
               right: 8,
-              background: '#ef4444', // red-500
+              background: '#ef4444',
               color: '#fff',
               border: 'none',
               borderRadius: '50%',
@@ -168,6 +149,6 @@ export function LeftSidebar() {
           </div>
         </div>
       )}
-    </aside>
+    </>
   );
 }

@@ -184,40 +184,29 @@ export function AIPanel() {
   };
 
   return (
-    <aside
+    <div
       style={{
-        marginTop: '1rem',
-        width: '15vw',
-        padding: '1.2rem',
+        width: '100%',
+        backgroundColor: '#89CFF0',
+        borderRadius: '0.5rem',
+        padding: '0.5rem',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'flex-end',
+        height: '100%',
         position: 'relative',
-        height: '70vh'
+        minHeight: '400px'
       }}
     >
-      <div
-        style={{
-          width: '100%',
-          backgroundColor: '#89CFF0',
-          borderRadius: '0.5rem',
-          padding: '0.5rem',
-          display: 'flex',
-          flexDirection: 'column',
-          height: '80%',
-          position: 'relative'
-        }}
-      >
         {/* AI Character */}
         <img
           src={currentPersonality.avatar}
           alt={currentPersonality.name}
           style={{
-            width: '12rem',
-            height: '20rem',
+            width: '8rem',
+            height: '12rem',
             objectFit: 'contain',
             position: 'absolute',
-            top: '-10rem',
+            top: '-6rem',
             alignSelf: 'center'
           }}
         />
@@ -227,7 +216,7 @@ export function AIPanel() {
           fontSize: '0.7rem', 
           color: '#374151',
           marginBottom: '0.5rem',
-          marginTop: '5rem',
+          marginTop: '3rem',
           textAlign: 'center'
         }}>
           {currentPersonality.name} • Guardian Advisor
@@ -301,6 +290,5 @@ export function AIPanel() {
           />
         </form>
       </div>
-    </aside>
   );
 }
