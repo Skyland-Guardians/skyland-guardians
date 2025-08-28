@@ -98,8 +98,7 @@ export function AssetToolbar() {
       borderTopLeftRadius: '2.5rem', // Much larger rounded corners
       borderTopRightRadius: '2.5rem',
       boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-      position: 'relative', // Use relative positioning within grid
-      zIndex: 5, // Higher z-index to show above slider popups
+      position: 'relative',
       width: 'fit-content', // Shrink to content size
       borderRadius: '2.5rem', // Make all corners rounded since it's now centered
       margin: '0 auto' // Center within grid area

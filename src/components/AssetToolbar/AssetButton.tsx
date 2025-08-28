@@ -151,7 +151,7 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
           border: `2px solid ${colors.border}`,
           minWidth: '200px',
           marginBottom: '0.5rem',
-          zIndex: 30,
+          zIndex: 50, /* Above asset toolbar(15) */
           animation: 'slideUp 0.2s ease'
         }}>
           {/* Other Assets Overview */}

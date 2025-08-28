@@ -102,7 +102,7 @@ export function LeftSidebar() {
           width: '100vw',
           height: '100vh',
           background: 'rgba(0,0,0,0.4)',
-          zIndex: 10000,
+          zIndex: 5200, /* Above other modals */
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

@@ -17,7 +17,7 @@ export function CardCollection() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 100
+        zIndex: 5100 /* Above modal-container(5000) */
       }}
     >
       <div

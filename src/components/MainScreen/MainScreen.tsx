@@ -21,13 +21,13 @@ export function MainScreen() {
           {/* Sky Island as background element */}
           <div style={{
             position: 'fixed',
-            top: '45%', // 稍微上移，与色块更好配合
+            top: '45%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: '600px', // 稍微放大
-            height: '480px', // 稍微放大
-            zIndex: 5,
-            pointerEvents: 'none'
+            width: '900px', // 放大容器以容纳更大的岛屿
+            height: '720px', // 放大容器以容纳更大的岛屿
+            zIndex: -1, // 设为负值，在所有UI元素之下但在背景色块之上
+            pointerEvents: 'none' // 确保不阻挡任何交互
           }}>
             <SkylandIsland />
           </div>
@@ -84,7 +84,7 @@ export function MainScreen() {
           <LeftSidebar />
         </aside>
         
-        {/* Main Content - flexible size, now empty to show background */}
+        {/* Main Content - transparent to show background */}
         <main className="layout-main-content">
           {/* Content area is now transparent */}
         </main>

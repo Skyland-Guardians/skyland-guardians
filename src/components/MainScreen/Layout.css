@@ -22,7 +22,7 @@
   height: 100px; /* Increased height */
   min-height: 100px;
   max-height: 100px;
-  z-index: 5;
+  z-index: 10; /* Above island(5), below modals(1000+) */
   position: relative;
   background: transparent; /* fully transparent to show background */
   overflow: hidden;
@@ -30,7 +30,7 @@
 
 .layout-left-panel {
   grid-area: left-panel;
-  z-index: 3;
+  z-index: 12; /* Above header(10), below modals(1000+) */
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
@@ -67,7 +67,7 @@
 
 .layout-main-content {
   grid-area: main-content;
-  z-index: 2;
+  z-index: 11; /* Above header(10), below panels(12+) */
   overflow-y: auto;
   overflow-x: hidden;
   position: relative;
@@ -104,7 +104,7 @@
 
 .layout-right-panel {
   grid-area: right-panel;
-  z-index: 3;
+  z-index: 13; /* Above other panels, below modals(1000+) */
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
@@ -144,12 +144,15 @@
   height: 180px; /* Increased height to fit content */
   min-height: 180px;
   max-height: 180px;
-  z-index: 4;
+  z-index: 15; /* Above all panels, below modals(1000+) */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  position: relative;
+  position: fixed; /* pin to bottom of viewport */
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: transparent; /* fully transparent */
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   overflow: visible; /* Allow slider popups to show */
@@ -158,8 +161,8 @@
 /* Island container that can grow with content */
 .island-container {
   width: 100%;
-  max-width: 800px;
-  min-height: 400px;
+  max-width: 1000px; /* 提高上限以支持更大岛屿 */
+  min-height: 600px; /* 增加最小高度 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -175,7 +178,7 @@
 
 /* Modal overlay container */
 .modal-container {
-  z-index: 1000;
+  z-index: 5000; /* Above all UI elements */
   position: relative;
 }
 
