@@ -192,6 +192,17 @@ export class EventManager {
       // 给予星星奖励
       updates.stars = gameState.stars + completedMissions.reduce((sum, m) => sum + m.rewardStars, 0);
       
+      // 同步更新playerCards中对应任务卡片的状态
+      updates.playerCards = gameState.playerCards.map(card => {
+        if (card.type === 'mission') {
+          const completedMission = completedMissions.find(cm => cm.id === (card.data as Mission).id);
+          if (completedMission) {
+            return { ...card, data: completedMission };
+          }
+        }
+        return card;
+      });
+      
       // 返回完成的任务信息，用于显示完成提示
       (updates as any).completedMissions = completedMissions;
     }
