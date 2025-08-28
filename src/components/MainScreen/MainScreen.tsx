@@ -21,7 +21,7 @@ export function MainScreen() {
           {/* Sky Island as background element */}
           <div style={{
             position: 'fixed',
-            top: '45%',
+            top: '55%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
             width: 'min(900px, 70vw)', // 缩小响应式宽度上限并增加视口占比控制
