@@ -13,27 +13,13 @@ export function AssetButton({ asset, onClick, isActive = false }: AssetButtonPro
   const { updateAssetAllocation, assetAllocations, addMessage, gameState, coins, performanceHistory } = useGameState();
 
   const handleSliderChange = (newValue: number) => {
-    // Calculate current total allocation excluding this asset
-    const otherAssetsTotal = assetAllocations
-      .filter(a => a.id !== asset.id)
-      .reduce((sum, a) => sum + a.allocation, 0);
-    
-    // Calculate what the total would be with the new value
-    const potentialTotal = otherAssetsTotal + newValue;
-    
-    // If the potential total is less than 100%, auto-adjust to make it 100%
-    // But only if the user is dragging upward (increasing allocation)
-    let finalValue = newValue;
-    if (potentialTotal < 100 && newValue > asset.allocation) {
-      // Auto-adjust to fill up to 100%
-      finalValue = 100 - otherAssetsTotal;
-      // Ensure we don't exceed 100%
-      finalValue = Math.min(finalValue, 100);
-      // Ensure we don't go below 0%
-      finalValue = Math.max(finalValue, 0);
-    }
-    
-    updateAssetAllocation(asset.id, finalValue);
+    // Set the asset allocation to the exact value selected by the user.
+    // Previously we auto-filled the remainder which caused preset clicks
+    // (e.g. 25%) to jump to unexpected values (e.g. 35%). Keep logic simple
+    // here — other consistency checks should live in a single place
+    // (e.g. on APPLY) if needed.
+    const clamped = Math.max(0, Math.min(100, newValue));
+    updateAssetAllocation(asset.id, clamped);
   };
 
   const handleDirectInput = (value: string) => {
