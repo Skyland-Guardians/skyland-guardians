@@ -2,6 +2,7 @@ import type { AchievementSummary } from '../../types/achievement';
 
 interface AchievementPanelProps {
   summary: AchievementSummary;
+  onClose?: () => void;
 }
 import { achievements } from '../../data/achievements';
 
@@ -10,17 +11,23 @@ import { useState } from 'react';
 import './AchievementPanel.css';
 import '../ModalShell/ModalShell.css';
 
-export const AchievementPanel: React.FC<AchievementPanelProps> = ({ summary }) => {
+export const AchievementPanel: React.FC<AchievementPanelProps> = ({ summary, onClose }) => {
   const [viewAll, setViewAll] = useState(false);
   // 获取已解锁徽章详细信息
   const unlocked = achievements.filter(a => summary.badges.includes(a.badgeIcon));
   const allList = viewAll ? achievements : unlocked;
 
   return (
-    <div className="achievement-panel" style={{ width: '100%', height: '80%', maxHeight: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
+    <div className="achievement-panel" style={{ width: '100%', flex: '1 1 auto', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
       <div className="my-cards-header">
         <h3 className="my-cards-title">🏅 Badges Gained</h3>
-        {/* close button rendered by parent */}
+        <button
+          className="my-cards-close"
+          onClick={() => {
+            if (onClose) onClose();
+          }}
+        >×
+        </button>
       </div>
 
       <div className="my-cards-content">
@@ -38,7 +45,7 @@ export const AchievementPanel: React.FC<AchievementPanelProps> = ({ summary }) =
             <div className="empty-cards">No badges yet</div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 18, paddingBottom: 12 }}>
-              {allList.map((a, idx) => (
+                {allList.map((a, idx) => (
                 <div
                   key={a.id}
                   className={`card-item ${unlocked.includes(a) ? '' : 'declined'}`}
@@ -48,7 +55,7 @@ export const AchievementPanel: React.FC<AchievementPanelProps> = ({ summary }) =
                     {idx + 1}
                   </div>
 
-                  <img src={a.badgeIcon} alt={a.name} style={{ width: 80, height: 80, marginRight: 24, borderRadius: 10, boxShadow: '0 1px 6px rgba(0,0,0,0.10)' }} />
+                  <img src={a.badgeIcon} alt={a.name} style={{ width: 80, height: 80, marginRight: 24, borderRadius: 10 }} />
 
                   <div style={{ flex: 1 }}>
                     <div className="card-title">{a.name}</div>

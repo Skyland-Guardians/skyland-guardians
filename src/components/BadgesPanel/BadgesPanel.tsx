@@ -7,10 +7,9 @@ export function BadgesPanel() {
   if (!isBadgesOpen) return null;
 
   return (
-    <div className="panel-overlay no-backdrop" onClick={() => setBadgesOpen && setBadgesOpen(false)}>
-      <div className="panel-card" onClick={e => e.stopPropagation()}>
-        <button className="panel-close" onClick={() => setBadgesOpen && setBadgesOpen(false)}>×</button>
-        <AchievementPanel summary={achievementService.getSummary()} />
+    <div className="my-cards-overlay" onClick={() => setBadgesOpen && setBadgesOpen(false)}>
+      <div className="my-cards-modal" onClick={e => e.stopPropagation()}>
+        <AchievementPanel summary={achievementService.getSummary()} onClose={() => setBadgesOpen && setBadgesOpen(false)} />
       </div>
     </div>
   );
