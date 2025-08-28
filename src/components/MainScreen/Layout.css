@@ -47,6 +47,69 @@
   scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
 
+/* Left sidebar action group - center the two primary buttons */
+.left-action-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* horizontal center of buttons */
+  justify-content: center; /* vertical center in the left panel */
+  gap: 1rem;
+  width: 100%;
+  height: 100%;
+}
+
+.left-action-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  padding: 0.75rem 1rem; /* more padding to enlarge hit target */
+  width: 88%; /* wider buttons for stronger presence */
+  border-radius: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.left-action-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+}
+
+.left-action-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem; /* larger gap between icon and label */
+}
+
+.left-action-icon {
+  width: 4.5rem; /* bigger icon */
+  height: 4.5rem;
+  object-fit: contain;
+}
+
+.left-action-label {
+  font-size: 0.95rem; /* larger label for readability */
+  font-weight: 700;
+  color: #1e3a8a;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+/* Responsive tweak: slightly smaller buttons/icon on narrow screens */
+@media (max-width: 768px) {
+  .left-action-btn { width: 60%; padding: 0.5rem 0.75rem; }
+  .left-action-icon { width: 3.25rem; height: 3.25rem; }
+  .left-action-label { font-size: 0.8rem; }
+}
+
+/* Remove focus outline / shadow to avoid border-like appearance */
+.left-action-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
 .layout-left-panel::-webkit-scrollbar {
   width: 8px;
 }

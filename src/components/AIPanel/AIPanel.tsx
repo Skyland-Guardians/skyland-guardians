@@ -187,7 +187,7 @@ export function AIPanel() {
     <div
       style={{
         width: '100%',
-        backgroundColor: '#5196DC', /* match asset toolbar color */
+        backgroundColor: 'rgba(81,150,220,0.85)', /* semi-transparent version of #5196DC */
         borderRadius: '0.5rem',
         padding: '0.5rem',
         display: 'flex',

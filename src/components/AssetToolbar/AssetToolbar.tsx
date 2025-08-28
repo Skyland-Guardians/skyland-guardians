@@ -94,13 +94,13 @@ export function AssetToolbar() {
   return (
     <div style={{
       background: '#5196DC', // Deeper blue from design specifications
-      padding: '1.5rem 2.5rem', // Reduced padding to fit in grid
+      padding: '1.5rem 3.5rem', // Reduced padding to fit in grid
       borderTopLeftRadius: '2.5rem', // Much larger rounded corners
       borderTopRightRadius: '2.5rem',
       boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
       position: 'relative',
       width: 'fit-content', // Shrink to content size
-      borderRadius: '2.5rem', // Make all corners rounded since it's now centered
+      borderRadius: '1.5rem', // Make all corners rounded since it's now centered
       margin: '0 auto' // Center within grid area
     }}>
       <div style={{
