@@ -41,6 +41,12 @@ export function MyCards({ isOpen, onClose, playerCards, activeMissions, activeEv
           {mission.tip && (
             <p className="card-tip">💡 {mission.tip}</p>
           )}
+          {mission.completionDescription && (
+            <div className="card-completion">
+              <span className="completion-label">Completion Criteria:</span>
+              <span className="completion-description">{mission.completionDescription}</span>
+            </div>
+          )}
         </div>
       </div>
     );

@@ -56,6 +56,7 @@ export interface Mission {
   completedAt?: number; // day when completed
   targetAssets?: string[]; // required assets for completion
   targetAllocation?: number; // required allocation percentage
+  completionDescription?: string; // user-friendly completion criteria
 }
 
 export interface EventCard {

@@ -26,6 +26,12 @@ export function CardChoiceModal({ card, isOpen, onAccept, onDecline, onClose }: 
           <p className="mission-background">{mission.background}</p>
           <div className="mission-details">
             <p className="mission-tip">💡 {mission.tip}</p>
+            {mission.completionDescription && (
+              <div className="mission-completion">
+                <span className="completion-label">Completion Criteria:</span>
+                <span className="completion-description">{mission.completionDescription}</span>
+              </div>
+            )}
             <p className="mission-focus">🎯 Focus: {mission.focus}</p>
             <div className="mission-reward">
               <span className="stars">⭐ {mission.rewardStars} Stars</span>

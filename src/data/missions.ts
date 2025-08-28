@@ -9,6 +9,7 @@ export interface MissionConfig {
   rewardStars: number;
   targetAssets: string[];
   targetAllocation: number;
+  completionDescription: string; // 新增：用户友好的完成条件描述
   completionCheck: (assetAllocations: AssetType[]) => boolean;
 }
 
@@ -23,6 +24,7 @@ export const MISSION_CONFIGS: MissionConfig[] = [
     rewardStars: 3,
     targetAssets: ['sword', 'crystal'],
     targetAllocation: 40, // 表示每个资产不超过40%
+    completionDescription: '🎯 Agile Sword < 40% AND Mystic Crystal < 40%',
     completionCheck: (assetAllocations: AssetType[]) => {
       // Check that EACH high-risk asset is below 40% (diversification goal)
       const swordAsset = assetAllocations.find(a => a.id === 'sword');
@@ -44,6 +46,7 @@ export const MISSION_CONFIGS: MissionConfig[] = [
     rewardStars: 4,
     targetAssets: ['forest'],
     targetAllocation: 20,
+    completionDescription: '🌳 Green Grove ≥ 20%',
     completionCheck: (assetAllocations: AssetType[]) => {
       const forestAsset = assetAllocations.find(a => a.id === 'forest');
       return (forestAsset?.allocation || 0) >= 20;
@@ -58,6 +61,7 @@ export const MISSION_CONFIGS: MissionConfig[] = [
     rewardStars: 2,
     targetAssets: ['golden', 'shield'],
     targetAllocation: 35,
+    completionDescription: '🛡️ Golden Temple + Sturdy Shield ≥ 35% (combined)',
     completionCheck: (assetAllocations: AssetType[]) => {
       const safeHavenAllocation = ['golden', 'shield'].reduce((sum, assetId) => {
         const asset = assetAllocations.find(a => a.id === assetId);
@@ -75,6 +79,7 @@ export const MISSION_CONFIGS: MissionConfig[] = [
     rewardStars: 5,
     targetAssets: ['fountain'],
     targetAllocation: 15,
+    completionDescription: '⛲ Calm Fountain ≥ 15%',
     completionCheck: (assetAllocations: AssetType[]) => {
       const fountainAsset = assetAllocations.find(a => a.id === 'fountain');
       return (fountainAsset?.allocation || 0) >= 15;
@@ -89,6 +94,7 @@ export const MISSION_CONFIGS: MissionConfig[] = [
     rewardStars: 1,
     targetAssets: ['yield'],
     targetAllocation: 25,
+    completionDescription: '🏛️ Temple of Yield ≥ 25%',
     completionCheck: (assetAllocations: AssetType[]) => {
       const yieldAsset = assetAllocations.find(a => a.id === 'yield');
       return (yieldAsset?.allocation || 0) >= 25;
@@ -121,7 +127,8 @@ export class MissionManager {
       rewardStars: config.rewardStars,
       status: 'pending',
       targetAssets: config.targetAssets,
-      targetAllocation: config.targetAllocation
+      targetAllocation: config.targetAllocation,
+      completionDescription: config.completionDescription
     };
   }
 
