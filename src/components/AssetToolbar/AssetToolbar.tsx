@@ -4,7 +4,7 @@ import { AssetButton } from './AssetButton';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
 
 export function AssetToolbar() {
-  const { assetAllocations, addMessage, gameState, coins, performanceHistory } = useGameState();
+  const { assetAllocations, addMessage, gameState, coins, performanceHistory, updateActiveCards, triggerNewCards } = useGameState();
   const [activeAssetId, setActiveAssetId] = useState<string | null>(null);
 
   const handleAssetClick = (assetId: string) => {
@@ -22,15 +22,28 @@ export function AssetToolbar() {
     if (Math.abs(total - 100) < 0.1) {
       setActiveAssetId(null); // Close any open sliders
       
+      // Store current allocations for consistent use throughout this function
+      const currentAllocations = [...assetAllocations];
+      
+      // First, check for any completed missions with the new allocation
+      if (updateActiveCards) {
+        updateActiveCards(currentAllocations);
+      }
+      
+      // Then, check if this action triggers any new cards (missions/events)
+      if (triggerNewCards) {
+        triggerNewCards('apply');
+      }
+
       // Create rich portfolio summary message similar to settlement format
       const portfolioSummary = {
         type: 'portfolio',
         title: `PORTFOLIO APPLIED! 📋`,
         summary: {
           totalAllocation: total,
-          assetCount: assetAllocations.length
+          assetCount: currentAllocations.length
         },
-        assets: assetAllocations.map((asset) => ({
+        assets: currentAllocations.map((asset) => ({
           id: asset.id,
           name: asset.shortName || asset.name,
           icon: asset.icon,
@@ -59,7 +72,7 @@ export function AssetToolbar() {
       // Get AI feedback on the portfolio allocation
       try {
         const aiFeedback = await gamifiedAIService.generateApplyFeedback({
-          assets: assetAllocations,
+          assets: currentAllocations,
           currentDay: gameState.currentDay,
           stars: gameState.stars,
           level: gameState.level,

@@ -42,12 +42,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
   };
 
   const defaultAllocations: AssetType[] = GAME_ASSETS.map(a => {
-    // Set initial allocation: 25% Tech (sword), 75% Bonds (shield), 0% others
+    // Set initial allocation: 70% Tech (sword), 30% Bonds (shield), 0% others
+    // This configuration doesn't complete any missions by default:
+    // - Task 1: sword=70% (>=40%), doesn't complete 
+    // - Task 3: shield=30% (<35%), doesn't complete
     let allocation = 0;
     if (a.id === 'sword') {
-      allocation = 25; // Agile Sword (Technology)
+      allocation = 70; // Agile Sword (Technology)
     } else if (a.id === 'shield') {
-      allocation = 75; // Sturdy Shield (Bonds)
+      allocation = 30; // Sturdy Shield (Bonds)
     }
     
     return {
@@ -94,12 +97,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       const updated = prev.map(asset => 
         asset.id === assetId ? { ...asset, allocation } : asset
       );
-      
-      // 只在分配更新后检查任务完成状态，不触发新事件
-      setTimeout(() => {
-        updateActiveCards();
-      }, 100);
-      
       return updated;
     });
   };

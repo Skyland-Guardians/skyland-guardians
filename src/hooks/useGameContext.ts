@@ -38,7 +38,7 @@ export interface GameContextType {
   triggerNewCards?: (action: 'apply' | 'nextDay' | 'init') => void;
   acceptCard?: (card: PlayerCard) => void;
   declineCard?: (card: PlayerCard) => void;
-  updateActiveCards?: () => void;
+  updateActiveCards?: (allocations?: AssetType[]) => void;
   clearNewCardFlags?: () => void;
   // Debug 测试方法
   triggerTestMission?: (missionId: number) => void;

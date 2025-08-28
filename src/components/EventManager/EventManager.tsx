@@ -9,7 +9,6 @@ import './EventManager.css';
 export function EventManager() {
   const {
     gameState,
-    assetAllocations,
     triggerNewCards,
     acceptCard,
     declineCard,
@@ -66,12 +65,12 @@ export function EventManager() {
     }
   }, [gameState.playerCards, clearNewCardFlags]);
 
-  // Update active cards status periodically
+  // Update active cards status only when day changes
   useEffect(() => {
     if (updateActiveCards) {
       updateActiveCards();
     }
-  }, [assetAllocations, gameState.currentDay, updateActiveCards]);
+  }, [gameState.currentDay, updateActiveCards]);
 
   const handleAcceptCard = () => {
     if (currentPendingCard && acceptCard) {
