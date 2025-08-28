@@ -236,17 +236,48 @@ export function AIPanel() {
             <div
               key={msg.id}
               style={{
-                alignSelf: msg.sender === 'ai' ? 'flex-start' : 'flex-end',
-                backgroundColor: '#ffffff',
-                color: '#111827',
-                borderRadius: '0.5rem',
-                padding: '0.4rem 0.8rem',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
-                maxWidth: '95%',
-                fontSize: '0.85rem'
+                display: 'flex',
+                flexDirection: msg.sender === 'ai' ? 'row' : 'row-reverse',
+                alignItems: 'flex-start',
+                gap: '0.5rem',
+                marginBottom: '0.25rem'
               }}
             >
-              <RichMessage content={msg.content} />
+              {/* Avatar */}
+              <div style={{
+                flexShrink: 0,
+                width: '2rem',
+                height: '2rem',
+                borderRadius: '50%',
+                overflow: 'hidden',
+                border: '2px solid #ffffff',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                <img 
+                  src={msg.sender === 'ai' ? currentPersonality.avatar : './assets/main-screen-1-assets/child-avatar-icon.png'}
+                  alt={msg.sender === 'ai' ? currentPersonality.name : 'User'}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              </div>
+              
+              {/* Message Bubble */}
+              <div
+                style={{
+                  backgroundColor: '#ffffff',
+                  color: '#111827',
+                  borderRadius: '0.5rem',
+                  padding: '0.4rem 0.8rem',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+                  maxWidth: '85%',
+                  fontSize: '0.85rem'
+                }}
+              >
+                <RichMessage content={msg.content} />
+              </div>
             </div>
           ))}
           
@@ -254,18 +285,49 @@ export function AIPanel() {
           {isTyping && (
             <div
               style={{
-                  alignSelf: 'flex-start',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                gap: '0.5rem',
+                marginBottom: '0.25rem'
+              }}
+            >
+              {/* AI Avatar */}
+              <div style={{
+                flexShrink: 0,
+                width: '2rem',
+                height: '2rem',
+                borderRadius: '50%',
+                overflow: 'hidden',
+                border: '2px solid #ffffff',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                <img 
+                  src={currentPersonality.avatar}
+                  alt={currentPersonality.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              </div>
+              
+              {/* Typing Message */}
+              <div
+                style={{
                   backgroundColor: '#ffffff',
                   color: '#374151',
                   borderRadius: '0.5rem',
                   padding: '0.4rem 0.8rem',
                   boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
-                  maxWidth: '95%',
+                  maxWidth: '85%',
                   fontStyle: 'italic',
                   fontSize: '0.85rem'
                 }}
-            >
-              {currentPersonality.name} is consulting the crystals...
+              >
+                {currentPersonality.name} is consulting the crystals...
+              </div>
             </div>
           )}
           
