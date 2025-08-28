@@ -1,10 +1,64 @@
 import { useGameState } from '../../hooks/useGameContext';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import HistoryModal from '../HistoryModal/HistoryModal';
-import { useState } from 'react';
+import AvatarModal from '../AvatarModal/AvatarModal';
 
 export function Header() {
   const { gameState, userInfo, coins, addMessage, assetAllocations, performanceHistory, getLevelProgress } = useGameState();
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [avatar, setAvatar] = useState(userInfo.avatar || '/src/assets/主界面1资源/小孩头像icon.png');
+  const [nickname, setNickname] = useState(userInfo.name || 'JAMES');
+  const [selectedBorder, setSelectedBorder] = useState(() => {
+    const stored = localStorage.getItem('userAvatarBorder');
+    return stored ? Number(stored) : 0;
+  });
+  const [selectedPendant, setSelectedPendant] = useState(() => {
+    const stored = localStorage.getItem('userAvatarPendant');
+    return stored ? Number(stored) : 0;
+  });
+  // 新增：边框和挂件选择
+  const borderStyles = [
+    { name: 'Default', style: { border: '3px solid #4a4a6a' } },
+    { name: 'Pink', style: { border: '3px solid #f472b6', boxShadow: '0 0 8px #f472b6' } },
+    { name: 'Blue', style: { border: '3px solid #3b82f6', boxShadow: '0 0 8px #3b82f6' } },
+    { name: 'Purple', style: { border: '3px solid #8b5cf6', boxShadow: '0 0 8px #8b5cf6' } },
+    { name: 'Champion', style: { border: '3px dashed #fbbf24', boxShadow: '0 0 12px #fbbf24' } },
+    { name: 'Gradient', style: { border: '3px solid transparent', background: 'linear-gradient(90deg, #f472b6, #3b82f6, #8b5cf6, #fbbf24)', boxShadow: '0 0 10px #8b5cf6', backgroundClip: 'border-box' } },
+    { name: 'Dotted', style: { border: '3px dotted #6366f1', boxShadow: '0 0 8px #6366f1' } },
+    { name: 'Custom', style: { border: '3px double #10b981', boxShadow: '0 0 10px #10b981', background: 'linear-gradient(135deg, #10b981 0%, #fbbf24 100%)', backgroundClip: 'border-box' } },
+  ];
+  const pendantIcons = [
+    { name: 'None', icon: null },
+    { name: 'Star', icon: '⭐' },
+    { name: 'Trophy', icon: '🏆' },
+    { name: 'Sakura', icon: '🌸' },
+    { name: 'Crown', icon: '👑' },
+  ];
+  // Duplicate state declarations removed. Already declared above.
+  // 敏感词列表
+  const forbiddenWords = ['admin', 'test', 'badword', '管理员', '测试'];
+  // 校验昵称格式
+  function validateNickname(name: string) {
+    if (!name.trim()) return 'Nickname cannot be empty';
+    if (name.length > 16) return 'Nickname must be at most 16 characters';
+    if (forbiddenWords.some(w => name.toLowerCase().includes(w))) return 'Nickname contains forbidden words';
+    // Support emoji/special chars, allow all unicode
+    return '';
+  }
+  const nicknameError = validateNickname(nickname);
+  // 读取localStorage头像和昵称
+  useEffect(() => {
+    const storedAvatar = localStorage.getItem('userAvatar');
+    const storedNickname = localStorage.getItem('userNickname');
+    const storedBorder = localStorage.getItem('userAvatarBorder');
+    const storedPendant = localStorage.getItem('userAvatarPendant');
+    if (storedAvatar) setAvatar(storedAvatar);
+    if (storedNickname) setNickname(storedNickname);
+    if (storedBorder) setSelectedBorder(Number(storedBorder));
+    if (storedPendant) setSelectedPendant(Number(storedPendant));
+  }, []);
   
   // 获取等级信息，如果没有getLevelProgress则使用默认值
   const levelInfo = getLevelProgress ? getLevelProgress() : {
@@ -82,24 +136,35 @@ export function Header() {
           alignItems: 'center',
           gap: '0.5rem'
         }}>
-          <div style={{
+        <div
+          style={{
+            position: 'relative',
             width: '4rem',
             height: '4rem',
             borderRadius: '50%',
             overflow: 'hidden',
-            border: '4px solid #fed7aa',
-            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'
-          }}>
-            <img 
-              src={userInfo.avatar} 
-              alt="User Avatar" 
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover'
-              }}
-            />
-          </div>
+            ...borderStyles[selectedBorder].style,
+            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+            cursor: 'pointer',
+          }}
+          onClick={() => setShowAvatarModal(true)}
+          tabIndex={0}
+          title="Click to edit avatar and nickname"
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') setShowAvatarModal(true);
+          }}
+        >
+          <img 
+            src={avatar} 
+            alt="User Avatar" 
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover'
+            }}
+          />
+          {/* 挂件已移除，不再显示 */}
+        </div>
         </div>
         <div style={{
           display: 'flex',
@@ -150,7 +215,7 @@ export function Header() {
             margin: '0',
             textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
           }}>
-            {userInfo.name}, {levelInfo.currentLevelConfig.description}
+            {nickname}, {levelInfo.currentLevelConfig.description}
           </h1>
           {/* Progress Bar */}
           {levelInfo.nextLevelConfig && (
@@ -308,6 +373,129 @@ export function Header() {
       </div>
       
       {/* History Modal */}
+      {/* Avatar Modal (Portal) */}
+      {showAvatarModal && createPortal(
+        <div
+          className="my-cards-overlay"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 99999,
+            background: 'rgba(30, 30, 46, 0.85)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'auto',
+          }}
+          onClick={() => setShowAvatarModal(false)}
+          aria-modal="true"
+          role="dialog"
+        >
+          <div
+            className="my-cards-modal"
+            tabIndex={-1}
+            onClick={e => e.stopPropagation()}
+            style={{
+              maxWidth: 480,
+              minHeight: 380,
+              background: 'linear-gradient(145deg, #23233e 0%, #181826 100%)',
+              borderRadius: 18,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.28)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+              padding: 0,
+              margin: 0,
+              position: 'fixed',
+              zIndex: 100000,
+              pointerEvents: 'auto',
+            }}
+          >
+            <div className="my-cards-header" style={{ padding: '20px 24px', borderBottom: '1px solid rgba(74,74,106,0.9)', background: 'linear-gradient(145deg, #2a2a3e, #1e1e2e)', borderTopLeftRadius: 16, borderTopRightRadius: 16, width: '100%' }}>
+              <h3 className="my-cards-title" style={{ fontSize: '1.3rem', color: '#fff', margin: 0 }}>Edit Avatar &amp; Nickname</h3>
+              <button className="my-cards-close" style={{ fontSize: '2rem', color: '#aaa', background: 'none', border: 'none', cursor: 'pointer', width: 32, height: 32, borderRadius: '50%', position: 'absolute', top: 18, right: 18 }} onClick={() => setShowAvatarModal(false)}>×</button>
+            </div>
+            <div className="my-cards-content" style={{ width: '100%', padding: '32px 32px 24px 32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
+              {/* Avatar preview with border and pendant (pendant outside top-left, 45° tilt, half over border) */}
+              <div style={{ position: 'relative', width: 100, height: 100, borderRadius: '50%', overflow: 'hidden', background: '#222', ...borderStyles[selectedBorder].style, marginBottom: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.18)' }}>
+                <img src={avatar} alt="avatar-preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                {/* 挂件预览已移除 */}
+              </div>
+              {/* Border selection */}
+              <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+                {borderStyles.map((b, i) => (
+                  <button key={b.name} type="button" style={{ width: 28, height: 28, borderRadius: '50%', border: i === selectedBorder ? '2px solid #fbbf24' : '2px solid #444', background: '#23233e', margin: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: i === selectedBorder ? '0 0 6px #fbbf24' : 'none' }} onClick={() => setSelectedBorder(i)} title={b.name}>
+                    <span style={{ width: 18, height: 18, borderRadius: '50%', ...b.style, display: 'inline-block' }}></span>
+                  </button>
+                ))}
+              </div>
+              {/* 挂件选择区已移除 */}
+              <label style={{ display: 'inline-block', marginBottom: 12, cursor: 'pointer' }}>
+                <span style={{ padding: '7px 16px', border: '1.5px solid #4a4a6a', borderRadius: 10, background: '#23233e', color: '#fff', fontWeight: 600, fontSize: '1rem', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>Choose image…</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = () => {
+                        setAvatar(String(reader.result || ''));
+                        localStorage.setItem('userAvatar', String(reader.result || ''));
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+              </label>
+              <input
+                type="text"
+                value={nickname}
+                onChange={e => {
+                  setNickname(e.target.value);
+                  localStorage.setItem('userNickname', e.target.value);
+                }}
+                placeholder="Enter nickname"
+                maxLength={16}
+                style={{ width: '100%', marginBottom: 4, padding: '12px 14px', borderRadius: 10, border: '1.5px solid #4a4a6a', fontSize: '1.08rem', background: '#23233e', color: '#fff', fontWeight: 500, boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
+              />
+              {/* Nickname validation message */}
+              {nicknameError && (
+                <div style={{ color: '#f87171', fontSize: '0.95rem', marginBottom: 6 }}>{nicknameError}</div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, width: '100%', marginTop: 10 }}>
+                <button
+                  type="button"
+                  style={{ background: '#23233e', color: '#aaa', padding: '9px 18px', borderRadius: 10, border: 'none', fontWeight: 600, fontSize: '1rem', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
+                  onClick={() => setShowAvatarModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  style={{ background: (!nickname.trim() || nickname.length > 16 || !!nicknameError) ? '#666' : '#4a4a6a', color: '#fff', padding: '9px 18px', borderRadius: 10, border: 'none', fontWeight: 600, fontSize: '1rem', cursor: (!nickname.trim() || nickname.length > 16 || !!nicknameError) ? 'not-allowed' : 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
+                  onClick={() => {
+                    setShowAvatarModal(false);
+                    localStorage.setItem('userAvatar', avatar);
+                    localStorage.setItem('userNickname', nickname);
+                    localStorage.setItem('userAvatarBorder', String(selectedBorder));
+                    localStorage.setItem('userAvatarPendant', String(selectedPendant));
+                  }}
+                  disabled={!nickname.trim() || nickname.length > 16 || !!nicknameError}
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
       <HistoryModal
         isOpen={showHistoryModal}
         onClose={() => setShowHistoryModal(false)}
