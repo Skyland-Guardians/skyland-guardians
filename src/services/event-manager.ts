@@ -174,7 +174,9 @@ export class EventManager {
     // 检查任务完成
     const completedMissions: Mission[] = [];
     const activeMissions = gameState.activeMissions.map(mission => {
+      console.log('🔄 [EventManager Service] Checking mission:', mission.id, 'status:', mission.status);
       if (mission.status === 'active' && this.checkMissionCompletion(mission, assetAllocations)) {
+        console.log('🎉 [EventManager Service] Mission COMPLETED:', mission.id);
         const completed = {
           ...mission,
           status: 'completed' as const,
@@ -197,6 +199,7 @@ export class EventManager {
         if (card.type === 'mission') {
           const completedMission = completedMissions.find(cm => cm.id === (card.data as Mission).id);
           if (completedMission) {
+            console.log('🔄 [EventManager Service] Updating playerCard for completed mission:', completedMission.id);
             return { ...card, data: completedMission };
           }
         }
@@ -205,6 +208,11 @@ export class EventManager {
       
       // 返回完成的任务信息，用于显示完成提示
       (updates as any).completedMissions = completedMissions;
+    }
+
+    // minimal logging: which keys will be updated
+    if (Object.keys(updates).length > 0) {
+      console.log('🔄 [EventManager Service] updateActiveCards will update:', Object.keys(updates));
     }
 
     // 检查事件到期

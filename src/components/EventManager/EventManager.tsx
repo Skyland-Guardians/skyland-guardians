@@ -24,6 +24,9 @@ export function EventManager() {
   const [showMissionCompleted, setShowMissionCompleted] = useState(false);
   const processedCompletionsRef = useRef<Set<number>>(new Set());
 
+  // Minimal render log for EventManager
+  console.log('🔄 [EventManager] Render - Day:', gameState.currentDay, 'ActiveMissions:', gameState.activeMissions.length);
+
   // Initialize events on first day
   useEffect(() => {
     console.log('🌅 [EventManager] First day init effect, currentDay:', gameState.currentDay, 'playerCards length:', gameState.playerCards.length);
@@ -35,9 +38,7 @@ export function EventManager() {
 
   // Handle pending cards
   useEffect(() => {
-    console.log('📋 [EventManager] Pending cards effect, pendingCards:', gameState.pendingCards.length, 'currentPendingCard:', !!currentPendingCard);
     if (gameState.pendingCards.length > 0 && !currentPendingCard) {
-      console.log('📝 [EventManager] Setting current pending card');
       setCurrentPendingCard(gameState.pendingCards[0]);
       setShowCardChoice(true);
     }
@@ -45,31 +46,27 @@ export function EventManager() {
 
   // Check for mission completions
   useEffect(() => {
-    console.log('🏆 [EventManager] Mission completion check effect, activeMissions:', gameState.activeMissions.length);
     const completedMissions = gameState.activeMissions.filter(
       mission => mission.status === 'completed' && !processedCompletionsRef.current.has(mission.id)
     );
 
     if (completedMissions.length > 0) {
-      console.log('🎉 [EventManager] Found completed missions:', completedMissions.map(m => m.id));
       const mission = completedMissions[0];
+      console.log('🎉 [EventManager] Mission completed detected:', mission.id);
       setCompletedMission(mission);
       setShowMissionCompleted(true);
-      // 使用ref避免触发useEffect重新运行
+      // mark as processed
       processedCompletionsRef.current.add(mission.id);
     }
-  }, [gameState.activeMissions]); // 移除processedCompletions依赖避免循环
+  }, [gameState.activeMissions]);
 
   // Auto-clear new card flags after 5 seconds
   useEffect(() => {
     const newCardsCount = gameState.playerCards.filter(card => card.isNew).length;
-    console.log('✨ [EventManager] New cards clear effect, newCardsCount:', newCardsCount);
     if (newCardsCount > 0 && clearNewCardFlags) {
-      console.log('⏰ [EventManager] Setting timer to clear new card flags');
       const timer = setTimeout(() => {
-        console.log('🧹 [EventManager] Clearing new card flags');
         clearNewCardFlags();
-      }, 5000); // Clear after 5 seconds
+      }, 5000);
 
       return () => clearTimeout(timer);
     }
@@ -77,11 +74,15 @@ export function EventManager() {
 
   // Update active cards status only when day changes
   useEffect(() => {
-    console.log('🌅 [EventManager] Day changed, updating active cards');
     if (updateActiveCards) {
       updateActiveCards();
     }
-  }, [gameState.currentDay]); // Removed updateActiveCards dependency
+
+    // clear processed completions periodically
+    if (gameState.currentDay % 10 === 0) {
+      processedCompletionsRef.current.clear();
+    }
+  }, [gameState.currentDay]);
 
   const handleAcceptCard = () => {
     if (currentPendingCard && acceptCard) {
@@ -142,7 +143,8 @@ export function EventManager() {
 
   const handleCloseMissionCompleted = () => {
     setShowMissionCompleted(false);
-    setCompletedMission(null);
+    // small delay to avoid re-trigger in same render cycle
+    setTimeout(() => setCompletedMission(null), 100);
   };
 
   const handleNewCardsClick = () => {
@@ -172,6 +174,7 @@ export function EventManager() {
       )}
 
       {/* Mission completion celebration */}
+      {console.log('🎊 [EventManager] Rendering MissionCompletedModal - Mission:', completedMission?.id, 'IsOpen:', showMissionCompleted)}
       <MissionCompletedModal
         mission={completedMission}
         isOpen={showMissionCompleted}
