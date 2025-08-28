@@ -245,6 +245,81 @@
   position: relative;
 }
 
+/* Generic panel overlay/card used by badges and card collection when rendered inside main content */
+.panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5100;
+}
+
+.panel-card {
+  background: transparent;
+  width: 540px;
+  max-height: calc(100vh - 200px);
+  height: min(70vh, calc(100vh - 200px));
+  border-radius: 16px;
+  padding: 0;
+  position: relative;
+}
+
+.panel-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Card Collection inline panel */
+.card-collection-panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.card-collection-card {
+  background-color: #f5f5dc; /* badges/modal visual style */
+  padding: 1.5rem;
+  border-radius: 1rem;
+  width: min(48rem, 95%);
+  max-height: 70vh;
+  display: flex;
+  gap: 1.5rem;
+  position: relative;
+}
+
+.two-column-wrap {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+.two-column-wrap .col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.two-column-wrap .col h2 { text-align: center; color: #1e3a8a; margin-bottom: 0.5rem }
+.col-scroll { overflow-y: auto; padding-right: 0.5rem }
+.card-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem }
+.card-item { background: #fff; padding: 0.5rem 1rem; border-radius: 0.5rem; display:flex; justify-content:space-between }
+
 /* Responsive breakpoints */
 @media (max-width: 1200px) {
   .main-game-layout {

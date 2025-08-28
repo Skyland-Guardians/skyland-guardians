@@ -11,6 +11,7 @@ export interface GameContextType {
   missions: Mission[];
   events: EventCard[];
   isCardCollectionOpen: boolean;
+  isBadgesOpen?: boolean;
   coins?: number;
   marketMode?: 'simulated' | 'random' | 'real';
   setMarketMode?: (mode: 'simulated' | 'random' | 'real') => void;
@@ -31,6 +32,7 @@ export interface GameContextType {
   addMission: (mission: Mission) => void;
   addEvent: (event: EventCard) => void;
   setCardCollectionOpen: (open: boolean) => void;
+  setBadgesOpen?: (open: boolean) => void;
   performNextDaySettlement?: () => SettlementResult | void;
 }
 

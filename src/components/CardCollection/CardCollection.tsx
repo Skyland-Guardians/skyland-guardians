@@ -1,4 +1,5 @@
 import { useGameState } from '../../hooks/useGameContext';
+import { ModalShell } from '../ModalShell/ModalShell';
 
 export function CardCollection() {
   const { missions, events, isCardCollectionOpen, setCardCollectionOpen } = useGameState();
@@ -6,120 +7,54 @@ export function CardCollection() {
   if (!isCardCollectionOpen) return null;
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.6)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 5100 /* Above modal-container(5000) */
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: '#f5f5dc',
-          padding: '2rem',
-          borderRadius: '1rem',
-          width: '48rem',
-          maxHeight: '80vh',
-          overflowY: 'auto',
-          display: 'flex',
-          gap: '2rem',
-          position: 'relative'
-        }}
-      >
-        <div style={{ flex: 1 }}>
-          <h2 style={{ textAlign: 'center', color: '#1e3a8a', marginBottom: '1rem' }}>
-            Mission Cards
-          </h2>
-          {missions.length === 0 ? (
-            <p style={{ color: '#374151', textAlign: 'center' }}>No missions yet</p>
-          ) : (
-            <ul
-              style={{
-                listStyle: 'none',
-                padding: 0,
-                margin: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.5rem'
-              }}
-            >
-              {missions.map(mission => (
-                <li
-                  key={mission.id}
-                  style={{
-                    backgroundColor: '#fff',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '0.5rem',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}
-                >
-                  <span style={{ color: '#374151' }}>{mission.title}</span>
-                  <span style={{ color: '#f59e0b', fontWeight: 'bold' }}>
-                    ⭐ {mission.rewardStars}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <div style={{ flex: 1 }}>
-          <h2 style={{ textAlign: 'center', color: '#1e3a8a', marginBottom: '1rem' }}>
-            Event Cards
-          </h2>
-          {events.length === 0 ? (
-            <p style={{ color: '#374151', textAlign: 'center' }}>No events yet</p>
-          ) : (
-            <ul
-              style={{
-                listStyle: 'none',
-                padding: 0,
-                margin: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.5rem'
-              }}
-            >
-              {events.map(event => (
-                <li
-                  key={event.id}
-                  style={{
-                    backgroundColor: '#fff',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '0.5rem'
-                  }}
-                >
-                  <span style={{ color: '#374151' }}>{event.title}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <button
-          onClick={() => setCardCollectionOpen(false)}
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            right: '1rem',
-            backgroundColor: '#2563eb',
-            color: 'white',
-            padding: '0.25rem 0.75rem',
-            borderRadius: '0.25rem',
-            border: 'none',
-            cursor: 'pointer',
-            fontWeight: 'bold'
-          }}
-        >
-          X
-        </button>
+    <div className="panel-overlay" onClick={() => setCardCollectionOpen(false)}>
+      <div className="panel-card" onClick={e => e.stopPropagation()}>
+        <button className="panel-close" onClick={() => setCardCollectionOpen(false)}>X</button>
+        <ModalShell title="MY CARDS">
+          <div className="two-column-wrap" style={{ padding: '8px' }}>
+            <div className="col">
+              <h2 style={{ textAlign: 'center', color: '#1e3a8a' }}>Mission Cards</h2>
+              <div className="col-scroll">
+                {missions.length === 0 ? (
+                  <p style={{ color: '#888', textAlign: 'center' }}>No missions yet</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {missions.map((mission, idx) => (
+                      <div key={mission.id} style={{ display: 'flex', alignItems: 'center', background: '#fff', borderRadius: 14, padding: '12px 16px', boxShadow: '0 2px 12px rgba(0,0,0,0.08)' }}>
+                        <div style={{ fontWeight: 'bold', color: '#3b82f6', fontSize: 16, marginRight: 12, minWidth: 28, textAlign: 'center' }}>{idx + 1}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: '700', color: '#23304a' }}>{mission.title}</div>
+                          <div style={{ fontSize: 13, color: '#374151', opacity: 0.8 }}>{''}</div>
+                        </div>
+                        <div style={{ marginLeft: 12, color: '#f59e0b', fontWeight: '700' }}>⭐ {mission.rewardStars}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="col">
+              <h2 style={{ textAlign: 'center', color: '#1e3a8a' }}>Event Cards</h2>
+              <div className="col-scroll">
+                {events.length === 0 ? (
+                  <p style={{ color: '#888', textAlign: 'center' }}>No events yet</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {events.map((event, idx) => (
+                      <div key={event.id} style={{ display: 'flex', alignItems: 'center', background: '#fff', borderRadius: 14, padding: '12px 16px', boxShadow: '0 2px 12px rgba(0,0,0,0.08)' }}>
+                        <div style={{ fontWeight: 'bold', color: '#3b82f6', fontSize: 16, marginRight: 12, minWidth: 28, textAlign: 'center' }}>{idx + 1}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: '700', color: '#23304a' }}>{event.title}</div>
+                          <div style={{ fontSize: 13, color: '#374151', opacity: 0.8 }}>{''}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </ModalShell>
       </div>
     </div>
   );

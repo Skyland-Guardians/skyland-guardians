@@ -64,6 +64,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [missions, setMissions] = useState<Mission[]>([]);
   const [events, setEvents] = useState<EventCard[]>([]);
   const [isCardCollectionOpen, setCardCollectionOpen] = useState(false);
+  const [isBadgesOpen, setBadgesOpen] = useState(false);
   const [coins, setCoins] = useState<number>(1000); // initial money the player holds
   const [marketMode, setMarketMode] = useState<MarketMode>(DEFAULT_MARKET_CONFIG.mode);
   const [marketDayIndex, setMarketDayIndex] = useState<number>(0);
@@ -239,7 +240,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       currentMission,
       missions,
       events,
-      isCardCollectionOpen,
+  isCardCollectionOpen,
+  isBadgesOpen,
       performanceHistory,
       updateGameState,
       updateUserInfo,
@@ -249,6 +251,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       addMission,
       addEvent,
       setCardCollectionOpen
+      ,
+      setBadgesOpen
     }}>
       {children}
     </GameContext.Provider>
