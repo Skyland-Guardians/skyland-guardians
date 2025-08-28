@@ -131,12 +131,19 @@ export function DebugPanel() {
         position: 'fixed',
         bottom: '20px',
         left: '20px',
-        zIndex: 1000
+        zIndex: 1000,
+        /* keep this wrapper minimal so it doesn't cover other UI */
+        width: '40px',
+        height: '40px',
+        pointerEvents: 'none'
       }}>
         <button
           onClick={() => setIsOpen(true)}
           style={{
-            padding: '12px 16px',
+            /* make the button itself interactive but keep wrapper non-interactive */
+            padding: 0,
+            width: '40px',
+            height: '40px',
             backgroundColor: '#6c757d',
             color: 'white',
             border: 'none',
@@ -145,7 +152,11 @@ export function DebugPanel() {
             fontSize: '14px',
             fontWeight: 'bold',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-            transition: 'all 0.2s ease'
+            transition: 'all 0.2s ease',
+            pointerEvents: 'auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = '#5a6268';
@@ -156,7 +167,7 @@ export function DebugPanel() {
             e.currentTarget.style.transform = 'scale(1)';
           }}
         >
-          🛠️ Debug
+          🛠️
         </button>
       </div>
     );
@@ -174,6 +185,8 @@ export function DebugPanel() {
       borderRadius: '12px',
       boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
       zIndex: 1000,
+      /* ensure the open panel is interactive even though modal-container is pointer-events:none */
+      pointerEvents: 'auto',
       overflow: 'hidden'
     }}>
       {/* Header */}

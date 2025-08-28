@@ -241,8 +241,17 @@
 
 /* Modal overlay container */
 .modal-container {
+  /* Make modal container a fixed overlay so it doesn't take up grid/layout space
+     and won't push or cover other grid areas. Keep it non-interactive by
+     default so floating controls don't block underlying UI; individual
+     modal components should enable pointer events when needed. */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 5000; /* Above all UI elements */
-  position: relative;
+  pointer-events: none;
 }
 
 /* Generic panel overlay/card used by badges and card collection when rendered inside main content */
