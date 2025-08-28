@@ -9,8 +9,8 @@ export function SkylandIsland() {
       style={{
         position: 'relative',
         width: '100%',
-        height: '720px', // 放大外层容器以匹配 wrapper
-        maxWidth: '900px', // 放大外层容器以匹配 wrapper
+        height: '1060px', // 继续放大外层容器以匹配更大的 wrapper
+        maxWidth: '1000px', // 继续放大外层容器以匹配更大的 wrapper
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -55,8 +55,8 @@ export function SkylandIsland() {
       <div style={{ 
         position: 'relative',
         width: '100%',
-        maxWidth: '820px', // 放大岛屿主体以利用新增空间
-        height: '640px' // 放大岛屿主体以利用新增空间
+        maxWidth: '820px', // 继续放大岛屿主体以利用新增空间
+        height: '6400px' // 继续放大岛屿主体以利用新增空间
       }}>
         {/* Island with floating animation */}
         <div style={{

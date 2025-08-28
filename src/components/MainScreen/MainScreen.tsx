@@ -24,8 +24,8 @@ export function MainScreen() {
             top: '45%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: '900px', // 放大容器以容纳更大的岛屿
-            height: '720px', // 放大容器以容纳更大的岛屿
+            width: '1200px', // 继续放大容器以容纳更更大的岛屿
+            height: '960px', // 继续放大容器以容纳更更大的岛屿
             zIndex: -1, // 设为负值，在所有UI元素之下但在背景色块之上
             pointerEvents: 'none' // 确保不阻挡任何交互
           }}>

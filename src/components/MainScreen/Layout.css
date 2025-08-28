@@ -161,8 +161,8 @@
 /* Island container that can grow with content */
 .island-container {
   width: 100%;
-  max-width: 1000px; /* 提高上限以支持更大岛屿 */
-  min-height: 600px; /* 增加最小高度 */
+  max-width: 1300px; /* 进一步提高上限以支持更大岛屿 */
+  min-height: 800px; /* 增加最小高度以容纳更大岛屿 */
   display: flex;
   align-items: center;
   justify-content: center;
