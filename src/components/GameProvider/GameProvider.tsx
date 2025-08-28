@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult, SettlementAsset, PlayerCard } from '../../types/game';
 import { GameContext } from '../../hooks/useGameContext';
 import { SIMULATED_SERIES } from '../../data/simulated-asset-series';
-import { SAMPLE_EVENTS } from '../../data/sample-events';
+import { EVENT_CONFIGS } from '../../data/events';
 import { DEFAULT_MARKET_CONFIG } from '../../data/asset-market-config';
 import { GAME_ASSETS } from '../../data/game-assets';
 import { sampleReturnForType } from '../../data/asset-return-config';
@@ -71,7 +71,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [coins, setCoins] = useState<number>(1000); // initial money the player holds
   const [marketMode, setMarketMode] = useState<MarketMode>(DEFAULT_MARKET_CONFIG.mode);
   const [marketDayIndex, setMarketDayIndex] = useState<number>(0);
-  const [marketEvents, setMarketEvents] = useState<any[]>([...SAMPLE_EVENTS]);
+  const [marketEvents, setMarketEvents] = useState<any[]>([...EVENT_CONFIGS]);
   
   // Store daily portfolio performance history
   const [performanceHistory, setPerformanceHistory] = useState<{
@@ -154,6 +154,51 @@ export function GameProvider({ children }: { children: ReactNode }) {
       ...prev,
       playerCards: prev.playerCards.map(card => ({ ...card, isNew: false }))
     }));
+  };
+
+  // Debug methods for testing
+  const triggerTestMission = (missionId: number) => {
+    const context = {
+      currentDay: gameState.currentDay,
+      assetAllocations,
+      activeMissions: gameState.activeMissions,
+      activeEvents: gameState.activeEvents,
+      lastAction: 'init' as const
+    };
+
+    const mission = eventManager.triggerSpecificMission(missionId, context);
+    if (mission) {
+      const newCard: PlayerCard = {
+        id: `mission-${mission.id}-${Date.now()}`,
+        type: 'mission',
+        data: mission,
+        obtainedAt: gameState.currentDay,
+        isNew: true
+      };
+
+      setGameState(prev => ({
+        ...prev,
+        pendingCards: [...prev.pendingCards, newCard]
+      }));
+    }
+  };
+
+  const triggerTestEvent = (eventId: string) => {
+    const event = eventManager.triggerSpecificEvent(eventId);
+    if (event) {
+      const newCard: PlayerCard = {
+        id: `event-${event.id}-${Date.now()}`,
+        type: 'event',
+        data: event,
+        obtainedAt: gameState.currentDay,
+        isNew: true
+      };
+
+      setGameState(prev => ({
+        ...prev,
+        pendingCards: [...prev.pendingCards, newCard]
+      }));
+    }
   };
 
   // Simple settlement logic for "next day" based on current allocations.
@@ -339,7 +384,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
       acceptCard,
       declineCard,
       updateActiveCards,
-      clearNewCardFlags
+      clearNewCardFlags,
+      // Debug 测试方法
+      triggerTestMission,
+      triggerTestEvent
     }}>
       {children}
     </GameContext.Provider>

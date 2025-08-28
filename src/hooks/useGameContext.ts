@@ -40,6 +40,9 @@ export interface GameContextType {
   declineCard?: (card: PlayerCard) => void;
   updateActiveCards?: () => void;
   clearNewCardFlags?: () => void;
+  // Debug 测试方法
+  triggerTestMission?: (missionId: number) => void;
+  triggerTestEvent?: (eventId: string) => void;
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
