@@ -55,8 +55,7 @@ export function Header() {
       alignItems: 'center',
       padding: '0.8rem 3rem',
       backgroundColor: 'transparent',
-      position: 'relative',
-      zIndex: 10
+      position: 'relative'
     }}>
       {/* Left side - User Info */}
       <div style={{
@@ -89,7 +88,7 @@ export function Header() {
             />
           </div>
           <p style={{
-            fontSize: '1rem',
+            fontSize: '0.8rem',
             color: '#1e40af',
             fontWeight: '800',
             textTransform: 'uppercase',
@@ -102,7 +101,7 @@ export function Header() {
         </div>
         <div>
           <h1 style={{
-            fontSize: '1.25rem',
+            fontSize: '1rem',
             fontWeight: '600',
             color: '#1e3a8a',
             textTransform: 'uppercase',

@@ -24,8 +24,7 @@
   max-height: 100px;
   z-index: 5;
   position: relative;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  background: transparent; /* fully transparent to show background */
   overflow: hidden;
 }
 
@@ -42,6 +41,7 @@
   max-width: 250px;
   /* Use full available height in the grid row */
   height: 100%;
+  background: transparent; /* fully transparent */
   /* Custom scrollbar matching main content */
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
@@ -78,6 +78,7 @@
   /* Use full available height in the grid row */
   height: 100%;
   padding: 1rem;
+  background: transparent; /* 完全透明 */
   /* Custom scrollbar for main content */
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
@@ -114,6 +115,7 @@
   /* Use full available height in the grid row */
   height: 100%;
   padding: 2rem 1rem; /* Increased top/bottom padding */
+  background: transparent; /* fully transparent */
   /* Custom scrollbar matching others */
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
@@ -148,9 +150,8 @@
   justify-content: center;
   padding: 1rem;
   position: relative;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent; /* fully transparent */
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   overflow: visible; /* Allow slider popups to show */
 }
 

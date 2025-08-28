@@ -187,7 +187,7 @@ export function AIPanel() {
     <div
       style={{
         width: '100%',
-        backgroundColor: '#89CFF0',
+        backgroundColor: '#5196DC', /* match asset toolbar color */
         borderRadius: '0.5rem',
         padding: '0.5rem',
         display: 'flex',
@@ -238,9 +238,10 @@ export function AIPanel() {
               style={{
                 alignSelf: msg.sender === 'ai' ? 'flex-start' : 'flex-end',
                 backgroundColor: '#ffffff',
+                color: '#111827',
                 borderRadius: '0.5rem',
                 padding: '0.4rem 0.8rem',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
                 maxWidth: '95%',
                 fontSize: '0.85rem'
               }}
@@ -253,16 +254,16 @@ export function AIPanel() {
           {isTyping && (
             <div
               style={{
-                alignSelf: 'flex-start',
-                backgroundColor: '#ffffff',
-                borderRadius: '0.5rem',
-                padding: '0.4rem 0.8rem',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                maxWidth: '95%',
-                fontStyle: 'italic',
-                color: '#666',
-                fontSize: '0.85rem'
-              }}
+                  alignSelf: 'flex-start',
+                  backgroundColor: '#ffffff',
+                  color: '#374151',
+                  borderRadius: '0.5rem',
+                  padding: '0.4rem 0.8rem',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+                  maxWidth: '95%',
+                  fontStyle: 'italic',
+                  fontSize: '0.85rem'
+                }}
             >
               {currentPersonality.name} is consulting the crystals...
             </div>

@@ -9,8 +9,8 @@ export function SkylandIsland() {
       style={{
         position: 'relative',
         width: '100%',
-        height: '400px', // Reduced from 500px
-        maxWidth: '500px', // Reduced from 600px
+        height: '600px', // Reduced from 500px
+        maxWidth: '600px', // Reduced from 600px
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -54,8 +54,8 @@ export function SkylandIsland() {
       <div style={{ 
         position: 'relative',
         width: '100%',
-        maxWidth: '400px', // Reduced from 600px
-        height: '320px' // Reduced from 400px
+        maxWidth: '800px', // Reduced from 600px
+        height: '800px' // Reduced from 400px
       }}>
         {/* Island with floating animation */}
         <div style={{

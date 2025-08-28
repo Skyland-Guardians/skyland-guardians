@@ -18,12 +18,26 @@ export function MainScreen() {
       {/* Background decorative elements - outside main container */}
       {!isChaoMode && (
         <>
+          {/* Sky Island as background element */}
+          <div style={{
+            position: 'fixed',
+            top: '45%', // 稍微上移，与色块更好配合
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '600px', // 稍微放大
+            height: '480px', // 稍微放大
+            zIndex: 5,
+            pointerEvents: 'none'
+          }}>
+            <SkylandIsland />
+          </div>
+          
           <div style={{
             position: 'fixed',
             bottom: 0,
             left: 0,
             right: 0,
-            height: '40%',
+            height: '60%',
             background: 'url("./assets/main-screen-1-assets/background-color-block-2.png")',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
@@ -37,7 +51,7 @@ export function MainScreen() {
             bottom: 0,
             left: 0,
             right: 0,
-            height: '50%',
+            height: '70%',
             background: 'url("./assets/main-screen-1-assets/background-color-1.png")',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
@@ -50,8 +64,8 @@ export function MainScreen() {
       
       <div className="main-game-layout" style={{
         background: isChaoMode 
-          ? 'linear-gradient(135deg, #1e1b4b 0%, #374151 50%, #1e1b4b 100%)' 
-          : 'linear-gradient(135deg, rgba(253,246,227,0.8) 0%, rgba(255,248,225,0.8) 30%, rgba(245,230,163,0.8) 70%, rgba(232,213,166,0.8) 100%)',
+          ? 'linear-gradient(135deg, rgba(30,27,75,0.9) 0%, rgba(55,65,81,0.9) 50%, rgba(30,27,75,0.9) 100%)' 
+          : 'transparent', // 完全透明让背景显示
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -70,9 +84,9 @@ export function MainScreen() {
           <LeftSidebar />
         </aside>
         
-        {/* Main Content - flexible size, contains island */}
+        {/* Main Content - flexible size, now empty to show background */}
         <main className="layout-main-content">
-          <SkylandIsland />
+          {/* Content area is now transparent */}
         </main>
         
         {/* Right Panel - fixed width, full height of main area */}
