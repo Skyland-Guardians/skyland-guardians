@@ -1,4 +1,4 @@
-import { MissionManager, MISSION_CONFIGS } from '../data/missions';
+import { MissionManager } from '../data/missions';
 import { EventManager as EventDataManager } from '../data/events';
 import type { Mission, EventCard, PlayerCard, GameState, AssetType } from '../types/game';
 
@@ -12,6 +12,8 @@ export interface EventTriggerContext {
 
 export class EventManager {
   private static instance: EventManager;
+  private lastTriggerTime: number = 0; // 上次触发的时间戳
+  private cooldownPeriod: number = 2 * 24 * 60 * 60 * 1000; // 冷却时间：2天（毫秒）
   
   static getInstance(): EventManager {
     if (!EventManager.instance) {
@@ -23,70 +25,84 @@ export class EventManager {
   // 随机事件触发概率配置
   private readonly TRIGGER_RATES = {
     mission: {
-      apply: 0.3, // 30% chance on apply
-      nextDay: 0.2, // 20% chance on next day
+      apply: 0.15, // 15% chance on apply - 在确定分配时触发
+      nextDay: 0.05, // 5% chance on next day
       init: 0, // 0% chance on init
     },
     event: {
-      apply: 0.25, // 25% chance on apply
-      nextDay: 0.15, // 15% chance on next day
+      apply: 0.08, // 8% chance on apply - 在确定分配时触发
+      nextDay: 0.03, // 3% chance on next day
       init: 0, // 0% chance on init
     }
   };
 
-  // 生成随机任务
-  generateRandomMission(context: EventTriggerContext): Mission | null {
-    const availableConfigs = MISSION_CONFIGS.filter(config => 
-      !context.activeMissions.some(active => active.id === config.id)
-    );
-
-    if (availableConfigs.length === 0) return null;
-
-    const randomConfig = availableConfigs[Math.floor(Math.random() * availableConfigs.length)];
-    return MissionManager.createMission(randomConfig.id);
-  }
-
-  // 生成随机事件
-  generateRandomEvent(_context: EventTriggerContext): EventCard | null {
-    const randomConfig = EventDataManager.getRandomEvent();
-    return EventDataManager.createEvent(randomConfig.id);
-  }
-
   // 检查是否应该触发新的任务或事件
-  checkForNewCards(context: EventTriggerContext): PlayerCard[] {
-    const newCards: PlayerCard[] = [];
+  checkForNewCards(
+    gameState: GameState, 
+    trigger: 'apply' | 'nextDay' | 'init',
+    currentAssetAllocations?: AssetType[]
+  ): {
+    type: 'mission' | 'event';
+    card: Mission | EventCard;
+  } | null {
+    // 检查冷却期
+    if (Date.now() - this.lastTriggerTime < this.cooldownPeriod) {
+      return null;
+    }
+
+    // 检查当前是否已有未完成的任务和事件
+    const hasActiveMission = gameState.activeMissions.some((m: Mission) => m.status === 'active');
+    const hasActiveEvent = gameState.activeEvents.some((e: EventCard) => e.status === 'active');
+    
+    // 如果已经有活跃的任务和事件，降低新触发概率
+    const activePenalty = (hasActiveMission && hasActiveEvent) ? 0.5 : 
+                         (hasActiveMission || hasActiveEvent) ? 0.8 : 1.0;
+
+    // 获取触发概率
+    const missionRate = this.TRIGGER_RATES.mission[trigger] * activePenalty;
+    const eventRate = this.TRIGGER_RATES.event[trigger] * activePenalty;
+
+    let newCard: { type: 'mission' | 'event'; card: Mission | EventCard } | null = null;
 
     // 检查任务触发
-    const missionRate = this.TRIGGER_RATES.mission[context.lastAction];
     if (Math.random() < missionRate) {
-      const mission = this.generateRandomMission(context);
-      if (mission) {
-        newCards.push({
-          id: `mission-${mission.id}-${Date.now()}`,
-          type: 'mission',
-          data: mission,
-          obtainedAt: context.currentDay,
-          isNew: true
-        });
+      // Get available missions (ones not already active and not already completed by current allocation)
+      const availableConfigs = MissionManager.getAllConfigs().filter(config => {
+        // Skip if already active
+        if (gameState.activeMissions.some(active => active.id === config.id)) {
+          return false;
+        }
+        // Skip if current allocation already satisfies the mission
+        if (currentAssetAllocations && config.completionCheck(currentAssetAllocations)) {
+          return false;
+        }
+        return true;
+      });
+      
+      if (availableConfigs.length > 0) {
+        const randomConfig = availableConfigs[Math.floor(Math.random() * availableConfigs.length)];
+        const mission = MissionManager.createMission(randomConfig.id);
+        if (mission) {
+          newCard = { type: 'mission', card: mission };
+        }
       }
     }
 
-    // 检查事件触发
-    const eventRate = this.TRIGGER_RATES.event[context.lastAction];
-    if (Math.random() < eventRate) {
-      const event = this.generateRandomEvent(context);
+    // 检查事件触发（如果没有任务触发）
+    if (!newCard && Math.random() < eventRate) {
+      const randomConfig = EventDataManager.getRandomEvent();
+      const event = EventDataManager.createEvent(randomConfig.id);
       if (event) {
-        newCards.push({
-          id: `event-${event.id}-${Date.now()}`,
-          type: 'event',
-          data: event,
-          obtainedAt: context.currentDay,
-          isNew: true
-        });
+        newCard = { type: 'event', card: event };
       }
     }
 
-    return newCards;
+    // 如果有新卡片，更新冷却时间
+    if (newCard) {
+      this.lastTriggerTime = Date.now();
+    }
+
+    return newCard;
   }
 
   // 检查任务完成条件
@@ -107,7 +123,13 @@ export class EventManager {
         status: 'active' as const,
         acceptedAt: gameState.currentDay
       };
-      updates.activeMissions = [...gameState.activeMissions, updatedMission];
+      updates.activeMissions = gameState.activeMissions.map((m: Mission) => m.id === mission.id ? updatedMission : m);
+      
+      // 如果任务不在列表中，添加它
+      if (!gameState.activeMissions.some((m: Mission) => m.id === mission.id)) {
+        updates.activeMissions = [...gameState.activeMissions, updatedMission];
+      }
+      
       updates.playerCards = [...gameState.playerCards, { ...card, data: updatedMission }];
     } else if (card.type === 'event') {
       const event = card.data as EventCard;
@@ -116,8 +138,17 @@ export class EventManager {
         status: 'active' as const,
         acceptedAt: gameState.currentDay
       };
-      updates.activeEvents = [...gameState.activeEvents, updatedEvent];
+      updates.activeEvents = gameState.activeEvents.map((e: EventCard) => e.id === event.id ? updatedEvent : e);
+      
+      // 如果事件不在列表中，添加它
+      if (!gameState.activeEvents.some((e: EventCard) => e.id === event.id)) {
+        updates.activeEvents = [...gameState.activeEvents, updatedEvent];
+      }
+      
       updates.playerCards = [...gameState.playerCards, { ...card, data: updatedEvent }];
+
+      // Note: Event effects are typically applied during settlement calculation
+      // rather than immediately when accepted
     }
 
     return updates;
@@ -156,8 +187,13 @@ export class EventManager {
     });
 
     if (completedMissions.length > 0) {
-      updates.activeMissions = activeMissions.filter(m => m.status === 'active');
+      // 保留已完成的任务在列表中，但更新状态
+      updates.activeMissions = activeMissions;
+      // 给予星星奖励
       updates.stars = gameState.stars + completedMissions.reduce((sum, m) => sum + m.rewardStars, 0);
+      
+      // 返回完成的任务信息，用于显示完成提示
+      (updates as any).completedMissions = completedMissions;
     }
 
     // 检查事件到期
@@ -176,12 +212,7 @@ export class EventManager {
   }
 
   // Debug methods for testing
-  triggerSpecificMission(missionId: number, context: EventTriggerContext): Mission | null {
-    // Check if mission is already active
-    if (context.activeMissions.some(active => active.id === missionId)) {
-      return null;
-    }
-
+  triggerSpecificMission(missionId: number): Mission | null {
     return MissionManager.createMission(missionId);
   }
 

@@ -42,12 +42,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
   };
 
   const defaultAllocations: AssetType[] = GAME_ASSETS.map(a => {
-    // Set initial allocation: 50% Tech (sword), 50% Bonds (shield), 0% others
+    // Set initial allocation: 25% Tech (sword), 75% Bonds (shield), 0% others
     let allocation = 0;
     if (a.id === 'sword') {
-      allocation = 50; // Agile Sword (Technology)
+      allocation = 25; // Agile Sword (Technology)
     } else if (a.id === 'shield') {
-      allocation = 50; // Sturdy Shield (Bonds)
+      allocation = 75; // Sturdy Shield (Bonds)
     }
     
     return {
@@ -95,9 +95,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         asset.id === assetId ? { ...asset, allocation } : asset
       );
       
-      // 在APPLY操作后触发新事件
+      // 只在分配更新后检查任务完成状态，不触发新事件
       setTimeout(() => {
-        triggerNewCards('apply');
         updateActiveCards();
       }, 100);
       
@@ -111,19 +110,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   // 触发新的事件和任务
   const triggerNewCards = (action: 'apply' | 'nextDay' | 'init') => {
-    const context = {
-      currentDay: gameState.currentDay,
-      assetAllocations,
-      activeMissions: gameState.activeMissions,
-      activeEvents: gameState.activeEvents,
-      lastAction: action
-    };
-
-    const newCards = eventManager.checkForNewCards(context);
-    if (newCards.length > 0) {
+    // 检查是否有新的任务或事件需要触发
+    const newCard = eventManager.checkForNewCards(gameState, action, assetAllocations);
+    if (newCard) {
       setGameState(prev => ({
         ...prev,
-        pendingCards: [...prev.pendingCards, ...newCards]
+        pendingCards: [...prev.pendingCards, {
+          id: `${newCard.type}-${newCard.card.id}-${Date.now()}`,
+          type: newCard.type,
+          data: newCard.card,
+          obtainedAt: prev.currentDay,
+          isNew: true
+        }]
       }));
     }
   };
@@ -141,11 +139,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
   };
 
   // 更新活跃的事件和任务状态
-  const updateActiveCards = () => {
-    const updates = eventManager.updateActiveCards(gameState, assetAllocations);
+  const updateActiveCards = (allocations: AssetType[] = assetAllocations) => {
+    const updates = eventManager.updateActiveCards(gameState, allocations);
     if (Object.keys(updates).length > 0) {
       setGameState(prev => ({ ...prev, ...updates }));
+      
+      // 返回更新信息，包括完成的任务
+      return updates;
     }
+    return null;
   };
 
   // 清除新卡片标志
@@ -158,15 +160,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   // Debug methods for testing
   const triggerTestMission = (missionId: number) => {
-    const context = {
-      currentDay: gameState.currentDay,
-      assetAllocations,
-      activeMissions: gameState.activeMissions,
-      activeEvents: gameState.activeEvents,
-      lastAction: 'init' as const
-    };
-
-    const mission = eventManager.triggerSpecificMission(missionId, context);
+    const mission = eventManager.triggerSpecificMission(missionId);
     if (mission) {
       const newCard: PlayerCard = {
         id: `mission-${mission.id}-${Date.now()}`,

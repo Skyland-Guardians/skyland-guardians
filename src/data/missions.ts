@@ -16,20 +16,23 @@ export interface MissionConfig {
 export const MISSION_CONFIGS: MissionConfig[] = [
   {
     id: 1,
-    title: 'Tech Forest Fog',
-    background: 'Unicorn stock prices swing wildly. Will you increase the allocation?',
-    tip: 'Tech stocks are highly volatile. Keep your portfolio diversified.',
-    focus: 'Concentration Risk',
+    title: 'Diversification Challenge',
+    background: 'Tech stock prices are swinging wildly! Manage concentration risk by keeping individual high-risk allocations under control.',
+    tip: 'Keep each high-risk asset (Tech Sword & Magic Crystal) below 40% to maintain diversification.',
+    focus: 'Concentration Risk Management',
     rewardStars: 3,
     targetAssets: ['sword', 'crystal'],
-    targetAllocation: 30,
+    targetAllocation: 40, // 表示每个资产不超过40%
     completionCheck: (assetAllocations: AssetType[]) => {
-      // Check that no single high-risk asset exceeds 40%
-      const highRiskAssets = ['sword', 'crystal'];
-      return highRiskAssets.every(assetId => {
-        const asset = assetAllocations.find(a => a.id === assetId);
-        return (asset?.allocation || 0) <= 40;
-      });
+      // Check that EACH high-risk asset is below 40% (diversification goal)
+      const swordAsset = assetAllocations.find(a => a.id === 'sword');
+      const crystalAsset = assetAllocations.find(a => a.id === 'crystal');
+      
+      const swordAllocation = swordAsset?.allocation || 0;
+      const crystalAllocation = crystalAsset?.allocation || 0;
+      
+      // Both must be under 40% for diversification
+      return swordAllocation < 40 && crystalAllocation < 40;
     }
   },
   {
