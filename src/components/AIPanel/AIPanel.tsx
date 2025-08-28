@@ -185,6 +185,7 @@ export function AIPanel() {
 
   return (
     <div
+      className="ai-panel-container"
       style={{
         width: '100%',
         backgroundColor: 'rgba(81,150,220,0.85)', /* semi-transparent version of #5196DC */
@@ -206,7 +207,7 @@ export function AIPanel() {
             height: '8rem',
             objectFit: 'contain',
             position: 'absolute',
-            top: '-3npm run buildnpm run buildrem',
+            top: '-3rem',
             alignSelf: 'center'
           }}
         />

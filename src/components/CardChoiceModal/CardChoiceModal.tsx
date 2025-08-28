@@ -1,4 +1,7 @@
 import type { PlayerCard, Mission, EventCard } from '../../types/game';
+import { useGameState } from '../../hooks/useGameContext';
+import { useAIPersonality } from '../../hooks/useAIPersonality';
+import { gamifiedAIService } from '../../services/gamified-ai-service';
 import './CardChoiceModal.css';
 
 interface CardChoiceModalProps {
@@ -10,13 +13,127 @@ interface CardChoiceModalProps {
 }
 
 export function CardChoiceModal({ card, isOpen, onAccept, onDecline, onClose }: CardChoiceModalProps) {
+  const { addMessage, gameState, assetAllocations, coins = 10000, performanceHistory } = useGameState();
+  const { currentPersonality } = useAIPersonality();
+  
   if (!isOpen) return null;
+
+  const handleAskAIAboutMission = async (mission: Mission) => {
+    addMessage({
+      id: `ai-thinking-mission-${Date.now()}`,
+      sender: 'ai',
+      content: `🤔 *Analyzing mission "${mission.title}"...*`,
+      timestamp: new Date(),
+      type: 'feedback'
+    });
+
+    try {
+      const response = await gamifiedAIService.getGameResponse(
+        `Explain this mission: "${mission.title}" - ${mission.background}. Why is this important for investment strategy? Focus: ${mission.focus}. 100 words max.`,
+        {
+          assets: assetAllocations,
+          currentDay: gameState.currentDay,
+          stars: gameState.stars,
+          level: gameState.level,
+          coins,
+          performanceHistory
+        }
+      );
+
+      addMessage({
+        id: `ai-mission-explain-${Date.now()}`,
+        sender: 'ai',
+        content: response,
+        timestamp: new Date(),
+        type: 'feedback'
+      });
+    } catch (error) {
+      console.error('Failed to get AI mission explanation:', error);
+      addMessage({
+        id: `ai-mission-fallback-${Date.now()}`,
+        sender: 'ai',
+        content: `This mission focuses on ${mission.focus}. ${mission.tip} Complete it to earn ${mission.rewardStars} stars! 🌟`,
+        timestamp: new Date(),
+        type: 'feedback'
+      });
+    }
+  };
+
+  const handleAskAIAboutEvent = async (event: EventCard) => {
+    addMessage({
+      id: `ai-thinking-event-${Date.now()}`,
+      sender: 'ai',
+      content: `🤔 *Analyzing event "${event.title}"...*`,
+      timestamp: new Date(),
+      type: 'feedback'
+    });
+
+    try {
+      const effectType = event.effects?.type === 'add' ? 'adds' : event.effects?.type === 'mul' ? 'multiplies' : 'affects volatility';
+      const effectValue = event.effects ? `${effectType} ${Math.abs(event.effects.value * 100).toFixed(1)}%` : 'has market impact';
+      const targets = event.effects?.targets.includes('all') ? 'all assets' : event.effects?.targets.join(', ') || 'various assets';
+      
+      const response = await gamifiedAIService.getGameResponse(
+        `Explain market event: "${event.title}" - ${event.description}. It ${effectValue} for ${targets}. Why does this happen and how should I react? 100 words max.`,
+        {
+          assets: assetAllocations,
+          currentDay: gameState.currentDay,
+          stars: gameState.stars,
+          level: gameState.level,
+          coins,
+          performanceHistory
+        }
+      );
+
+      addMessage({
+        id: `ai-event-explain-${Date.now()}`,
+        sender: 'ai',
+        content: response,
+        timestamp: new Date(),
+        type: 'feedback'
+      });
+    } catch (error) {
+      console.error('Failed to get AI event explanation:', error);
+      addMessage({
+        id: `ai-event-fallback-${Date.now()}`,
+        sender: 'ai',
+        content: `${event.title}: ${event.description} This type of market event can create opportunities and risks. Stay diversified! 📊`,
+        timestamp: new Date(),
+        type: 'feedback'
+      });
+    }
+  };
 
   const renderMissionCard = (mission: Mission) => (
     <div className="card-choice-content">
       <div className="card-choice-header">
         <h3 className="card-choice-title">🎯 New Mission</h3>
-        <button className="card-choice-close" onClick={onClose}>×</button>
+        <div className="header-buttons">
+          <button
+            onClick={() => handleAskAIAboutMission(mission)}
+            className="ask-ai-btn-modal"
+            title={`Ask ${currentPersonality.name} about this mission`}
+          >
+            <img 
+              src={currentPersonality.avatar} 
+              alt={`Ask ${currentPersonality.name}`}
+              style={{ width: '20px', height: '20px', objectFit: 'cover' }}
+            />
+          </button>
+          <button 
+            className="card-choice-close" 
+            onClick={(e) => {
+              console.log('🔴 [CardChoiceModal] Mission close button clicked', e);
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('🔴 [CardChoiceModal] Calling onClose');
+              onClose();
+              console.log('🔴 [CardChoiceModal] onClose called');
+            }}
+          >
+            ×
+          </button>
+        </div>
       </div>
       
       <div className="mission-card-display">
@@ -55,7 +172,32 @@ export function CardChoiceModal({ card, isOpen, onAccept, onDecline, onClose }: 
     <div className="card-choice-content">
       <div className="card-choice-header">
         <h3 className="card-choice-title">⚡ Market Event</h3>
-        <button className="card-choice-close" onClick={onClose}>×</button>
+        <div className="header-buttons">
+          <button
+            onClick={() => handleAskAIAboutEvent(event)}
+            className="ask-ai-btn-modal"
+            title={`Ask ${currentPersonality.name} about this event`}
+          >
+            <img 
+              src={currentPersonality.avatar} 
+              alt={`Ask ${currentPersonality.name}`}
+              style={{ width: '20px', height: '20px', objectFit: 'cover' }}
+            />
+          </button>
+          <button 
+            className="card-choice-close" 
+            onClick={(e) => {
+              console.log('🔴 [CardChoiceModal] Event close button clicked', e);
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('🔴 [CardChoiceModal] Calling onClose');
+              onClose();
+              console.log('🔴 [CardChoiceModal] onClose called');
+            }}
+          >
+            ×
+          </button>
+        </div>
       </div>
       
       <div className="event-card-display">

@@ -124,8 +124,20 @@ export function EventManager() {
   };
 
   const handleCloseCardChoice = () => {
+    console.log('🔴 [EventManager] handleCloseCardChoice called');
+    if (currentPendingCard && declineCard && acceptCard) {
+      console.log('🔴 [EventManager] Processing current pending card as declined/accepted');
+      // Only missions can be declined, events are automatically accepted
+      if (currentPendingCard.type === 'mission') {
+        declineCard(currentPendingCard);
+      } else {
+        // For events, automatically accept them when closed
+        acceptCard(currentPendingCard);
+      }
+    }
     setShowCardChoice(false);
     setCurrentPendingCard(null);
+    console.log('🔴 [EventManager] handleCloseCardChoice finished');
   };
 
   const handleCloseMissionCompleted = () => {
@@ -169,7 +181,11 @@ export function EventManager() {
       {/* Card collection interface */}
       <MyCards
         isOpen={isCardCollectionOpen}
-        onClose={() => setCardCollectionOpen && setCardCollectionOpen(false)}
+        onClose={() => {
+          console.log('🔴 [EventManager] MyCards onClose called');
+          setCardCollectionOpen && setCardCollectionOpen(false);
+          console.log('🔴 [EventManager] setCardCollectionOpen(false) called');
+        }}
         playerCards={gameState.playerCards}
         activeMissions={gameState.activeMissions}
         activeEvents={gameState.activeEvents}
