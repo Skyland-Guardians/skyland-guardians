@@ -1,7 +1,17 @@
 import { useGameState } from '../../hooks/useGameContext';
 
 export function Header() {
-  const { gameState, userInfo, coins, addMessage, assetAllocations, performanceHistory } = useGameState();
+  const { gameState, userInfo, coins, addMessage, assetAllocations, performanceHistory, getLevelProgress } = useGameState();
+  
+  // 获取等级信息，如果没有getLevelProgress则使用默认值
+  const levelInfo = getLevelProgress ? getLevelProgress() : {
+    currentLevel: gameState.level,
+    currentLevelConfig: { title: 'Guardian', description: 'Starting your journey in Skyland.' },
+    nextLevelConfig: null,
+    progressStars: 0,
+    starsToNext: 0,
+    progressPercentage: 0
+  };
 
   const handleGameHelp = async () => {
     // Add thinking message
@@ -53,7 +63,7 @@ export function Header() {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: '0.8rem 3rem',
+      padding: '1.2rem 3rem',
       backgroundColor: 'transparent',
       position: 'relative'
     }}>
@@ -87,19 +97,47 @@ export function Header() {
               }}
             />
           </div>
-          <p style={{
-            fontSize: '0.8rem',
-            color: '#1e40af',
-            fontWeight: '800',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            margin: '0',
-            textAlign: 'center'
-          }}>
-            LEVEL {userInfo.level}
-          </p>
         </div>
-        <div>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.3rem'
+        }}>
+          {/* Level and Title */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            <span style={{
+              fontSize: '0.85rem',
+              color: '#1e40af',
+              fontWeight: '800',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em'
+            }}>
+              LEVEL {levelInfo.currentLevel}
+            </span>
+            <span style={{
+              fontSize: '0.75rem',
+              color: '#6366f1',
+              fontWeight: '600',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+              {levelInfo.currentLevelConfig.title}
+            </span>
+            {levelInfo.nextLevelConfig && (
+              <span style={{
+                fontSize: '0.7rem',
+                color: '#fbbf24',
+                fontWeight: '600'
+              }}>
+                ({levelInfo.starsToNext} ★ to next)
+              </span>
+            )}
+          </div>
+          {/* User Name and Description */}
           <h1 style={{
             fontSize: '1rem',
             fontWeight: '600',
@@ -109,8 +147,26 @@ export function Header() {
             margin: '0',
             textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
           }}>
-            {userInfo.name}, GUARD YOUR FORTUNE!
+            {userInfo.name}, {levelInfo.currentLevelConfig.description}
           </h1>
+          {/* Progress Bar */}
+          {levelInfo.nextLevelConfig && (
+            <div style={{
+              width: '200px',
+              height: '4px',
+              background: 'rgba(255, 255, 255, 0.2)',
+              borderRadius: '2px',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                width: `${Math.min(levelInfo.progressPercentage, 100)}%`,
+                height: '100%',
+                background: 'linear-gradient(90deg, #4caf50, #81c784)',
+                borderRadius: '2px',
+                transition: 'width 0.3s ease'
+              }} />
+            </div>
+          )}
         </div>
       </div>
 

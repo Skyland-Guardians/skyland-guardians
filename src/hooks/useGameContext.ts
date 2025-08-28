@@ -42,6 +42,16 @@ export interface GameContextType {
   // Debug 测试方法
   triggerTestMission?: (missionId: number) => void;
   triggerTestEvent?: (eventId: string) => void;
+  // 等级相关函数
+  getLevelProgress?: () => {
+    currentLevel: number;
+    currentLevelConfig: any;
+    nextLevelConfig: any;
+    progressStars: number;
+    starsToNext: number;
+    progressPercentage: number;
+  };
+  getAllLevels?: () => any[];
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);

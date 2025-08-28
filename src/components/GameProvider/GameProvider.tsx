@@ -9,12 +9,13 @@ import { GAME_ASSETS } from '../../data/game-assets';
 import { sampleReturnForType } from '../../data/asset-return-config';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
 import { eventManager } from '../../services/event-manager';
+import { LevelManager } from '../../data/level-config';
 import type { MarketMode } from '../../data/asset-market-config';
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const [gameState, setGameState] = useState<GameState>({
     currentDay: 1,
-    stars: 15,
+    stars: 0,
     level: 1,
     mode: 'normal',
     currentScreen: 'main',
@@ -85,7 +86,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }[]>([]);
 
   const updateGameState = (updates: Partial<GameState>) => {
-    setGameState(prev => ({ ...prev, ...updates }));
+    setGameState(prev => {
+      const newState = { ...prev, ...updates };
+      
+      // 如果星星数发生变化，检查是否需要升级
+      if (updates.stars !== undefined && updates.stars !== prev.stars) {
+        const levelCheck = LevelManager.checkLevelUp(prev.stars, updates.stars);
+        if (levelCheck.leveledUp) {
+          console.log(`🎉 Level up! ${levelCheck.oldLevel} → ${levelCheck.newLevel}`);
+          newState.level = levelCheck.newLevel;
+          
+          // TODO: 可以在这里添加升级庆祝动画或通知
+          if (levelCheck.newLevelConfig) {
+            console.log(`🌟 Reached ${levelCheck.newLevelConfig.title}: ${levelCheck.newLevelConfig.description}`);
+          }
+        }
+      }
+      
+      return newState;
+    });
   };
 
   const updateUserInfo = (updates: Partial<UserInfo>) => {
@@ -155,7 +174,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }));
   };
 
-  // Debug methods for testing
+  // Debug 测试方法
   const triggerTestMission = (missionId: number) => {
     const mission = eventManager.triggerSpecificMission(missionId);
     if (mission) {
@@ -190,6 +209,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
         pendingCards: [...prev.pendingCards, newCard]
       }));
     }
+  };
+
+  // 等级相关函数
+  const getLevelProgress = () => {
+    return LevelManager.getLevelProgress(gameState.stars);
+  };
+
+  const getAllLevels = () => {
+    return LevelManager.getAllLevels();
   };
 
   // Simple settlement logic for "next day" based on current allocations.
@@ -378,7 +406,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
       clearNewCardFlags,
       // Debug 测试方法
       triggerTestMission,
-      triggerTestEvent
+      triggerTestEvent,
+      // 等级相关函数
+      getLevelProgress,
+      getAllLevels
     }}>
       {children}
     </GameContext.Provider>
