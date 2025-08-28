@@ -69,8 +69,10 @@ export function MyCards({ isOpen, onClose, playerCards, activeMissions, activeEv
             <div className="card-effects">
               <span className="effects-label">Impact:</span>
               <span className="effects-value">
-                {event.effects.type === 'add' ? '+' : event.effects.type === 'mul' ? '×' : '~'}
-                {Math.abs(event.effects.value * 100).toFixed(1)}%
+                {event.effects.type === 'add' 
+                  ? (event.effects.value >= 0 ? '+' : '') 
+                  : event.effects.type === 'mul' ? '×' : '~'}
+                {(event.effects.value * 100).toFixed(1)}%
               </span>
               <span className="effects-targets">
                 ({event.effects.targets.includes('all') ? 'All' : event.effects.targets.join(', ')})
