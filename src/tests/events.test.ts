@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { EventManager, EVENT_CONFIGS } from '../data/events';
-import type { EventCard, GameState } from '../types/game';
 
 describe('Event System Tests', () => {
   describe('EventManager', () => {
