@@ -1,5 +1,4 @@
-import { createContext, useContext, useEffect } from 'react';
-import { achievementService } from '../services/achievement-service';
+import { createContext, useContext } from 'react';
 import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult, PlayerCard } from '../types/game';
 
 export interface GameContextType {
@@ -53,25 +52,9 @@ export function useGameState() {
     throw new Error('useGameState must be used within a GameProvider');
   }
 
-  // BADGE 1: BALANCE APPRENTICE
-  useEffect(() => {
-    if (context.assetAllocations && context.assetAllocations.length > 0) {
-      const maxAllocation = Math.max(...context.assetAllocations.map(a => a.allocation));
-      if (maxAllocation <= 50) {
-        achievementService.achieve('badge_1', 1, 'bronze');
-      }
-    }
-  }, [context.assetAllocations]);
-
-  // BADGE 2: DIVERSIFICATION EXPLORER
-  useEffect(() => {
-    if (context.assetAllocations && context.assetAllocations.length > 0) {
-      const diversified = context.assetAllocations.filter(a => a.allocation > 0).length;
-      if (diversified >= 3) {
-        achievementService.achieve('badge_2', 2, 'silver');
-      }
-    }
-  }, [context.assetAllocations]);
+  // Badge effects removed to prevent infinite loops and state instability
+  // TODO: Implement badge system in a more stable way later
+  // console.log('🎮 [useGameState] Hook called, context ready');
 
   return context;
 }

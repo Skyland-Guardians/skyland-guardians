@@ -42,15 +42,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
   };
 
   const defaultAllocations: AssetType[] = GAME_ASSETS.map(a => {
-    // Set initial allocation: 70% Tech (sword), 30% Bonds (shield), 0% others
+    // Set initial allocation: 60% Tech (sword), 40% Bonds (shield), 0% others
     // This configuration doesn't complete any missions by default:
-    // - Task 1: sword=70% (>=40%), doesn't complete 
-    // - Task 3: shield=30% (<35%), doesn't complete
+    // - Task 1: sword=60% (>=40%), doesn't complete 
+    // - Task 3: shield=40% (<35%), doesn't complete
     let allocation = 0;
     if (a.id === 'sword') {
-      allocation = 70; // Agile Sword (Technology)
+      allocation = 60; // Agile Sword (Technology)
     } else if (a.id === 'shield') {
-      allocation = 30; // Sturdy Shield (Bonds)
+      allocation = 40; // Sturdy Shield (Bonds)
     }
     
     return {

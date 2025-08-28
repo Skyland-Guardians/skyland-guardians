@@ -27,12 +27,12 @@ export class EventManager {
     mission: {
       apply: 0.15, // 15% chance on apply - 在确定分配时触发
       nextDay: 0.05, // 5% chance on next day
-      init: 0, // 0% chance on init
+      init: 0.0, // 100% chance on init - 确保游戏开始时有任务
     },
     event: {
       apply: 0.08, // 8% chance on apply - 在确定分配时触发
       nextDay: 0.03, // 3% chance on next day
-      init: 0, // 0% chance on init
+      init: 0.0, // 30% chance on init - 有机会获得初始事件
     }
   };
 
