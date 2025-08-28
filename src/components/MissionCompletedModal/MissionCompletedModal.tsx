@@ -11,14 +11,13 @@ interface MissionCompletedModalProps {
 export function MissionCompletedModal({ mission, isOpen, onClose }: MissionCompletedModalProps) {
   const [animationPhase, setAnimationPhase] = useState<'enter' | 'celebrate' | 'exit'>('enter');
 
+  // Minimal logs: only when modal opens or closes
+
   useEffect(() => {
     if (isOpen && mission) {
       setAnimationPhase('enter');
-      
-      const celebrateTimer = setTimeout(() => {
-        setAnimationPhase('celebrate');
-      }, 500);
 
+      const celebrateTimer = setTimeout(() => setAnimationPhase('celebrate'), 500);
       const autoCloseTimer = setTimeout(() => {
         setAnimationPhase('exit');
         setTimeout(onClose, 300);
@@ -73,7 +72,7 @@ export function MissionCompletedModal({ mission, isOpen, onClose }: MissionCompl
             <p>Excellent work! You've successfully completed this mission and earned valuable experience.</p>
           </div>
 
-          <button className="close-celebration-btn" onClick={onClose}>
+          <button className="close-celebration-btn" onClick={() => onClose()}>
             Continue Playing
           </button>
         </div>
