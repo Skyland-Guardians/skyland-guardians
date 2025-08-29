@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import HistoryModal from '../HistoryModal/HistoryModal';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
 import { MoneyRequestModal } from '../MoneyRequestModal/MoneyRequestModal';
+import { demoStorage } from '../../utils/demo-storage';
 // import AvatarModal from '../AvatarModal/AvatarModal';
 
 export function Header() {
@@ -46,9 +47,13 @@ export function Header() {
   const nicknameError = validateNickname(nickname);
   // 读取localStorage头像和昵称
   useEffect(() => {
-    const storedAvatar = localStorage.getItem('userAvatar');
-    const storedNickname = localStorage.getItem('userNickname');
-    const storedBorder = localStorage.getItem('userAvatarBorder');
+    // 显示存储方案信息
+    const storageInfo = demoStorage.getStorageInfo();
+    console.log('🎯 Demo Storage Info:', storageInfo);
+    
+    const storedAvatar = demoStorage.getItem('userAvatar');
+    const storedNickname = demoStorage.getItem('userNickname');
+    const storedBorder = demoStorage.getItem('userAvatarBorder');
     if (storedAvatar) setAvatar(storedAvatar);
     if (storedNickname) setNickname(storedNickname);
     if (storedBorder) setSelectedBorder(Number(storedBorder));
@@ -108,8 +113,20 @@ export function Header() {
     }
   };
 
-    const handleMoneyRequest = (amount: number, reason: string) => {
-    const existingRequests = JSON.parse(localStorage.getItem('parentControl_moneyRequests') || '[]');
+  const handleMoneyRequest = (amount: number, reason: string) => {
+    console.log('💰 Demo Money Request:', { amount, reason });
+    
+    // 使用可靠的存储方案
+    const existingRequestsStr = demoStorage.getItem('parentControl_moneyRequests');
+    let existingRequests = [];
+    
+    try {
+      existingRequests = existingRequestsStr ? JSON.parse(existingRequestsStr) : [];
+    } catch (e) {
+      console.warn('Failed to parse existing requests, starting fresh:', e);
+      existingRequests = [];
+    }
+    
     const newRequest = {
       id: `request_${Date.now()}`,
       amount,
@@ -119,19 +136,33 @@ export function Header() {
     };
     
     const updatedRequests = [...existingRequests, newRequest];
-    localStorage.setItem('parentControl_moneyRequests', JSON.stringify(updatedRequests));
     
-    // Mark that user has used the money request feature
-    localStorage.setItem('hasUsedMoneyRequest', 'true');
+    // 保存数据
+    const saveSuccess = demoStorage.setItem('parentControl_moneyRequests', JSON.stringify(updatedRequests));
+    demoStorage.setItem('hasUsedMoneyRequest', 'true');
     
-    // Show confirmation message
-    addMessage({
-      id: `money-request-${Date.now()}`,
-      sender: 'ai',
-      content: `Your request for $${amount.toLocaleString()} has been sent to your parents! They'll review it and get back to you.`,
-      timestamp: new Date(),
-      type: 'feedback'
-    });
+    const storageInfo = demoStorage.getStorageInfo();
+    
+    if (saveSuccess) {
+      console.log('✅ Money request saved successfully');
+      // Show confirmation message with storage method info
+      addMessage({
+        id: `money-request-${Date.now()}`,
+        sender: 'ai',
+        content: `Your request for $${amount.toLocaleString()} has been sent to your parents! They'll review it and get back to you. ${storageInfo.isDemo ? `(Demo mode: using ${storageInfo.method})` : ''}`,
+        timestamp: new Date(),
+        type: 'feedback'
+      });
+    } else {
+      console.error('❌ Failed to save money request');
+      addMessage({
+        id: `money-request-error-${Date.now()}`,
+        sender: 'ai',
+        content: `Sorry, there was an issue saving your request. Please try again. (Storage: ${storageInfo.method})`,
+        timestamp: new Date(),
+        type: 'feedback'
+      });
+    }
   };
 
   return (
@@ -268,7 +299,7 @@ export function Header() {
         <button
           onClick={() => {
             setShowMoneyRequestModal(true);
-            localStorage.setItem('hasUsedMoneyRequest', 'true');
+            demoStorage.setItem('hasUsedMoneyRequest', 'true');
           }}
           style={{
             background: 'linear-gradient(145deg, #f59e0b, #ea580c)',
@@ -490,8 +521,9 @@ export function Header() {
                     if (file) {
                       const reader = new FileReader();
                       reader.onload = () => {
-                        setAvatar(String(reader.result || ''));
-                        localStorage.setItem('userAvatar', String(reader.result || ''));
+                        const result = String(reader.result || '');
+                        setAvatar(result);
+                        demoStorage.setItem('userAvatar', result);
                       };
                       reader.readAsDataURL(file);
                     }
@@ -503,7 +535,7 @@ export function Header() {
                 value={nickname}
                 onChange={e => {
                   setNickname(e.target.value);
-                  localStorage.setItem('userNickname', e.target.value);
+                  demoStorage.setItem('userNickname', e.target.value);
                 }}
                 placeholder="Enter nickname"
                 maxLength={16}
@@ -526,11 +558,11 @@ export function Header() {
                   style={{ background: (!nickname.trim() || nickname.length > 16 || !!nicknameError) ? '#666' : '#4a4a6a', color: '#fff', padding: '9px 18px', borderRadius: 10, border: 'none', fontWeight: 600, fontSize: '1rem', cursor: (!nickname.trim() || nickname.length > 16 || !!nicknameError) ? 'not-allowed' : 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
                   onClick={() => {
                     setShowAvatarModal?.(false);
-                    localStorage.setItem('userAvatar', avatar);
-                    localStorage.setItem('userNickname', nickname);
-                    localStorage.setItem('userAvatarBorder', String(selectedBorder));
+                    demoStorage.setItem('userAvatar', avatar);
+                    demoStorage.setItem('userNickname', nickname);
+                    demoStorage.setItem('userAvatarBorder', String(selectedBorder));
                     // pendant not used; ensure no stale pendant data remains
-                    localStorage.removeItem('userAvatarPendant');
+                    demoStorage.removeItem('userAvatarPendant');
                   }}
                   disabled={!nickname.trim() || nickname.length > 16 || !!nicknameError}
                 >

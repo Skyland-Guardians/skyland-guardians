@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import type { RealWorldAssetMapping, MoneyRequest, LoanStatus } from '../../types/parent-control';
 import { REAL_WORLD_ASSET_OPTIONS } from '../../types/parent-control';
 import { GAME_ASSETS } from '../../data/game-assets';
 import { useGameState } from '../../hooks/useGameContext';
+import { safeStorage } from '../../utils/safe-storage';
 
 interface ParentControlPanelProps {
   isOpen: boolean;
@@ -53,28 +54,38 @@ export function ParentControlPanel({ isOpen, onClose }: ParentControlPanelProps)
   const [activeLoans, setActiveLoans] = useState<LoanStatus[]>([]);
   const [activeTab, setActiveTab] = useState<'assets' | 'requests' | 'loans'>('assets');
 
-  // Load data from localStorage and refresh on open
+  // Refs to hold latest serialized state for stable comparisons (avoid unnecessary setState)
+  const assetMappingsRef = useRef<string>(JSON.stringify(getDefaultMappings()));
+  const moneyRequestsRef = useRef<string>('[]');
+  const activeLoansRef = useRef<string>('[]');
+
+  // Load data from storage when component mounts or panel opens.
+  // We compare serialized strings and only call setState when data actually differs to avoid write loops.
   useEffect(() => {
     const loadData = () => {
-      const savedMappings = localStorage.getItem('parentControl_assetMappings');
-      const savedRequests = localStorage.getItem('parentControl_moneyRequests');
-      const savedLoans = localStorage.getItem('parentControl_activeLoans');
+  const savedMappings = safeStorage.getItem('parentControl_assetMappings');
+  const savedRequests = safeStorage.getItem('parentControl_moneyRequests');
+  const savedLoans = safeStorage.getItem('parentControl_activeLoans');
 
       if (savedMappings) {
-        setAssetMappings(JSON.parse(savedMappings));
+        try {
+          if (savedMappings !== assetMappingsRef.current) {
+            setAssetMappings(JSON.parse(savedMappings));
+            assetMappingsRef.current = savedMappings;
+          }
+        } catch (e) {
+          console.warn('Failed to parse savedMappings', e);
+        }
       } else {
-        // Initialize with default mappings from game assets
+        // initialize defaults only if not already set
         const defaultMappings = GAME_ASSETS.map(asset => {
-          // Extract suggested real-world assets from the asset's realWorld description
-          let suggestedAssets = [];
+          let suggestedAssets: string[] = [];
           if (asset.realWorld.includes('QQQ')) suggestedAssets.push('QQQ');
           if (asset.realWorld.includes('BTC')) suggestedAssets.push('BTC');
           if (asset.realWorld.includes('ETH')) suggestedAssets.push('ETH');
           if (asset.realWorld.includes('GLD')) suggestedAssets.push('GLD');
           if (asset.realWorld.includes('TLT')) suggestedAssets.push('TLT');
           if (asset.realWorld.includes('USDC')) suggestedAssets.push('USDC');
-          
-          // If no specific assets found, use category-based defaults
           if (suggestedAssets.length === 0) {
             switch (asset.risk) {
               case 'high':
@@ -88,59 +99,55 @@ export function ParentControlPanel({ isOpen, onClose }: ParentControlPanelProps)
                 break;
             }
           }
-          
-          return {
-            gameAssetId: asset.id,
-            realWorldAssets: suggestedAssets,
-            maxAllocationPercentage: 100
-          };
+          return { gameAssetId: asset.id, realWorldAssets: suggestedAssets, maxAllocationPercentage: 100 };
         });
-        setAssetMappings(defaultMappings);
-        localStorage.setItem('parentControl_assetMappings', JSON.stringify(defaultMappings));
+  const defaultStr = JSON.stringify(defaultMappings);
+  setAssetMappings(defaultMappings);
+  assetMappingsRef.current = defaultStr;
+  safeStorage.setItem('parentControl_assetMappings', defaultStr);
       }
 
       if (savedRequests) {
-        const requests = JSON.parse(savedRequests);
-        // Convert date strings back to Date objects
-        const processedRequests = requests.map((req: any) => ({
-          ...req,
-          requestedAt: new Date(req.requestedAt),
-          parentResponse: req.parentResponse ? {
-            ...req.parentResponse,
-            approvedAt: new Date(req.parentResponse.approvedAt),
-            dueDate: new Date(req.parentResponse.dueDate)
-          } : undefined
-        }));
-        setMoneyRequests(processedRequests);
+        try {
+          // only update when actual data differs
+          if (savedRequests !== moneyRequestsRef.current) {
+            const requests = JSON.parse(savedRequests);
+            const processedRequests = requests.map((req: any) => ({
+              ...req,
+              requestedAt: new Date(req.requestedAt),
+              parentResponse: req.parentResponse ? {
+                ...req.parentResponse,
+                approvedAt: new Date(req.parentResponse.approvedAt),
+                dueDate: new Date(req.parentResponse.dueDate)
+              } : undefined
+            }));
+            setMoneyRequests(processedRequests);
+            moneyRequestsRef.current = savedRequests;
+          }
+        } catch (e) {
+          console.warn('Failed to parse savedRequests', e);
+        }
       }
 
       if (savedLoans) {
-        const loans = JSON.parse(savedLoans);
-        // Convert date strings back to Date objects
-        const processedLoans = loans.map((loan: any) => ({
-          ...loan,
-          dueDate: new Date(loan.dueDate)
-        }));
-        setActiveLoans(processedLoans);
+        try {
+          if (savedLoans !== activeLoansRef.current) {
+            const loans = JSON.parse(savedLoans);
+            const processedLoans = loans.map((loan: any) => ({ ...loan, dueDate: new Date(loan.dueDate) }));
+            setActiveLoans(processedLoans);
+            activeLoansRef.current = savedLoans;
+          }
+        } catch (e) {
+          console.warn('Failed to parse savedLoans', e);
+        }
       }
     };
-    
-    // Load data immediately on mount
+
+    // Load once when mounted / when panel open. Removing polling avoids continuous write/read cycles.
     loadData();
-    
-    // If panel is open, set up refresh interval
-    if (isOpen) {
-      const interval = setInterval(loadData, 2000);
-      return () => clearInterval(interval);
-    }
   }, [isOpen]);
 
-  // Save data to localStorage
-  const saveData = () => {
-    localStorage.setItem('parentControl_assetMappings', JSON.stringify(assetMappings));
-    localStorage.setItem('parentControl_moneyRequests', JSON.stringify(moneyRequests));
-    localStorage.setItem('parentControl_activeLoans', JSON.stringify(activeLoans));
-  };
+  // (persistence handled by effect below)
 
   const updateAssetMapping = (gameAssetId: string, updates: Partial<RealWorldAssetMapping>) => {
     setAssetMappings(prev => 
@@ -199,9 +206,31 @@ export function ParentControlPanel({ isOpen, onClose }: ParentControlPanelProps)
     );
   };
 
+  // Persist data when local state changes. We serialize and compare to refs
   useEffect(() => {
-    saveData();
-  }, [assetMappings, moneyRequests, activeLoans, saveData]);
+    try {
+      const mappingsStr = JSON.stringify(assetMappings);
+      const requestsStr = JSON.stringify(moneyRequests.map(r => ({ ...r, requestedAt: r.requestedAt.toISOString(), parentResponse: r.parentResponse ? { ...r.parentResponse, approvedAt: r.parentResponse.approvedAt.toISOString(), dueDate: r.parentResponse.dueDate.toISOString() } : undefined })));
+      const loansStr = JSON.stringify(activeLoans.map(l => ({ ...l, dueDate: l.dueDate.toISOString() })));
+
+      if (mappingsStr !== assetMappingsRef.current) {
+        safeStorage.setItem('parentControl_assetMappings', mappingsStr);
+        assetMappingsRef.current = mappingsStr;
+      }
+
+      if (requestsStr !== moneyRequestsRef.current) {
+        safeStorage.setItem('parentControl_moneyRequests', requestsStr);
+        moneyRequestsRef.current = requestsStr;
+      }
+
+      if (loansStr !== activeLoansRef.current) {
+        safeStorage.setItem('parentControl_activeLoans', loansStr);
+        activeLoansRef.current = loansStr;
+      }
+    } catch (e) {
+      console.error('Failed to persist parent-control data', e);
+    }
+  }, [assetMappings, moneyRequests, activeLoans]);
 
   if (!isOpen) return null;
 
