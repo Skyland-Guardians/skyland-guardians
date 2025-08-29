@@ -63,8 +63,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   // Load persisted JSON and revive ISO date strings for known fields (messages.timestamp)
   const loadFromStorage = () => {
+    console.log('🔄 [DEBUG] Starting loadFromStorage...');
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
+      console.log('📦 [DEBUG] Raw main storage data:', raw ? `${raw.length} chars` : 'null');
       let parsed: any = null;
 
       if (raw) {
@@ -110,8 +112,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
         loadedAnyRef.current = true;
       }
       if (fcoins && typeof parsed.coins !== 'number') {
-        parsed.coins = Number(fcoins);
+        const coinsValue = Number(fcoins);
+        console.log('🪙 [DEBUG] Loading coins from fallback storage:', fcoins, '-> parsed as:', coinsValue);
+        parsed.coins = coinsValue;
         loadedAnyRef.current = true;
+      } else if (fcoins) {
+        console.log('🪙 [DEBUG] Found fallback coins but main data already has coins:', parsed.coins, 'fallback value:', fcoins);
+      } else {
+        console.log('🪙 [DEBUG] No fallback coins data found');
       }
       if (falloc && !Array.isArray(parsed.assetAllocations)) {
         try { 
@@ -163,6 +171,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
         parsed.performanceHistory = parsed.performanceHistory.map((h: any) => ({ ...h }));
       }
 
+      console.log('📊 [DEBUG] Final parsed data summary:', {
+        hasGameState: !!parsed?.gameState,
+        currentDay: parsed?.gameState?.currentDay,
+        stars: parsed?.gameState?.stars,
+        level: parsed?.gameState?.level,
+        coins: parsed?.coins,
+        coinsType: typeof parsed?.coins,
+        hasUserInfo: !!parsed?.userInfo,
+        userName: parsed?.userInfo?.name
+      });
       return parsed;
     } catch (e) {
       console.warn('Failed to load persisted state', e);
@@ -223,7 +241,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [isBadgesOpen, setBadgesOpen] = useState(false);
   const [showWelcomeOverlay, setShowWelcomeOverlay] = useState(false);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
-  const [coins, setCoins] = useState<number>(1000); // initial money the player holds
+  const [coins, setCoins] = useState<number>(() => {
+    console.log('🪙 [DEBUG] Initializing coins state with default value: 1000');
+    return 1000;
+  }); // initial money the player holds
   const [marketMode, setMarketMode] = useState<MarketMode>(DEFAULT_MARKET_CONFIG.mode);
   const [marketDayIndex, setMarketDayIndex] = useState<number>(0);
   const [marketEvents, setMarketEvents] = useState<any[]>([...EVENT_CONFIGS]);
@@ -242,38 +263,74 @@ export function GameProvider({ children }: { children: ReactNode }) {
   // Tutorial hint state
   const [activeHint, setActiveHint] = useState<UITutorialHint | null>(null);
 
-  // Hydration flag to avoid persisting default initial state before we've loaded existing data
+  // Hydration flags to avoid persisting default initial state before we've loaded existing data
   const hasHydrated = useRef(false);
+  const isRestoringData = useRef(false);
 
 
   // Load persisted state once on mount
   useEffect(() => {
+    console.log('🚀 [DEBUG] Starting state hydration on mount...');
+    isRestoringData.current = true; // Prevent persistence during restoration
+    
     const persisted = loadFromStorage();
     if (persisted) {
+      console.log('✅ [DEBUG] Found persisted data, applying to state...');
       // Apply persisted slices if available
-      if (persisted.gameState) setGameState(prev => ({ ...prev, ...persisted.gameState }));
-      if (persisted.userInfo) setUserInfo(prev => ({ ...prev, ...persisted.userInfo }));
+      if (persisted.gameState) {
+        console.log('🎮 [DEBUG] Restoring gameState:', persisted.gameState);
+        setGameState(prev => ({ ...prev, ...persisted.gameState }));
+      }
+      if (persisted.userInfo) {
+        console.log('👤 [DEBUG] Restoring userInfo:', persisted.userInfo);
+        setUserInfo(prev => ({ ...prev, ...persisted.userInfo }));
+      }
       if (Array.isArray(persisted.assetAllocations)) setAssetAllocations(persisted.assetAllocations);
       if (Array.isArray(persisted.messages)) setMessages(persisted.messages);
-      if (typeof persisted.coins === 'number') setCoins(persisted.coins);
+      if (typeof persisted.coins === 'number') {
+        console.log('🪙 [DEBUG] Restoring coins from persisted data:', persisted.coins);
+        setCoins(persisted.coins);
+      } else {
+        console.log('🪙 [DEBUG] No valid coins in persisted data, keeping default 1000. Found:', persisted.coins, typeof persisted.coins);
+      }
       if (persisted.marketMode) setMarketMode(persisted.marketMode);
       if (typeof persisted.marketDayIndex === 'number') setMarketDayIndex(persisted.marketDayIndex);
       if (Array.isArray(persisted.marketEvents)) setMarketEvents(persisted.marketEvents);
       if (Array.isArray(persisted.performanceHistory)) setPerformanceHistory(persisted.performanceHistory);
       console.debug('GameProvider: Hydrated state from storage', STORAGE_KEY, persisted);
+      
+      // Use setTimeout to ensure all state updates have been processed
+      setTimeout(() => {
+        isRestoringData.current = false;
+        hasHydrated.current = true;
+        console.log('✅ [DEBUG] State restoration complete, enabling persistence');
+      }, 100);
     } else {
       console.debug('GameProvider: No persisted state found for', STORAGE_KEY);
+      // Even if no data found, mark as hydrated after a short delay
+      setTimeout(() => {
+        isRestoringData.current = false;
+        hasHydrated.current = true;
+        console.log('✅ [DEBUG] No data to restore, enabling persistence');
+      }, 100);
     }
-
-    // Mark hydration complete so we don't overwrite storage with defaults on first render
-    hasHydrated.current = true;
   }, []);
 
   // Persist whenever important slices change
   useEffect(() => {
     // Don't persist until we've attempted to hydrate initial state
-    if (!hasHydrated.current) return;
+    if (!hasHydrated.current) {
+      console.log('⏳ [DEBUG] Skipping persistence - not yet hydrated');
+      return;
+    }
+    
+    // Don't persist while we're restoring data
+    if (isRestoringData.current) {
+      console.log('🔄 [DEBUG] Skipping persistence - currently restoring data');
+      return;
+    }
 
+    console.log('💾 [DEBUG] Starting persistence. Current coins:', coins, typeof coins);
     try {
       const payload = {
         gameState,
@@ -286,6 +343,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
         marketEvents,
         performanceHistory
       };
+      console.log('📦 [DEBUG] Payload to persist:', {
+        currentDay: gameState.currentDay,
+        stars: gameState.stars,
+        level: gameState.level,
+        coins: coins,
+        coinsType: typeof coins
+      });
 
       const serialized = serializeForStorage(payload);
       if (serialized) {
@@ -297,10 +361,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
         }
         // Also persist important slices under separate keys so they are easy to inspect and resilient
         try {
+          console.log('💰 [DEBUG] Saving to fallback storage - coins:', coins, 'as string:', String(coins));
           localStorage.setItem('skyland-guardians-current-day', String(gameState.currentDay));
           localStorage.setItem('skyland-guardians-stars', String(gameState.stars));
           localStorage.setItem('skyland-guardians-level', String(gameState.level));
           localStorage.setItem('skyland-guardians-coins', String(coins));
+          console.log('✅ [DEBUG] Saved fallback coins. Verify:', localStorage.getItem('skyland-guardians-coins'));
           localStorage.setItem('skyland-guardians-asset-allocations', JSON.stringify(assetAllocations));
           localStorage.setItem('skyland-guardians-messages', JSON.stringify(messages.map(m => ({ ...m, timestamp: m.timestamp instanceof Date ? m.timestamp.toISOString() : m.timestamp }))));
           localStorage.setItem('skyland-guardians-performance-history', JSON.stringify(performanceHistory || []));
@@ -572,7 +638,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const portfolioReturn = perAssetResults.reduce((s, p) => s + p.contributionPct, 0);
 
     const delta = perAssetResults.reduce((s, p) => s + p.coinDelta, 0);
-    setCoins(prev => prev + delta);
+    console.log('💰 [DEBUG] performNextDaySettlement - updating coins. Current:', coins, 'Delta:', delta, 'New total will be:', coins + delta);
+    setCoins(prev => {
+      const newCoins = prev + delta;
+      console.log('💰 [DEBUG] setCoins callback - prev:', prev, 'delta:', delta, 'new:', newCoins);
+      return newCoins;
+    });
 
     // advance day counters
     setMarketDayIndex(i => i + 1);
