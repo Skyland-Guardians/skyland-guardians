@@ -3,11 +3,13 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import HistoryModal from '../HistoryModal/HistoryModal';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
+import { MoneyRequestModal } from '../MoneyRequestModal/MoneyRequestModal';
 // import AvatarModal from '../AvatarModal/AvatarModal';
 
 export function Header() {
   const { gameState, userInfo, coins, addMessage, assetAllocations, performanceHistory, getLevelProgress, showAvatarModal, setShowAvatarModal } = useGameState();
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showMoneyRequestModal, setShowMoneyRequestModal] = useState(false);
   const [avatar, setAvatar] = useState(userInfo.avatar || '/src/assets/主界面1资源/小孩头像icon.png');
   const [nickname, setNickname] = useState(userInfo.name || 'JAMES');
   const [selectedBorder, setSelectedBorder] = useState(() => {
@@ -104,6 +106,29 @@ export function Header() {
         type: 'feedback'
       });
     }
+  };
+
+  const handleMoneyRequest = (amount: number, reason: string) => {
+    const existingRequests = JSON.parse(localStorage.getItem('parentControl_moneyRequests') || '[]');
+    const newRequest = {
+      id: `request_${Date.now()}`,
+      amount,
+      reason,
+      requestedAt: new Date(),
+      status: 'pending'
+    };
+    
+    const updatedRequests = [...existingRequests, newRequest];
+    localStorage.setItem('parentControl_moneyRequests', JSON.stringify(updatedRequests));
+    
+    // Show confirmation message
+    addMessage({
+      id: `money-request-${Date.now()}`,
+      sender: 'ai',
+      content: `💌 Your request for $${amount.toLocaleString()} has been sent to your parents! They'll review it and get back to you.`,
+      timestamp: new Date(),
+      type: 'feedback'
+    });
   };
 
   return (
@@ -236,23 +261,37 @@ export function Header() {
         gap: '1rem'
       }}>
         {/* Coins */}
-        <div style={{
-          background: 'linear-gradient(145deg, #f59e0b, #ea580c)',
-          color: 'white',
-          padding: '0.75rem 1.25rem',
-          borderRadius: '1rem',
-          fontWeight: '700',
-          fontSize: '1.1rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
-          border: '2px solid rgba(255, 255, 255, 0.2)',
-          textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
-        }}>
+        <button
+          onClick={() => setShowMoneyRequestModal(true)}
+          style={{
+            background: 'linear-gradient(145deg, #f59e0b, #ea580c)',
+            color: 'white',
+            padding: '0.75rem 1.25rem',
+            borderRadius: '1rem',
+            fontWeight: '700',
+            fontSize: '1.1rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
+            border: '2px solid rgba(255, 255, 255, 0.2)',
+            textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.05)';
+            e.currentTarget.style.boxShadow = '0 6px 16px rgba(245, 158, 11, 0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(245, 158, 11, 0.3)';
+          }}
+          title="Click to request more money from parents"
+        >
           <span style={{ fontSize: '1.2rem' }}>💰</span>
           <span>{typeof coins === 'number' ? coins.toLocaleString() : '--'}</span>
-        </div>
+        </button>
         
         {/* Day */}
         <div style={{
@@ -493,6 +532,13 @@ export function Header() {
         onClose={() => setShowHistoryModal(false)}
         performanceHistory={performanceHistory || []}
         currentDay={gameState.currentDay}
+      />
+      
+      {/* Money Request Modal */}
+      <MoneyRequestModal
+        isOpen={showMoneyRequestModal}
+        onClose={() => setShowMoneyRequestModal(false)}
+        onSubmitRequest={handleMoneyRequest}
       />
     </header>
   );
