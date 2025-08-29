@@ -108,7 +108,7 @@ export function Header() {
     }
   };
 
-  const handleMoneyRequest = (amount: number, reason: string) => {
+    const handleMoneyRequest = (amount: number, reason: string) => {
     const existingRequests = JSON.parse(localStorage.getItem('parentControl_moneyRequests') || '[]');
     const newRequest = {
       id: `request_${Date.now()}`,
@@ -121,11 +121,14 @@ export function Header() {
     const updatedRequests = [...existingRequests, newRequest];
     localStorage.setItem('parentControl_moneyRequests', JSON.stringify(updatedRequests));
     
+    // Mark that user has used the money request feature
+    localStorage.setItem('hasUsedMoneyRequest', 'true');
+    
     // Show confirmation message
     addMessage({
       id: `money-request-${Date.now()}`,
       sender: 'ai',
-      content: `💌 Your request for $${amount.toLocaleString()} has been sent to your parents! They'll review it and get back to you.`,
+      content: `Your request for $${amount.toLocaleString()} has been sent to your parents! They'll review it and get back to you.`,
       timestamp: new Date(),
       type: 'feedback'
     });
@@ -144,7 +147,8 @@ export function Header() {
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '1rem'
+        gap: '1rem',
+        flexWrap: 'nowrap' // keep items on a single line and avoid wrapping when scaled
       }}>
         <div style={{
           display: 'flex',
@@ -262,7 +266,10 @@ export function Header() {
       }}>
         {/* Coins */}
         <button
-          onClick={() => setShowMoneyRequestModal(true)}
+          onClick={() => {
+            setShowMoneyRequestModal(true);
+            localStorage.setItem('hasUsedMoneyRequest', 'true');
+          }}
           style={{
             background: 'linear-gradient(145deg, #f59e0b, #ea580c)',
             color: 'white',
@@ -278,6 +285,8 @@ export function Header() {
             textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
             cursor: 'pointer',
             transition: 'all 0.2s ease'
+            ,whiteSpace: 'nowrap', // prevent label from breaking into multiple lines
+            flexShrink: 0
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.05)';
@@ -306,7 +315,9 @@ export function Header() {
           gap: '0.5rem',
           boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
           border: '2px solid rgba(255, 255, 255, 0.2)',
-          textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
+          textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
+          whiteSpace: 'nowrap', // ensure "DAY 1" stays on one line
+          flexShrink: 0
         }}>
           <span style={{ fontSize: '1.2rem' }}>📅</span>
           <span>DAY {gameState.currentDay}</span>
@@ -353,6 +364,8 @@ export function Header() {
             textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
             cursor: 'pointer',
             transition: 'all 0.2s ease'
+            ,whiteSpace: 'nowrap', // keep "How to Play" on one line
+            flexShrink: 0
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'linear-gradient(145deg, #059669, #047857)';
@@ -386,6 +399,8 @@ export function Header() {
             textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
             cursor: 'pointer',
             transition: 'all 0.2s ease'
+            ,whiteSpace: 'nowrap',
+            flexShrink: 0
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'linear-gradient(145deg, #5b21b6, #4c1d95)';

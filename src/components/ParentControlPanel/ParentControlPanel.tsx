@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import type { RealWorldAssetMapping, MoneyRequest, LoanStatus } from '../../types/parent-control';
 import { REAL_WORLD_ASSET_OPTIONS } from '../../types/parent-control';
 import { GAME_ASSETS } from '../../data/game-assets';
+import { useGameState } from '../../hooks/useGameContext';
 
 interface ParentControlPanelProps {
   isOpen: boolean;
@@ -10,6 +11,8 @@ interface ParentControlPanelProps {
 }
 
 export function ParentControlPanel({ isOpen, onClose }: ParentControlPanelProps) {
+  const { addCoins } = useGameState();
+  
   // Initialize with default mappings directly from GAME_ASSETS
   const getDefaultMappings = (): RealWorldAssetMapping[] => {
     return GAME_ASSETS.map(asset => {
@@ -167,6 +170,12 @@ export function ParentControlPanel({ isOpen, onClose }: ParentControlPanelProps)
           : request
       )
     );
+
+    // Add the approved amount to the child's coins
+    if (addCoins) {
+      addCoins(approvedAmount);
+      console.log('💰 Parent approved loan:', approvedAmount, 'coins added to child account');
+    }
 
     // Create a new loan
     const newLoan: LoanStatus = {

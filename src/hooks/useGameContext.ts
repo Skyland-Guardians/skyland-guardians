@@ -13,6 +13,7 @@ export interface GameContextType {
   isCardCollectionOpen: boolean;
   isBadgesOpen?: boolean;
   coins?: number;
+  addCoins?: (amount: number) => void;
   marketMode?: 'simulated' | 'random' | 'real';
   setMarketMode?: (mode: 'simulated' | 'random' | 'real') => void;
   marketDayIndex?: number;
