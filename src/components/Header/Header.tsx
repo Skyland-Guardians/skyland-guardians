@@ -1,8 +1,9 @@
 import { useGameState } from '../../hooks/useGameContext';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import HistoryModal from '../HistoryModal/HistoryModal';
-import AvatarModal from '../AvatarModal/AvatarModal';
+import { gamifiedAIService } from '../../services/gamified-ai-service';
+// import AvatarModal from '../AvatarModal/AvatarModal';
 
 export function Header() {
   const { gameState, userInfo, coins, addMessage, assetAllocations, performanceHistory, getLevelProgress } = useGameState();
@@ -14,10 +15,10 @@ export function Header() {
     const stored = localStorage.getItem('userAvatarBorder');
     return stored ? Number(stored) : 0;
   });
-  const [selectedPendant, setSelectedPendant] = useState(() => {
-    const stored = localStorage.getItem('userAvatarPendant');
-    return stored ? Number(stored) : 0;
-  });
+  // const [selectedPendant, setSelectedPendant] = useState(() => {
+  //   const stored = localStorage.getItem('userAvatarPendant');
+  //   return stored ? Number(stored) : 0;
+  // });
   // 新增：边框和挂件选择
   const borderStyles = [
     { name: 'Default', style: { border: '3px solid #4a4a6a' } },
@@ -29,13 +30,7 @@ export function Header() {
     { name: 'Dotted', style: { border: '3px dotted #6366f1', boxShadow: '0 0 8px #6366f1' } },
     { name: 'Custom', style: { border: '3px double #10b981', boxShadow: '0 0 10px #10b981', background: 'linear-gradient(135deg, #10b981 0%, #fbbf24 100%)', backgroundClip: 'border-box' } },
   ];
-  const pendantIcons = [
-    { name: 'None', icon: null },
-    { name: 'Star', icon: '⭐' },
-    { name: 'Trophy', icon: '🏆' },
-    { name: 'Sakura', icon: '🌸' },
-    { name: 'Crown', icon: '👑' },
-  ];
+  // pendant icons removed — pendants are not currently used in the UI
   // Duplicate state declarations removed. Already declared above.
   // 敏感词列表
   const forbiddenWords = ['admin', 'test', 'badword', '管理员', '测试'];
@@ -53,11 +48,9 @@ export function Header() {
     const storedAvatar = localStorage.getItem('userAvatar');
     const storedNickname = localStorage.getItem('userNickname');
     const storedBorder = localStorage.getItem('userAvatarBorder');
-    const storedPendant = localStorage.getItem('userAvatarPendant');
     if (storedAvatar) setAvatar(storedAvatar);
     if (storedNickname) setNickname(storedNickname);
     if (storedBorder) setSelectedBorder(Number(storedBorder));
-    if (storedPendant) setSelectedPendant(Number(storedPendant));
   }, []);
   
   // 获取等级信息，如果没有getLevelProgress则使用默认值
@@ -81,7 +74,6 @@ export function Header() {
     });
 
     try {
-      const { gamifiedAIService } = await import('../../services/gamified-ai-service');
       const response = await gamifiedAIService.getGameResponse(
         'Explain how this investment game works. What should I focus on?',
         {
@@ -484,7 +476,8 @@ export function Header() {
                     localStorage.setItem('userAvatar', avatar);
                     localStorage.setItem('userNickname', nickname);
                     localStorage.setItem('userAvatarBorder', String(selectedBorder));
-                    localStorage.setItem('userAvatarPendant', String(selectedPendant));
+                    // pendant not used; ensure no stale pendant data remains
+                    localStorage.removeItem('userAvatarPendant');
                   }}
                   disabled={!nickname.trim() || nickname.length > 16 || !!nicknameError}
                 >

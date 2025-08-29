@@ -32,3 +32,4 @@ const IconModal: React.FC<IconModalProps> = ({ label, value, onChange, onClose }
 };
 
 export default IconModal;
+
