@@ -99,7 +99,7 @@ const formatCoins = (amount: number): string => {
 };
 
 export function AIPanel() {
-  const { messages, addMessage, gameState, userInfo, assetAllocations, coins = 10000, performanceHistory, setActiveHint } = useGameState();
+  const { messages, addMessage, gameState, userInfo, assetAllocations, coins = 10000, performanceHistory, setActiveHint, setShowWelcomeOverlay } = useGameState();
   const { currentPersonality } = useAIPersonality();
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -119,20 +119,43 @@ export function AIPanel() {
       // Add welcome message
       const welcomeMessage = gamifiedAIService.generateWelcomeMessage(userInfo.name);
       addMessage(welcomeMessage);
-      // Queue tutorial hints for new players
+      // Queue tutorial messages for new players
       const tutorialMessages = gamifiedAIService.generateTutorialMessages();
       tutorialMessages.forEach((msg, index) => {
         setTimeout(() => addMessage(msg), 800 * (index + 1));
       });
-      const uiHints = gamifiedAIService.generateTutorialHints();
-      uiHints.forEach((hint, index) => {
-        setTimeout(() => setActiveHint && setActiveHint(hint), 800 * (index + 1));
-        setTimeout(() => setActiveHint && setActiveHint(null), 800 * (index + 1) + 4000);
-      });
+
+      // Check if this is the first time visiting (localStorage persistence)
+      const hasSeenTutorial = localStorage.getItem('skyland-guardians-tutorial-seen');
+      
+      if (!hasSeenTutorial) {
+        // Mark tutorial as seen
+        localStorage.setItem('skyland-guardians-tutorial-seen', 'true');
+        
+        // Show welcome overlay after AI messages start
+        setTimeout(() => {
+          setShowWelcomeOverlay && setShowWelcomeOverlay(true);
+        }, 1200);
+
+        // Show left panel hint then footer hint with better spacing
+        const leftHint = { 
+          id: 'hint-leftpanel', 
+          selector: '.layout-left-panel', 
+          content: 'Your cards and badges live here. Click MY CARDS to view your collection!' 
+        };
+        const footerHint = { 
+          id: 'hint-footer', 
+          selector: '.layout-asset-toolbar', 
+          content: 'Adjust your asset weights here and press APPLY to lock in your choices.' 
+        };
+
+        setTimeout(() => setActiveHint && setActiveHint(leftHint), 2000);
+        setTimeout(() => setActiveHint && setActiveHint(footerHint), 4000);
+      }
 
       hasInitialized.current = true;
     }
-  }, [messages.length, userInfo.name, addMessage, gameState, assetAllocations, coins, currentPersonality.id]);
+  }, [messages.length, userInfo.name, addMessage, gameState, assetAllocations, coins, currentPersonality.id, setActiveHint, setShowWelcomeOverlay]);
 
   // Update AI service when personality changes (but don't send welcome message)
   useEffect(() => {

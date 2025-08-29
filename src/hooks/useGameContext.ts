@@ -58,6 +58,9 @@ export interface GameContextType {
   checkAchievements?: (allocations?: AssetType[]) => void;
   resetAchievements?: () => void;
   onAchievementAnimationComplete?: () => void;
+  // Welcome overlay controls
+  showWelcomeOverlay?: boolean;
+  setShowWelcomeOverlay?: (open: boolean) => void;
   // Tutorial hint controls
   activeHint?: UITutorialHint | null;
   setActiveHint?: (hint: UITutorialHint | null) => void;

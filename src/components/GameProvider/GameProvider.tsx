@@ -13,6 +13,7 @@ import { achievementChecker } from '../../services/achievement-checker';
 import { achievementService } from '../../services/achievement-service';
 import type { UITutorialHint } from '../../types/tutorial';
 import { TutorialHint } from '../TutorialHint/TutorialHint';
+import { MyCardOverlayPrompt } from '../MyCards/MyCardOverlayPrompt';
 import { LevelManager } from '../../data/level-config';
 import type { MarketMode } from '../../data/asset-market-config';
 
@@ -68,6 +69,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [currentMission, setCurrentMission] = useState<Mission | null>(null);
   const [isCardCollectionOpen, setCardCollectionOpen] = useState(false);
   const [isBadgesOpen, setBadgesOpen] = useState(false);
+  const [showWelcomeOverlay, setShowWelcomeOverlay] = useState(false);
   const [coins, setCoins] = useState<number>(1000); // initial money the player holds
   const [marketMode, setMarketMode] = useState<MarketMode>(DEFAULT_MARKET_CONFIG.mode);
   const [marketDayIndex, setMarketDayIndex] = useState<number>(0);
@@ -446,10 +448,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
       resetAchievements,
       onAchievementAnimationComplete,
       activeHint,
-      setActiveHint
+      setActiveHint,
+      showWelcomeOverlay,
+      setShowWelcomeOverlay
     }}>
       {children}
-      <TutorialHint hint={activeHint} />
+      <TutorialHint 
+        hint={activeHint} 
+        onDismiss={() => setActiveHint(null)}
+      />
+      <MyCardOverlayPrompt
+        isOpen={showWelcomeOverlay}
+        onClose={() => setShowWelcomeOverlay(false)}
+        title="Welcome to Skyland Guardians"
+      />
     </GameContext.Provider>
   );
 }
