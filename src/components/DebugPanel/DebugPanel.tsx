@@ -8,7 +8,7 @@ import { gamifiedAIService } from '../../services/gamified-ai-service';
 
 export function DebugPanel() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'nextDay' | 'aiPersonality' | 'mode' | 'events' | 'achievements'>('nextDay');
+  const [activeTab, setActiveTab] = useState<'nextDay' | 'aiPersonality' | 'mode' | 'events' | 'achievements' | 'reset'>('nextDay');
   const { currentPersonality, changePersonality } = useAIPersonality();
   const { 
     gameState, 
@@ -296,6 +296,21 @@ export function DebugPanel() {
           }}
         >
           🏆 Badges
+        </button>
+        <button
+          onClick={() => setActiveTab('reset')}
+          style={{
+            flex: 1,
+            padding: '10px 8px',
+            border: 'none',
+            backgroundColor: activeTab === 'reset' ? '#007bff' : 'transparent',
+            color: activeTab === 'reset' ? 'white' : '#6c757d',
+            cursor: 'pointer',
+            fontSize: '12px',
+            fontWeight: activeTab === 'reset' ? 'bold' : 'normal'
+          }}
+        >
+          🔄 Reset
         </button>
       </div>
 
@@ -686,116 +701,6 @@ export function DebugPanel() {
               >
                 🧹 Reset All Achievements
               </button>
-
-              <button
-                style={{
-                  backgroundColor: '#6f42c1',
-                  color: 'white',
-                  border: 'none',
-                  padding: '10px 12px',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  marginTop: '8px',
-                  width: '100%',
-                  fontWeight: 'bold',
-                  fontSize: '14px',
-                  transition: 'background-color 0.2s, transform 0.1s'
-                }}
-                onClick={() => {
-                  localStorage.removeItem('skyland-guardians-tutorial-seen');
-                  window.location.reload();
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#563d7c';
-                  e.currentTarget.style.transform = 'scale(1.02)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#6f42c1';
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
-              >
-                🎯 Reset Tutorial (Reload Page)
-              </button>
-
-              <button
-                style={{
-                  backgroundColor: '#e74c3c',
-                  color: 'white',
-                  border: 'none',
-                  padding: '10px 12px',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  marginTop: '8px',
-                  width: '100%',
-                  fontWeight: 'bold',
-                  fontSize: '14px',
-                  transition: 'background-color 0.2s, transform 0.1s'
-                }}
-                onClick={() => {
-                  // Clear all localStorage items
-                  localStorage.clear();
-                  // Show confirmation
-                  alert('All localStorage data cleared! Page will reload.');
-                  window.location.reload();
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#c0392b';
-                  e.currentTarget.style.transform = 'scale(1.02)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#e74c3c';
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
-              >
-                🗑️ Clear All LocalStorage
-              </button>
-
-              <button
-                style={{
-                  backgroundColor: '#e74c3c',
-                  color: 'white',
-                  border: 'none',
-                  padding: '10px 12px',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  marginTop: '8px',
-                  width: '100%',
-                  fontWeight: 'bold',
-                  fontSize: '14px',
-                  transition: 'background-color 0.2s, transform 0.1s'
-                }}
-                onClick={() => {
-                  // Clear all localStorage items
-                  const itemsToRemove = [
-                    'skyland-guardians-tutorial-seen',
-                    'userAvatar',
-                    'userNickname', 
-                    'userAvatarBorder',
-                    'userAvatarPendant'
-                  ];
-                  
-                  itemsToRemove.forEach(item => localStorage.removeItem(item));
-                  
-                  // Also clear any other game-related localStorage items
-                  Object.keys(localStorage).forEach(key => {
-                    if (key.startsWith('skyland-') || key.startsWith('user')) {
-                      localStorage.removeItem(key);
-                    }
-                  });
-                  
-                  window.location.reload();
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#c0392b';
-                  e.currentTarget.style.transform = 'scale(1.02)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#e74c3c';
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
-              >
-                🗑️ Clear All localStorage (Reset Everything)
-              </button>
               
               <div style={{
                 fontSize: '12px',
@@ -823,6 +728,124 @@ export function DebugPanel() {
                 <li>Risk Manager: Keep 40%+ in safe assets (shield, golden, crystal)</li>
                 <li>Growth Seeker: Allocate 50%+ to growth assets (sword, forest)</li>
               </ul>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'reset' && (
+          <div style={{ padding: '20px' }}>
+            <h4 style={{ marginTop: 0, marginBottom: '16px' }}>🔄 Reset Options</h4>
+            
+            <p style={{ 
+              fontSize: '14px', 
+              color: '#666', 
+              marginBottom: '16px',
+              lineHeight: '1.4'
+            }}>
+              Reset various game states and localStorage data.
+            </p>
+            
+            <div style={{ marginBottom: '20px' }}>
+              <button
+                style={{
+                  backgroundColor: '#6f42c1',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  marginBottom: '12px',
+                  width: '100%',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  transition: 'background-color 0.2s, transform 0.1s'
+                }}
+                onClick={() => {
+                  localStorage.removeItem('skyland-guardians-tutorial-seen');
+                  window.location.reload();
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#563d7c';
+                  e.currentTarget.style.transform = 'scale(1.02)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#6f42c1';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                🎯 Reset Tutorial
+              </button>
+
+              <button
+                style={{
+                  backgroundColor: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  marginBottom: '12px',
+                  width: '100%',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  transition: 'background-color 0.2s, transform 0.1s'
+                }}
+                onClick={() => resetAchievements && resetAchievements()}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#c82333';
+                  e.currentTarget.style.transform = 'scale(1.02)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#dc3545';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                🧹 Reset Achievements
+              </button>
+
+              <button
+                style={{
+                  backgroundColor: '#e74c3c',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  marginBottom: '12px',
+                  width: '100%',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  transition: 'background-color 0.2s, transform 0.1s'
+                }}
+                onClick={() => {
+                  if (confirm('Are you sure you want to clear all localStorage data? This will reset everything!')) {
+                    localStorage.clear();
+                    window.location.reload();
+                  }
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#c0392b';
+                  e.currentTarget.style.transform = 'scale(1.02)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#e74c3c';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                🗑️ Clear All Data
+              </button>
+              
+              <div style={{
+                fontSize: '12px',
+                color: '#999',
+                textAlign: 'center',
+                fontStyle: 'italic',
+                marginTop: '16px',
+                borderTop: '1px solid #eee',
+                paddingTop: '12px'
+              }}>
+                <strong>Warning:</strong> Reset actions will reload the page and cannot be undone.
+              </div>
             </div>
           </div>
         )}

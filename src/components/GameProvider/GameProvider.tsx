@@ -464,6 +464,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
         isOpen={showWelcomeOverlay}
         onClose={() => setShowWelcomeOverlay(false)}
         title="Welcome to Skyland Guardians"
+        onOpenAvatarCustomization={() => setShowAvatarModal(true)}
+        onStartPlaying={() => {
+          // Trigger AI greeting when user starts playing
+          const userName = localStorage.getItem('userNickname') || 'Guardian';
+          const welcomeMessage = gamifiedAIService.generateWelcomeMessage(userName);
+          addMessage(welcomeMessage);
+        }}
       />
     </GameContext.Provider>
   );

@@ -7,9 +7,10 @@ interface Props {
   title?: string;
   children?: React.ReactNode;
   onOpenAvatarCustomization?: () => void;
+  onStartPlaying?: () => void;
 }
 
-export function MyCardOverlayPrompt({ isOpen, onClose, title = 'Welcome to Skyland Guardians!', children, onOpenAvatarCustomization }: Props) {
+export function MyCardOverlayPrompt({ isOpen, onClose, title = 'Welcome to Skyland Guardians!', children, onOpenAvatarCustomization, onStartPlaying }: Props) {
   if (!isOpen) return null;
 
   return (
@@ -29,23 +30,61 @@ export function MyCardOverlayPrompt({ isOpen, onClose, title = 'Welcome to Skyla
             ×
           </button>
         </div>
-
-        <div className="my-cards-content" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        
+        <div className="my-cards-content">
           {children || (
-            <div style={{ color: '#ddd', lineHeight: 1.5 }}>
-              <p style={{ marginTop: 0, fontSize: '1rem', color: '#fff' }}>
-                🏰 <strong>Welcome, guardian!</strong> You're about to embark on an investment adventure through the mystical Skyland realms.
+            <div className="welcome-content">
+              <h3>🏝️ Welcome to Your Island Adventure!</h3>
+              <p>
+                Embark on a thrilling journey in the world of asset management and financial decision-making.
+                As a Guardian of Skyland, you'll learn to navigate the markets while protecting your island home.
               </p>
-              <div style={{ background: 'rgba(74, 144, 226, 0.1)', padding: 12, borderRadius: 8, marginBottom: 12 }}>
-                <p style={{ margin: 0, fontSize: '0.9rem' }}>
-                  <strong>💡 Quick Tour:</strong><br/>
-                  • <strong>Left Panel:</strong> Access your cards and badges collection<br/>
-                  • <strong>Bottom Toolbar:</strong> Adjust asset allocations and press APPLY<br/>
-                  • <strong>Right Panel:</strong> Chat with your AI advisor for guidance
-                </p>
+              
+              <div className="welcome-features">
+                <div className="feature-item">
+                  <span className="feature-icon">🃏</span>
+                  <span>Collect powerful decision cards</span>
+                </div>
+                <div className="feature-item">
+                  <span className="feature-icon">🎯</span>
+                  <span>Complete strategic missions</span>
+                </div>
+                <div className="feature-item">
+                  <span className="feature-icon">🏆</span>
+                  <span>Unlock achievements and badges</span>
+                </div>
+                <div className="feature-item">
+                  <span className="feature-icon">🤖</span>
+                  <span>Get guidance from AI mentors</span>
+                </div>
               </div>
-              <p style={{ marginBottom: 0, fontSize: '0.9rem' }}>
-                Look for the highlighted hints that will appear next to guide you through your first steps. Ready to begin your journey? ✨
+
+              <div className="welcome-actions">
+                <button 
+                  className="primary-action-btn"
+                  onClick={() => {
+                    if (onOpenAvatarCustomization) {
+                      onOpenAvatarCustomization();
+                    }
+                  }}
+                >
+                  🎨 Customize Your Avatar
+                </button>
+                <button 
+                  className="secondary-action-btn"
+                  onClick={() => {
+                    if (onStartPlaying) {
+                      onStartPlaying();
+                    }
+                    onClose();
+                  }}
+                >
+                  Start Playing
+                </button>
+              </div>
+
+              <p className="welcome-tip">
+                💡 <strong>Tip:</strong> You can always access your cards, achievements, and settings from the sidebar!
               </p>
             </div>
           )}
@@ -56,3 +95,54 @@ export function MyCardOverlayPrompt({ isOpen, onClose, title = 'Welcome to Skyla
 }
 
 export default MyCardOverlayPrompt;
+
+const styles = `
+  .welcome-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    justify-content: center;
+  }
+
+  .primary-action-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-size: 14px;
+  }
+
+  .primary-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .secondary-action-btn {
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    border: 2px solid #ddd;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+  }
+
+  .secondary-action-btn:hover {
+    background: white;
+    border-color: #667eea;
+    color: #667eea;
+  }
+`;
+
+// Inject styles
+if (typeof document !== 'undefined') {
+  const styleElement = document.createElement('style');
+  styleElement.textContent = styles;
+  document.head.appendChild(styleElement);
+}
