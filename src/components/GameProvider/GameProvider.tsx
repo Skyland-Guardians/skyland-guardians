@@ -20,6 +20,12 @@ import type { MarketMode } from '../../data/asset-market-config';
 export function GameProvider({ children }: { children: ReactNode }) {
   const STORAGE_KEY = 'skyland-guardians-app-state-v1';
 
+  // Track whether loadFromStorage found any persisted data and whether parse failed
+  const loadedAnyRef = useRef(false);
+  const parseErrorRef = useRef(false);
+
+  
+
   // Serialize payload to JSON safely, converting Date objects to ISO strings everywhere
   const serializeForStorage = (payload: any) => {
     try {
@@ -60,8 +66,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       let parsed: any = null;
+
       if (raw) {
-        parsed = JSON.parse(raw);
+        try {
+          parsed = JSON.parse(raw);
+          loadedAnyRef.current = true;
+        } catch (e) {
+          // If parsing the main blob fails, we don't want to blindly overwrite it later.
+          console.warn('GameProvider: failed to parse main storage key', STORAGE_KEY, e);
+          // Indicate parse error via ref so persistence can avoid overwriting corrupted data
+          parseErrorRef.current = true;
+          parsed = null;
+        }
       } else {
         // Attempt to read important slices from individual fallback keys so older installs
         // or partial saves still hydrate important fields for the user.
@@ -90,7 +106,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
         }
         const uname = localStorage.getItem('userNickname');
         const uavatar = localStorage.getItem('userAvatar');
-        if (uname || uavatar) parsed.userInfo = { ...(parsed.userInfo || {}), ...(uname ? { name: uname } : {}), ...(uavatar ? { avatar: uavatar } : {}) };
+        if (uname || uavatar) {
+          parsed.userInfo = { ...(parsed.userInfo || {}), ...(uname ? { name: uname } : {}), ...(uavatar ? { avatar: uavatar } : {}) };
+          loadedAnyRef.current = true;
+        }
       }
 
       // Convert message timestamps back to Date where possible
@@ -109,6 +128,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return null;
     }
   };
+  
   const [gameState, setGameState] = useState<GameState>({
     currentDay: 1,
     stars: 0,
@@ -184,6 +204,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   // Hydration flag to avoid persisting default initial state before we've loaded existing data
   const hasHydrated = useRef(false);
 
+
   // Load persisted state once on mount
   useEffect(() => {
     const persisted = loadFromStorage();
@@ -227,7 +248,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       const serialized = serializeForStorage(payload);
       if (serialized) {
-        localStorage.setItem(STORAGE_KEY, serialized);
+        if (parseErrorRef.current) {
+          // If the main blob existed but failed to parse, avoid overwriting it to prevent data loss.
+          console.warn('GameProvider: main storage key is corrupted; skipping overwrite to avoid data loss', STORAGE_KEY);
+        } else {
+          localStorage.setItem(STORAGE_KEY, serialized);
+        }
         // Also persist important slices under separate keys so they are easy to inspect and resilient
         try {
           localStorage.setItem('skyland-guardians-current-day', String(gameState.currentDay));
