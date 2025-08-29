@@ -31,7 +31,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   });
 
   const [userInfo, setUserInfo] = useState<UserInfo>({
-    name: 'JAMES',
+    name: 'GUARDIAN',
     avatar: './assets/main-screen-1-assets/child-avatar-icon.png',
     level: 1
   });
@@ -458,15 +458,42 @@ export function GameProvider({ children }: { children: ReactNode }) {
       {children}
       <TutorialHint 
         hint={activeHint} 
-        onDismiss={() => setActiveHint(null)}
+        onDismiss={() => {
+          // If the left hint was dismissed, show the bottom hint next
+          if (activeHint && activeHint.id === 'hint-leftpanel') {
+            const bottomHint = {
+              id: 'hint-bottom',
+              selector: '.layout-asset-toolbar',
+              content: 'Use the asset toolbar to adjust allocations. Try assigning some % and hit APPLY.'
+            } as UITutorialHint;
+            setActiveHint(bottomHint);
+            return;
+          }
+
+          // Default behavior: clear active hint
+          setActiveHint(null);
+        }}
       />
       <MyCardOverlayPrompt
         isOpen={showWelcomeOverlay}
-        onClose={() => setShowWelcomeOverlay(false)}
+        onClose={() => {
+          // Closing the welcome overlay counts as 'start playing' for hint flow
+          setShowWelcomeOverlay(false);
+
+          // Show the left panel hint after the user dismisses welcome
+          const leftHint = { 
+            id: 'hint-leftpanel', 
+            selector: '.layout-left-panel', 
+            content: 'Your cards and badges live here. Click MY CARDS to view your collection!' 
+          } as UITutorialHint;
+
+          // Slight delay to allow modal to fully close and layout to settle
+          setTimeout(() => setActiveHint(leftHint), 300);
+        }}
         title="Welcome to Skyland Guardians"
         onOpenAvatarCustomization={() => setShowAvatarModal(true)}
         onStartPlaying={() => {
-          // Trigger AI greeting when user starts playing
+          // Trigger AI greeting when user starts playing (Start Playing button)
           const userName = localStorage.getItem('userNickname') || 'Guardian';
           const welcomeMessage = gamifiedAIService.generateWelcomeMessage(userName);
           addMessage(welcomeMessage);

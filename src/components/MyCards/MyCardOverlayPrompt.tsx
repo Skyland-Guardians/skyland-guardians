@@ -34,7 +34,7 @@ export function MyCardOverlayPrompt({ isOpen, onClose, title = 'Welcome to Skyla
         <div className="my-cards-content">
           {children || (
             <div className="welcome-content">
-              <h3>🏝️ Welcome to Your Island Adventure!</h3>
+              <h3>Welcome to Skyland Guardians</h3>
               <p>
                 Embark on a thrilling journey in the world of asset management and financial decision-making.
                 As a Guardian of Skyland, you'll learn to navigate the markets while protecting your island home.

@@ -133,15 +133,9 @@ export function AIPanel() {
           setShowWelcomeOverlay && setShowWelcomeOverlay(true);
         }, 1200);
 
-        // Show persistent left panel hint (user must dismiss via Got it)
-        const leftHint = { 
-          id: 'hint-leftpanel', 
-          selector: '.layout-left-panel', 
-          content: 'Your cards and badges live here. Click MY CARDS to view your collection!' 
-        };
-
-        // Only show the left hint; do not enqueue additional timed hints that auto-disappear
-        setTimeout(() => setActiveHint && setActiveHint(leftHint), 2000);
+  // DO NOT auto-show UI hints here. The welcome overlay controls the hint sequence
+  // (on close/start it will show the left hint, and the tutorial hint dismissal will
+  // trigger the bottom hint). This prevents duplicate or timing-related disappearance.
       }
 
       hasInitialized.current = true;

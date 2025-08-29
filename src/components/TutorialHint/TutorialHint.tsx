@@ -71,7 +71,12 @@ export function TutorialHint({ hint, onDismiss }: Props) {
             setStyle({ top: Math.max(12, window.innerHeight - 160), left: 24 });
           }
         } else {
-          setStyle(null);
+          // If no specific placement rules matched and the target wasn't found,
+          // use a safe fallback so the hint remains visible (prevents accidental disappearance).
+          // Position near the bottom-left by default but keep it within viewport bounds.
+          const fallbackTop = Math.max(12, window.innerHeight - 160);
+          const fallbackLeft = 24;
+          setStyle({ top: fallbackTop, left: fallbackLeft });
         }
       }
     } else {
