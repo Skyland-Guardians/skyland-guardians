@@ -834,29 +834,6 @@ export function DebugPanel() {
               >
                 🗑️ Clear All Data
               </button>
-              <button
-                style={{
-                  backgroundColor: '#6c757d',
-                  color: 'white',
-                  border: 'none',
-                  padding: '12px 16px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  marginBottom: '12px',
-                  width: '100%',
-                  fontWeight: 'bold',
-                  fontSize: '14px'
-                }}
-                onClick={() => {
-                  const key = 'skyland-guardians-app-state-v1';
-                  if (confirm(`Clear saved game state (${key})? This will reset your progress but keep other localStorage data.`)) {
-                    localStorage.removeItem(key);
-                    window.location.reload();
-                  }
-                }}
-              >
-                🧾 Clear Saved Game Only
-              </button>
               
               <div style={{
                 fontSize: '12px',
