@@ -1,5 +1,6 @@
 import { createContext, useContext } from 'react';
 import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult, PlayerCard } from '../types/game';
+import type { UITutorialHint } from '../types/tutorial';
 
 export interface GameContextType {
   gameState: GameState;
@@ -57,6 +58,15 @@ export interface GameContextType {
   checkAchievements?: (allocations?: AssetType[]) => void;
   resetAchievements?: () => void;
   onAchievementAnimationComplete?: () => void;
+  // Welcome overlay controls
+  showWelcomeOverlay?: boolean;
+  setShowWelcomeOverlay?: (open: boolean) => void;
+  // Avatar customization controls
+  showAvatarModal?: boolean;
+  setShowAvatarModal?: (open: boolean) => void;
+  // Tutorial hint controls
+  activeHint?: UITutorialHint | null;
+  setActiveHint?: (hint: UITutorialHint | null) => void;
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);

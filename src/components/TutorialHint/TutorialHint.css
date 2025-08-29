@@ -1,0 +1,60 @@
+.tutorial-hint {
+  position: fixed;
+  z-index: 15500;
+  background: linear-gradient(145deg, #2a2a3e, #1e1e2e);
+  border: 2px solid #4a90e2;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  max-width: 280px;
+  min-width: 220px;
+  font-size: 0.875rem;
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(74, 144, 226, 0.3);
+  pointer-events: auto;
+  animation: hintFadeIn 0.3s ease-out, hintPulse 2s ease-in-out infinite;
+}
+
+.tutorial-hint-content {
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.tutorial-hint-button {
+  background: linear-gradient(145deg, #4a90e2, #357abd);
+  border: none;
+  color: white;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.tutorial-hint-button:hover {
+  background: linear-gradient(145deg, #357abd, #2c5f99);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes hintFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hintPulse {
+  0%, 100% {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(74, 144, 226, 0.3);
+  }
+  50% {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 3px rgba(74, 144, 226, 0.5);
+  }
+}

@@ -160,14 +160,16 @@ export class AchievementChecker {
       if (!unlocked && isValidAllocation) {
         // 只有在分配有效时才计算进度
         switch (achievement.id) {
-          case 'badge_1':
+          case 'badge_1': {
             const maxAllocation = Math.max(...allocations.map(a => a.allocation));
             progress = Math.max(0, 100 - (maxAllocation - 50) * 2); // 50%以下为100%进度
             break;
-          case 'badge_2':
+          }
+          case 'badge_2': {
             const activeCount = allocations.filter(a => a.allocation > 0).length;
             progress = Math.min(100, (activeCount / 3) * 100);
             break;
+          }
           case 'badge_7':
             progress = Math.min(100, (stars / 10) * 100);
             break;

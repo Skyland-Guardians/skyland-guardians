@@ -6,9 +6,8 @@ import { gamifiedAIService } from '../../services/gamified-ai-service';
 // import AvatarModal from '../AvatarModal/AvatarModal';
 
 export function Header() {
-  const { gameState, userInfo, coins, addMessage, assetAllocations, performanceHistory, getLevelProgress } = useGameState();
+  const { gameState, userInfo, coins, addMessage, assetAllocations, performanceHistory, getLevelProgress, showAvatarModal, setShowAvatarModal } = useGameState();
   const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [avatar, setAvatar] = useState(userInfo.avatar || '/src/assets/主界面1资源/小孩头像icon.png');
   const [nickname, setNickname] = useState(userInfo.name || 'JAMES');
   const [selectedBorder, setSelectedBorder] = useState(() => {
@@ -139,11 +138,11 @@ export function Header() {
             boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
             cursor: 'pointer',
           }}
-          onClick={() => setShowAvatarModal(true)}
+          onClick={() => setShowAvatarModal && setShowAvatarModal(true)}
           tabIndex={0}
           title="Click to edit avatar and nickname"
           onKeyDown={e => {
-            if (e.key === 'Enter' || e.key === ' ') setShowAvatarModal(true);
+            if (e.key === 'Enter' || e.key === ' ') setShowAvatarModal && setShowAvatarModal(true);
           }}
         >
           <img 
@@ -382,7 +381,7 @@ export function Header() {
             justifyContent: 'center',
             pointerEvents: 'auto',
           }}
-          onClick={() => setShowAvatarModal(false)}
+          onClick={() => setShowAvatarModal && setShowAvatarModal(false)}
           aria-modal="true"
           role="dialog"
         >
@@ -409,7 +408,7 @@ export function Header() {
           >
             <div className="my-cards-header" style={{ padding: '20px 24px', borderBottom: '1px solid rgba(74,74,106,0.9)', background: 'linear-gradient(145deg, #2a2a3e, #1e1e2e)', borderTopLeftRadius: 16, borderTopRightRadius: 16, width: '100%' }}>
               <h3 className="my-cards-title" style={{ fontSize: '1.3rem', color: '#fff', margin: 0 }}>Edit Avatar &amp; Nickname</h3>
-              <button className="my-cards-close" style={{ fontSize: '2rem', color: '#aaa', background: 'none', border: 'none', cursor: 'pointer', width: 32, height: 32, borderRadius: '50%', position: 'absolute', top: 18, right: 18 }} onClick={() => setShowAvatarModal(false)}>×</button>
+              <button className="my-cards-close" style={{ fontSize: '2rem', color: '#aaa', background: 'none', border: 'none', cursor: 'pointer', width: 32, height: 32, borderRadius: '50%', position: 'absolute', top: 18, right: 18 }} onClick={() => setShowAvatarModal && setShowAvatarModal(false)}>×</button>
             </div>
             <div className="my-cards-content" style={{ width: '100%', padding: '32px 32px 24px 32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
               {/* Avatar preview with border and pendant (pendant outside top-left, 45° tilt, half over border) */}
@@ -464,7 +463,7 @@ export function Header() {
                 <button
                   type="button"
                   style={{ background: '#23233e', color: '#aaa', padding: '9px 18px', borderRadius: 10, border: 'none', fontWeight: 600, fontSize: '1rem', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
-                  onClick={() => setShowAvatarModal(false)}
+                  onClick={() => setShowAvatarModal && setShowAvatarModal(false)}
                 >
                   Cancel
                 </button>
@@ -472,7 +471,7 @@ export function Header() {
                   type="button"
                   style={{ background: (!nickname.trim() || nickname.length > 16 || !!nicknameError) ? '#666' : '#4a4a6a', color: '#fff', padding: '9px 18px', borderRadius: 10, border: 'none', fontWeight: 600, fontSize: '1rem', cursor: (!nickname.trim() || nickname.length > 16 || !!nicknameError) ? 'not-allowed' : 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
                   onClick={() => {
-                    setShowAvatarModal(false);
+                    setShowAvatarModal && setShowAvatarModal(false);
                     localStorage.setItem('userAvatar', avatar);
                     localStorage.setItem('userNickname', nickname);
                     localStorage.setItem('userAvatarBorder', String(selectedBorder));

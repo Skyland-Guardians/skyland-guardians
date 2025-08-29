@@ -4,15 +4,117 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: transparent;
+  /* a dim overlay that doesn't affect child opacity */
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  /* High z-index for MyCards/Badges modals */
   z-index: 15000;
-  /* Match animation timing and easing used across modals */
+  backdrop-filter: blur(3px);
   animation: fadeIn 0.28s ease-out;
-  pointer-events: none;
+  pointer-events: auto;
+}
+
+/* Welcome overlay styles */
+.welcome-content {
+  padding: 20px;
+}
+
+.welcome-content h3 {
+  color: rgba(255,255,255,0.98);
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.welcome-content p {
+  color: rgba(255,255,255,0.88);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.welcome-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.9);
+}
+
+.feature-icon {
+  font-size: 18px;
+  color: rgba(191,230,255,0.95);
+}
+
+.feature-item span {
+  color: rgba(255,255,255,0.9);
+}
+
+.welcome-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.primary-action-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-size: 14px;
+}
+
+.primary-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.secondary-action-btn {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border: 2px solid #ddd;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.secondary-action-btn:hover {
+  background: white;
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.welcome-tip {
+  margin-top: 20px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 215, 0, 0.12);
+  border-radius: 6px;
+  font-size: 14px;
+  color: rgba(255,250,230,0.95);
+  text-align: center;
 }
 
 .my-cards-modal {

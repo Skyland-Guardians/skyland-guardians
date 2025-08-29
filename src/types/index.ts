@@ -1,2 +1,3 @@
-// Re-export all types from game.ts
+// Re-export types
 export * from './game';
+export * from './tutorial';

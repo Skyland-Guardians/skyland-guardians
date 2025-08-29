@@ -84,7 +84,7 @@ const RichMessage = ({ content }: { content: string }) => {
         </div>
       );
     }
-  } catch (e) {
+  } catch {
     // Fall back to markdown rendering if JSON parsing fails
   }
   return <MarkdownMessage content={content} />;
@@ -99,7 +99,7 @@ const formatCoins = (amount: number): string => {
 };
 
 export function AIPanel() {
-  const { messages, addMessage, gameState, userInfo, assetAllocations, coins = 10000, performanceHistory } = useGameState();
+  const { messages, addMessage, gameState, userInfo, assetAllocations, coins = 10000, performanceHistory, setActiveHint, setShowWelcomeOverlay } = useGameState();
   const { currentPersonality } = useAIPersonality();
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -110,19 +110,37 @@ export function AIPanel() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Initialize AI service and welcome message only once
+  // Initialize AI service only once, but delay welcome message
   useEffect(() => {
     if (!hasInitialized.current && messages.length === 0) {
       gamifiedAIService.initialize(gameState, assetAllocations, coins);
       gamifiedAIService.setPersonality(currentPersonality.id);
       
-      // Add welcome message
-      const welcomeMessage = gamifiedAIService.generateWelcomeMessage(userInfo.name);
-      addMessage(welcomeMessage);
+      // Don't add welcome message here - it will be triggered when user clicks "Start Playing"
       
+  // Do not automatically queue tutorial messages here.
+  // Tutorial hints are presented via the overlay and UI hints; avoid adding chat hints automatically.
+
+      // Check if this is the first time visiting (localStorage persistence)
+      const hasSeenTutorial = localStorage.getItem('skyland-guardians-tutorial-seen');
+      
+      if (!hasSeenTutorial) {
+        // Mark tutorial as seen
+        localStorage.setItem('skyland-guardians-tutorial-seen', 'true');
+        
+        // Show welcome overlay after tutorial messages start
+        setTimeout(() => {
+          setShowWelcomeOverlay && setShowWelcomeOverlay(true);
+        }, 1200);
+
+  // DO NOT auto-show UI hints here. The welcome overlay controls the hint sequence
+  // (on close/start it will show the left hint, and the tutorial hint dismissal will
+  // trigger the bottom hint). This prevents duplicate or timing-related disappearance.
+      }
+
       hasInitialized.current = true;
     }
-  }, [messages.length, userInfo.name, addMessage, gameState, assetAllocations, coins, currentPersonality.id]);
+  }, [messages.length, userInfo.name, addMessage, gameState, assetAllocations, coins, currentPersonality.id, setActiveHint, setShowWelcomeOverlay]);
 
   // Update AI service when personality changes (but don't send welcome message)
   useEffect(() => {

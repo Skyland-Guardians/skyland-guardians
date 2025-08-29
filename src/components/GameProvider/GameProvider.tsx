@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult, SettlementAsset, PlayerCard } from '../../types/game';
 import { GameContext } from '../../hooks/useGameContext';
@@ -11,10 +11,124 @@ import { gamifiedAIService } from '../../services/gamified-ai-service';
 import { eventManager } from '../../services/event-manager';
 import { achievementChecker } from '../../services/achievement-checker';
 import { achievementService } from '../../services/achievement-service';
+import type { UITutorialHint } from '../../types/tutorial';
+import { TutorialHint } from '../TutorialHint/TutorialHint';
+import { MyCardOverlayPrompt } from '../MyCards/MyCardOverlayPrompt';
 import { LevelManager } from '../../data/level-config';
 import type { MarketMode } from '../../data/asset-market-config';
 
 export function GameProvider({ children }: { children: ReactNode }) {
+  const STORAGE_KEY = 'skyland-guardians-app-state-v1';
+
+  // Track whether loadFromStorage found any persisted data and whether parse failed
+  const loadedAnyRef = useRef(false);
+  const parseErrorRef = useRef(false);
+
+  
+
+  // Serialize payload to JSON safely, converting Date objects to ISO strings everywhere
+  const serializeForStorage = (payload: any) => {
+    try {
+      const replacer = (_key: string, value: any) => {
+        if (value instanceof Date) return value.toISOString();
+        return value;
+      };
+
+      // Try to stringify the whole payload first
+      try {
+        return JSON.stringify(payload, replacer);
+      } catch (err) {
+        console.warn('GameProvider: Full payload serialization failed, attempting per-slice serialization', err);
+        // Fallback: try to serialize slices individually and keep the ones that succeed
+        const safePayload: any = {};
+        for (const key of Object.keys(payload)) {
+          try {
+            const value = payload[key];
+            // Quick check: if value is undefined, skip
+            if (typeof value === 'undefined') continue;
+            // Attempt to stringify this slice
+            JSON.stringify(value, replacer);
+            safePayload[key] = value;
+          } catch (sliceErr) {
+            console.warn(`GameProvider: Skipping non-serializable slice for key= ${key}`, sliceErr);
+          }
+        }
+        return JSON.stringify(safePayload, replacer);
+      }
+    } catch (e) {
+      console.warn('Failed to serialize state for storage', e);
+      return null;
+    }
+  };
+
+  // Load persisted JSON and revive ISO date strings for known fields (messages.timestamp)
+  const loadFromStorage = () => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      let parsed: any = null;
+
+      if (raw) {
+        try {
+          parsed = JSON.parse(raw);
+          loadedAnyRef.current = true;
+        } catch (e) {
+          // If parsing the main blob fails, we don't want to blindly overwrite it later.
+          console.warn('GameProvider: failed to parse main storage key', STORAGE_KEY, e);
+          // Indicate parse error via ref so persistence can avoid overwriting corrupted data
+          parseErrorRef.current = true;
+          parsed = null;
+        }
+      } else {
+        // Attempt to read important slices from individual fallback keys so older installs
+        // or partial saves still hydrate important fields for the user.
+        parsed = {};
+        const fd = localStorage.getItem('skyland-guardians-current-day');
+        if (fd) parsed.gameState = { ...(parsed.gameState || {}), currentDay: Number(fd) };
+        const fcoins = localStorage.getItem('skyland-guardians-coins');
+        if (fcoins) parsed.coins = Number(fcoins);
+        const falloc = localStorage.getItem('skyland-guardians-asset-allocations');
+        if (falloc) {
+          try { parsed.assetAllocations = JSON.parse(falloc); } catch { /* ignore */ }
+        }
+        const fmsg = localStorage.getItem('skyland-guardians-messages');
+        if (fmsg) {
+          try { parsed.messages = JSON.parse(fmsg); } catch { /* ignore */ }
+        }
+        const fph = localStorage.getItem('skyland-guardians-performance-history');
+        if (fph) {
+          try { parsed.performanceHistory = JSON.parse(fph); } catch { /* ignore */ }
+        }
+        const fmdi = localStorage.getItem('skyland-guardians-market-day-index');
+        if (fmdi) parsed.marketDayIndex = Number(fmdi);
+        const fmev = localStorage.getItem('skyland-guardians-market-events');
+        if (fmev) {
+          try { parsed.marketEvents = JSON.parse(fmev); } catch { /* ignore */ }
+        }
+        const uname = localStorage.getItem('userNickname');
+        const uavatar = localStorage.getItem('userAvatar');
+        if (uname || uavatar) {
+          parsed.userInfo = { ...(parsed.userInfo || {}), ...(uname ? { name: uname } : {}), ...(uavatar ? { avatar: uavatar } : {}) };
+          loadedAnyRef.current = true;
+        }
+      }
+
+      // Convert message timestamps back to Date where possible
+      if (parsed && Array.isArray(parsed.messages)) {
+        parsed.messages = parsed.messages.map((m: any) => ({ ...m, timestamp: m?.timestamp ? new Date(m.timestamp) : new Date() }));
+      }
+
+      // Defensive: performanceHistory may contain day numbers only, but if there are timestamps in future, revive them here
+      if (parsed && Array.isArray(parsed.performanceHistory)) {
+        parsed.performanceHistory = parsed.performanceHistory.map((h: any) => ({ ...h }));
+      }
+
+      return parsed;
+    } catch (e) {
+      console.warn('Failed to load persisted state', e);
+      return null;
+    }
+  };
+  
   const [gameState, setGameState] = useState<GameState>({
     currentDay: 1,
     stars: 0,
@@ -28,7 +142,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   });
 
   const [userInfo, setUserInfo] = useState<UserInfo>({
-    name: 'JAMES',
+    name: 'GUARDIAN',
     avatar: './assets/main-screen-1-assets/child-avatar-icon.png',
     level: 1
   });
@@ -49,17 +163,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const orderedAssets = orderedIds.map(id => GAME_ASSETS.find(a => a.id === id)).filter(Boolean) as typeof GAME_ASSETS;
 
   const defaultAllocations: AssetType[] = orderedAssets.map(a => {
-    // Set initial allocation: 60% Tech (sword), 40% Bonds (shield), 0% others
-    // This configuration doesn't complete any missions by default:
-    // - Task 1: sword=60% (>=40%), doesn't complete 
-    // - Task 3: shield=40% (<35%), doesn't complete
-    let allocation = 0;
-    if (a.id === 'sword') {
-      allocation = 60; // Agile Sword (Technology)
-    } else if (a.id === 'shield') {
-      allocation = 40; // Sturdy Shield (Bonds)
-    }
-    
+    // Start with zero allocation for every asset so players manually assign weights
     return {
       id: a.id,
       name: a.gameName.toUpperCase(),
@@ -67,7 +171,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       icon: a.icon || '',
       type: a.id as any,
       theme: mapThemeFromRisk(a.risk),
-      allocation: allocation
+      allocation: 0
     };
   });
 
@@ -76,6 +180,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [currentMission, setCurrentMission] = useState<Mission | null>(null);
   const [isCardCollectionOpen, setCardCollectionOpen] = useState(false);
   const [isBadgesOpen, setBadgesOpen] = useState(false);
+  const [showWelcomeOverlay, setShowWelcomeOverlay] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [coins, setCoins] = useState<number>(1000); // initial money the player holds
   const [marketMode, setMarketMode] = useState<MarketMode>(DEFAULT_MARKET_CONFIG.mode);
   const [marketDayIndex, setMarketDayIndex] = useState<number>(0);
@@ -91,6 +197,91 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   // 新成就状态
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
+
+  // Tutorial hint state
+  const [activeHint, setActiveHint] = useState<UITutorialHint | null>(null);
+
+  // Hydration flag to avoid persisting default initial state before we've loaded existing data
+  const hasHydrated = useRef(false);
+
+
+  // Load persisted state once on mount
+  useEffect(() => {
+    const persisted = loadFromStorage();
+    if (persisted) {
+      // Apply persisted slices if available
+      if (persisted.gameState) setGameState(prev => ({ ...prev, ...persisted.gameState }));
+      if (persisted.userInfo) setUserInfo(prev => ({ ...prev, ...persisted.userInfo }));
+      if (Array.isArray(persisted.assetAllocations)) setAssetAllocations(persisted.assetAllocations);
+      if (Array.isArray(persisted.messages)) setMessages(persisted.messages);
+      if (typeof persisted.coins === 'number') setCoins(persisted.coins);
+      if (persisted.marketMode) setMarketMode(persisted.marketMode);
+      if (typeof persisted.marketDayIndex === 'number') setMarketDayIndex(persisted.marketDayIndex);
+      if (Array.isArray(persisted.marketEvents)) setMarketEvents(persisted.marketEvents);
+      if (Array.isArray(persisted.performanceHistory)) setPerformanceHistory(persisted.performanceHistory);
+      console.debug('GameProvider: Hydrated state from storage', STORAGE_KEY, persisted);
+    } else {
+      console.debug('GameProvider: No persisted state found for', STORAGE_KEY);
+    }
+
+    // Mark hydration complete so we don't overwrite storage with defaults on first render
+    hasHydrated.current = true;
+  }, []);
+
+  // Persist whenever important slices change
+  useEffect(() => {
+    // Don't persist until we've attempted to hydrate initial state
+    if (!hasHydrated.current) return;
+
+    try {
+      const payload = {
+        gameState,
+        userInfo,
+        assetAllocations,
+        messages,
+        coins,
+        marketMode,
+        marketDayIndex,
+        marketEvents,
+        performanceHistory
+      };
+
+      const serialized = serializeForStorage(payload);
+      if (serialized) {
+        if (parseErrorRef.current) {
+          // If the main blob existed but failed to parse, avoid overwriting it to prevent data loss.
+          console.warn('GameProvider: main storage key is corrupted; skipping overwrite to avoid data loss', STORAGE_KEY);
+        } else {
+          localStorage.setItem(STORAGE_KEY, serialized);
+        }
+        // Also persist important slices under separate keys so they are easy to inspect and resilient
+        try {
+          localStorage.setItem('skyland-guardians-current-day', String(gameState.currentDay));
+          localStorage.setItem('skyland-guardians-coins', String(coins));
+          localStorage.setItem('skyland-guardians-asset-allocations', JSON.stringify(assetAllocations));
+          localStorage.setItem('skyland-guardians-messages', JSON.stringify(messages.map(m => ({ ...m, timestamp: m.timestamp instanceof Date ? m.timestamp.toISOString() : m.timestamp }))));
+          localStorage.setItem('skyland-guardians-performance-history', JSON.stringify(performanceHistory || []));
+          localStorage.setItem('skyland-guardians-market-day-index', String(marketDayIndex));
+          localStorage.setItem('skyland-guardians-market-events', JSON.stringify(marketEvents || []));
+          // userInfo fields are also useful
+          try { localStorage.setItem('userNickname', userInfo.name || ''); } catch {}
+          try { localStorage.setItem('userAvatar', userInfo.avatar || ''); } catch {}
+        } catch (e) {
+          console.warn('GameProvider: failed to persist per-slice storage', e);
+        }
+
+        // Debug log to help trace persistence issues
+        console.debug('GameProvider: Persisted state to storage', STORAGE_KEY, {
+          gameState: { currentDay: gameState.currentDay, stars: gameState.stars, level: gameState.level },
+          coins,
+          marketDayIndex,
+          messagesCount: Array.isArray(messages) ? messages.length : 0
+        });
+      }
+    } catch (e) {
+      console.warn('Failed to persist game state', e);
+    }
+  }, [gameState, userInfo, assetAllocations, messages, coins, marketMode, marketDayIndex, marketEvents, performanceHistory]);
 
   // 检查成就
   const checkAchievements = (allocations: AssetType[] = assetAllocations) => {
@@ -449,9 +640,58 @@ export function GameProvider({ children }: { children: ReactNode }) {
       newAchievements,
       checkAchievements,
       resetAchievements,
-      onAchievementAnimationComplete
+      onAchievementAnimationComplete,
+      activeHint,
+      setActiveHint,
+      showWelcomeOverlay,
+      setShowWelcomeOverlay,
+      showAvatarModal,
+      setShowAvatarModal
     }}>
       {children}
+      <TutorialHint 
+        hint={activeHint} 
+        onDismiss={() => {
+          // If the left hint was dismissed, show the bottom hint next
+          if (activeHint && activeHint.id === 'hint-leftpanel') {
+            const bottomHint = {
+              id: 'hint-bottom',
+              selector: '.layout-asset-toolbar',
+              content: 'Use the asset toolbar to adjust allocations. Try assigning some % and hit APPLY.'
+            } as UITutorialHint;
+            setActiveHint(bottomHint);
+            return;
+          }
+
+          // Default behavior: clear active hint
+          setActiveHint(null);
+        }}
+      />
+      <MyCardOverlayPrompt
+        isOpen={showWelcomeOverlay}
+        onClose={() => {
+          // Closing the welcome overlay counts as 'start playing' for hint flow
+          setShowWelcomeOverlay(false);
+
+          // Show the left panel hint after the user dismisses welcome
+          const leftHint = { 
+            id: 'hint-leftpanel', 
+            selector: '.layout-left-panel', 
+            content: 'Your cards and badges live here. Click MY CARDS to view your collection!' 
+          } as UITutorialHint;
+
+          // Slight delay to allow modal to fully close and layout to settle
+          setTimeout(() => setActiveHint(leftHint), 300);
+        }}
+        title="Welcome to Skyland Guardians"
+        onOpenAvatarCustomization={() => setShowAvatarModal(true)}
+        onStartPlaying={() => {
+          // Trigger AI greeting when user starts playing (Start Playing button)
+          const userName = localStorage.getItem('userNickname') || 'Guardian';
+          const welcomeMessage = gamifiedAIService.generateWelcomeMessage(userName);
+          addMessage(welcomeMessage);
+        }}
+      />
     </GameContext.Provider>
   );
 }
