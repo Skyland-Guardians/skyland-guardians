@@ -128,7 +128,7 @@ export function Header() {
     addMessage({
       id: `money-request-${Date.now()}`,
       sender: 'ai',
-      content: `� Your request for $${amount.toLocaleString()} has been sent to your parents! They'll review it and get back to you.`,
+      content: `Your request for $${amount.toLocaleString()} has been sent to your parents! They'll review it and get back to you.`,
       timestamp: new Date(),
       type: 'feedback'
     });
