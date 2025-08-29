@@ -373,8 +373,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
           localStorage.setItem('skyland-guardians-market-day-index', String(marketDayIndex));
           localStorage.setItem('skyland-guardians-market-events', JSON.stringify(marketEvents || []));
           // userInfo fields are also useful
-          try { localStorage.setItem('userNickname', userInfo.name || ''); } catch {}
-          try { localStorage.setItem('userAvatar', userInfo.avatar || ''); } catch {}
+            try { localStorage.setItem('userNickname', userInfo.name || ''); } catch {
+              /* ignore */
+            }
+            try { localStorage.setItem('userAvatar', userInfo.avatar || ''); } catch {
+              /* ignore */
+            }
         } catch (e) {
           console.warn('GameProvider: failed to persist per-slice storage', e);
         }

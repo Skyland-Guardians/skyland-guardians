@@ -192,7 +192,7 @@ export function ParentControlPanel({ isOpen, onClose }: ParentControlPanelProps)
 
   useEffect(() => {
     saveData();
-  }, [assetMappings, moneyRequests, activeLoans]);
+  }, [assetMappings, moneyRequests, activeLoans, saveData]);
 
   if (!isOpen) return null;
 

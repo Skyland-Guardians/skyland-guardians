@@ -130,7 +130,7 @@ export function AIPanel() {
         
         // Show welcome overlay after tutorial messages start
         setTimeout(() => {
-          setShowWelcomeOverlay && setShowWelcomeOverlay(true);
+          setShowWelcomeOverlay?.(true);
         }, 1200);
 
   // DO NOT auto-show UI hints here. The welcome overlay controls the hint sequence
