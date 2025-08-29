@@ -60,6 +60,21 @@ export function MainScreen() {
         </>
       )}
       
+      {/* Sky Island - fixed at root level so it never overlays panels */}
+      <div style={{
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 'min(900px, 70vw)',
+        aspectRatio: '11 / 8',
+        zIndex: -3, // above background color blocks (-10/-11 and -4), below all UI
+        pointerEvents: 'none',
+        backgroundColor: 'transparent'
+      }}>
+        <SkylandIsland />
+      </div>
+
       {/* Chaos mode background color blocks */}
       {isChaoMode && (
         <div style={{
@@ -100,21 +115,7 @@ export function MainScreen() {
         
         {/* Main Content - transparent to show background */}
         <main className="layout-main-content">
-          {/* Sky Island - always visible inside main content */}
-          <div style={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 'min(900px, 70vw)',
-            aspectRatio: '11 / 8',
-            zIndex: -1,
-            pointerEvents: 'none',
-            backgroundColor: 'transparent'
-          }}>
-            <SkylandIsland />
-          </div>
-          {/* Content area is now transparent */}
+          {/* Content area is transparent; island rendered at root */}
           <BadgesPanel />
         </main>
         
