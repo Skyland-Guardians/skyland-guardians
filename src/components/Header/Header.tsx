@@ -147,7 +147,8 @@ export function Header() {
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '1rem'
+        gap: '1rem',
+        flexWrap: 'nowrap' // keep items on a single line and avoid wrapping when scaled
       }}>
         <div style={{
           display: 'flex',
@@ -284,6 +285,8 @@ export function Header() {
             textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
             cursor: 'pointer',
             transition: 'all 0.2s ease'
+            ,whiteSpace: 'nowrap', // prevent label from breaking into multiple lines
+            flexShrink: 0
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.05)';
@@ -312,7 +315,9 @@ export function Header() {
           gap: '0.5rem',
           boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
           border: '2px solid rgba(255, 255, 255, 0.2)',
-          textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
+          textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
+          whiteSpace: 'nowrap', // ensure "DAY 1" stays on one line
+          flexShrink: 0
         }}>
           <span style={{ fontSize: '1.2rem' }}>📅</span>
           <span>DAY {gameState.currentDay}</span>
@@ -359,6 +364,8 @@ export function Header() {
             textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
             cursor: 'pointer',
             transition: 'all 0.2s ease'
+            ,whiteSpace: 'nowrap', // keep "How to Play" on one line
+            flexShrink: 0
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'linear-gradient(145deg, #059669, #047857)';
@@ -392,6 +399,8 @@ export function Header() {
             textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
             cursor: 'pointer',
             transition: 'all 0.2s ease'
+            ,whiteSpace: 'nowrap',
+            flexShrink: 0
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'linear-gradient(145deg, #5b21b6, #4c1d95)';
