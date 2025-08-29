@@ -110,20 +110,16 @@ export function AIPanel() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Initialize AI service and welcome message only once
+  // Initialize AI service only once, but delay welcome message
   useEffect(() => {
     if (!hasInitialized.current && messages.length === 0) {
       gamifiedAIService.initialize(gameState, assetAllocations, coins);
       gamifiedAIService.setPersonality(currentPersonality.id);
       
-      // Add welcome message
-      const welcomeMessage = gamifiedAIService.generateWelcomeMessage(userInfo.name);
-      addMessage(welcomeMessage);
-      // Queue tutorial messages for new players
-      const tutorialMessages = gamifiedAIService.generateTutorialMessages();
-      tutorialMessages.forEach((msg, index) => {
-        setTimeout(() => addMessage(msg), 800 * (index + 1));
-      });
+      // Don't add welcome message here - it will be triggered when user clicks "Start Playing"
+      
+  // Do not automatically queue tutorial messages here.
+  // Tutorial hints are presented via the overlay and UI hints; avoid adding chat hints automatically.
 
       // Check if this is the first time visiting (localStorage persistence)
       const hasSeenTutorial = localStorage.getItem('skyland-guardians-tutorial-seen');
@@ -132,25 +128,20 @@ export function AIPanel() {
         // Mark tutorial as seen
         localStorage.setItem('skyland-guardians-tutorial-seen', 'true');
         
-        // Show welcome overlay after AI messages start
+        // Show welcome overlay after tutorial messages start
         setTimeout(() => {
           setShowWelcomeOverlay && setShowWelcomeOverlay(true);
         }, 1200);
 
-        // Show left panel hint then footer hint with better spacing
+        // Show persistent left panel hint (user must dismiss via Got it)
         const leftHint = { 
           id: 'hint-leftpanel', 
           selector: '.layout-left-panel', 
           content: 'Your cards and badges live here. Click MY CARDS to view your collection!' 
         };
-        const footerHint = { 
-          id: 'hint-footer', 
-          selector: '.layout-asset-toolbar', 
-          content: 'Adjust your asset weights here and press APPLY to lock in your choices.' 
-        };
 
+        // Only show the left hint; do not enqueue additional timed hints that auto-disappear
         setTimeout(() => setActiveHint && setActiveHint(leftHint), 2000);
-        setTimeout(() => setActiveHint && setActiveHint(footerHint), 4000);
       }
 
       hasInitialized.current = true;
