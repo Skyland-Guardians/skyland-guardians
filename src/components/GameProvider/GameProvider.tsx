@@ -78,36 +78,77 @@ export function GameProvider({ children }: { children: ReactNode }) {
           parseErrorRef.current = true;
           parsed = null;
         }
-      } else {
-        // Attempt to read important slices from individual fallback keys so older installs
-        // or partial saves still hydrate important fields for the user.
-        parsed = {};
-        const fd = localStorage.getItem('skyland-guardians-current-day');
-        if (fd) parsed.gameState = { ...(parsed.gameState || {}), currentDay: Number(fd) };
-        const fcoins = localStorage.getItem('skyland-guardians-coins');
-        if (fcoins) parsed.coins = Number(fcoins);
-        const falloc = localStorage.getItem('skyland-guardians-asset-allocations');
-        if (falloc) {
-          try { parsed.assetAllocations = JSON.parse(falloc); } catch { /* ignore */ }
+      }
+      
+      // Always attempt to read from fallback keys and merge with main data
+      // This ensures we don't lose data even if main storage is partial or corrupted
+      if (!parsed) parsed = {};
+      
+      const fd = localStorage.getItem('skyland-guardians-current-day');
+      const fstars = localStorage.getItem('skyland-guardians-stars');
+      const flevel = localStorage.getItem('skyland-guardians-level');
+      const fcoins = localStorage.getItem('skyland-guardians-coins');
+      const falloc = localStorage.getItem('skyland-guardians-asset-allocations');
+      const fmsg = localStorage.getItem('skyland-guardians-messages');
+      const fph = localStorage.getItem('skyland-guardians-performance-history');
+      const fmdi = localStorage.getItem('skyland-guardians-market-day-index');
+      const fmev = localStorage.getItem('skyland-guardians-market-events');
+      const uname = localStorage.getItem('userNickname');
+      const uavatar = localStorage.getItem('userAvatar');
+      
+      // Merge fallback data with main data, preferring main data when available
+      if (fd && (!parsed.gameState || typeof parsed.gameState.currentDay !== 'number')) {
+        parsed.gameState = { ...(parsed.gameState || {}), currentDay: Number(fd) };
+        loadedAnyRef.current = true;
+      }
+      if (fstars && (!parsed.gameState || typeof parsed.gameState.stars !== 'number')) {
+        parsed.gameState = { ...(parsed.gameState || {}), stars: Number(fstars) };
+        loadedAnyRef.current = true;
+      }
+      if (flevel && (!parsed.gameState || typeof parsed.gameState.level !== 'number')) {
+        parsed.gameState = { ...(parsed.gameState || {}), level: Number(flevel) };
+        loadedAnyRef.current = true;
+      }
+      if (fcoins && typeof parsed.coins !== 'number') {
+        parsed.coins = Number(fcoins);
+        loadedAnyRef.current = true;
+      }
+      if (falloc && !Array.isArray(parsed.assetAllocations)) {
+        try { 
+          parsed.assetAllocations = JSON.parse(falloc); 
+          loadedAnyRef.current = true;
+        } catch { /* ignore */ }
+      }
+      if (fmsg && !Array.isArray(parsed.messages)) {
+        try { 
+          parsed.messages = JSON.parse(fmsg); 
+          loadedAnyRef.current = true;
+        } catch { /* ignore */ }
+      }
+      if (fph && !Array.isArray(parsed.performanceHistory)) {
+        try { 
+          parsed.performanceHistory = JSON.parse(fph); 
+          loadedAnyRef.current = true;
+        } catch { /* ignore */ }
+      }
+      if (fmdi && typeof parsed.marketDayIndex !== 'number') {
+        parsed.marketDayIndex = Number(fmdi);
+        loadedAnyRef.current = true;
+      }
+      if (fmev && !Array.isArray(parsed.marketEvents)) {
+        try { 
+          parsed.marketEvents = JSON.parse(fmev); 
+          loadedAnyRef.current = true;
+        } catch { /* ignore */ }
+      }
+      if (uname || uavatar) {
+        if (!parsed.userInfo) parsed.userInfo = {};
+        if (uname && !parsed.userInfo.name) {
+          parsed.userInfo.name = uname;
+          loadedAnyRef.current = true;
         }
-        const fmsg = localStorage.getItem('skyland-guardians-messages');
-        if (fmsg) {
-          try { parsed.messages = JSON.parse(fmsg); } catch { /* ignore */ }
-        }
-        const fph = localStorage.getItem('skyland-guardians-performance-history');
-        if (fph) {
-          try { parsed.performanceHistory = JSON.parse(fph); } catch { /* ignore */ }
-        }
-        const fmdi = localStorage.getItem('skyland-guardians-market-day-index');
-        if (fmdi) parsed.marketDayIndex = Number(fmdi);
-        const fmev = localStorage.getItem('skyland-guardians-market-events');
-        if (fmev) {
-          try { parsed.marketEvents = JSON.parse(fmev); } catch { /* ignore */ }
-        }
-        const uname = localStorage.getItem('userNickname');
-        const uavatar = localStorage.getItem('userAvatar');
-        if (uname || uavatar) {
-          parsed.userInfo = { ...(parsed.userInfo || {}), ...(uname ? { name: uname } : {}), ...(uavatar ? { avatar: uavatar } : {}) };
+        if (uavatar && !parsed.userInfo.avatar) {
+          parsed.userInfo.avatar = uavatar;
           loadedAnyRef.current = true;
         }
       }
@@ -257,6 +298,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         // Also persist important slices under separate keys so they are easy to inspect and resilient
         try {
           localStorage.setItem('skyland-guardians-current-day', String(gameState.currentDay));
+          localStorage.setItem('skyland-guardians-stars', String(gameState.stars));
+          localStorage.setItem('skyland-guardians-level', String(gameState.level));
           localStorage.setItem('skyland-guardians-coins', String(coins));
           localStorage.setItem('skyland-guardians-asset-allocations', JSON.stringify(assetAllocations));
           localStorage.setItem('skyland-guardians-messages', JSON.stringify(messages.map(m => ({ ...m, timestamp: m.timestamp instanceof Date ? m.timestamp.toISOString() : m.timestamp }))));
