@@ -52,8 +52,8 @@ export function TutorialHint({ hint, onDismiss }: Props) {
           const leftPanel = document.querySelector('.layout-left-panel') as HTMLElement | null;
           if (leftPanel) {
             const rect = leftPanel.getBoundingClientRect();
-            let top = Math.max(12, rect.top + 60);
-            let left = Math.min(rect.right + 12, window.innerWidth - 300);
+            const top = Math.max(12, rect.top + 60);
+            const left = Math.min(rect.right + 12, window.innerWidth - 300);
             setStyle({ top, left });
           } else {
             // Safe fallback position
@@ -63,8 +63,8 @@ export function TutorialHint({ hint, onDismiss }: Props) {
           const footer = document.querySelector('.layout-asset-toolbar') as HTMLElement | null;
           if (footer) {
             const rect = footer.getBoundingClientRect();
-            let top = Math.max(12, rect.top - 120);
-            let left = Math.max(12, Math.min(rect.left + 20, window.innerWidth - 300));
+            const top = Math.max(12, rect.top - 120);
+            const left = Math.max(12, Math.min(rect.left + 20, window.innerWidth - 300));
             setStyle({ top, left });
           } else {
             // Safe fallback position above bottom

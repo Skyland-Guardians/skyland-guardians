@@ -16,7 +16,7 @@ export class AchievementService {
     this.userAchievements = [];
     try {
       localStorage.removeItem(this.STORAGE_KEY);
-    } catch (e) {
+    } catch {
       // ignore
     }
     console.log('🧹 All achievements reset');
