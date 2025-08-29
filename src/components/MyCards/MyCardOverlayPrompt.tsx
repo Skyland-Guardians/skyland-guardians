@@ -6,9 +6,10 @@ interface Props {
   onClose: () => void;
   title?: string;
   children?: React.ReactNode;
+  onOpenAvatarCustomization?: () => void;
 }
 
-export function MyCardOverlayPrompt({ isOpen, onClose, title = 'Welcome to Skyland Guardians!', children }: Props) {
+export function MyCardOverlayPrompt({ isOpen, onClose, title = 'Welcome to Skyland Guardians!', children, onOpenAvatarCustomization }: Props) {
   if (!isOpen) return null;
 
   return (

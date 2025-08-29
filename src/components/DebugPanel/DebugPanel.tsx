@@ -716,6 +716,86 @@ export function DebugPanel() {
               >
                 🎯 Reset Tutorial (Reload Page)
               </button>
+
+              <button
+                style={{
+                  backgroundColor: '#e74c3c',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 12px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  marginTop: '8px',
+                  width: '100%',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  transition: 'background-color 0.2s, transform 0.1s'
+                }}
+                onClick={() => {
+                  // Clear all localStorage items
+                  localStorage.clear();
+                  // Show confirmation
+                  alert('All localStorage data cleared! Page will reload.');
+                  window.location.reload();
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#c0392b';
+                  e.currentTarget.style.transform = 'scale(1.02)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#e74c3c';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                🗑️ Clear All LocalStorage
+              </button>
+
+              <button
+                style={{
+                  backgroundColor: '#e74c3c',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 12px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  marginTop: '8px',
+                  width: '100%',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  transition: 'background-color 0.2s, transform 0.1s'
+                }}
+                onClick={() => {
+                  // Clear all localStorage items
+                  const itemsToRemove = [
+                    'skyland-guardians-tutorial-seen',
+                    'userAvatar',
+                    'userNickname', 
+                    'userAvatarBorder',
+                    'userAvatarPendant'
+                  ];
+                  
+                  itemsToRemove.forEach(item => localStorage.removeItem(item));
+                  
+                  // Also clear any other game-related localStorage items
+                  Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('skyland-') || key.startsWith('user')) {
+                      localStorage.removeItem(key);
+                    }
+                  });
+                  
+                  window.location.reload();
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#c0392b';
+                  e.currentTarget.style.transform = 'scale(1.02)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#e74c3c';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                🗑️ Clear All localStorage (Reset Everything)
+              </button>
               
               <div style={{
                 fontSize: '12px',

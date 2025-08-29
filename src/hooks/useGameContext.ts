@@ -61,6 +61,9 @@ export interface GameContextType {
   // Welcome overlay controls
   showWelcomeOverlay?: boolean;
   setShowWelcomeOverlay?: (open: boolean) => void;
+  // Avatar customization controls
+  showAvatarModal?: boolean;
+  setShowAvatarModal?: (open: boolean) => void;
   // Tutorial hint controls
   activeHint?: UITutorialHint | null;
   setActiveHint?: (hint: UITutorialHint | null) => void;

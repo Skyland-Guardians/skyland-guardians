@@ -70,6 +70,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [isCardCollectionOpen, setCardCollectionOpen] = useState(false);
   const [isBadgesOpen, setBadgesOpen] = useState(false);
   const [showWelcomeOverlay, setShowWelcomeOverlay] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [coins, setCoins] = useState<number>(1000); // initial money the player holds
   const [marketMode, setMarketMode] = useState<MarketMode>(DEFAULT_MARKET_CONFIG.mode);
   const [marketDayIndex, setMarketDayIndex] = useState<number>(0);
@@ -450,7 +451,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       activeHint,
       setActiveHint,
       showWelcomeOverlay,
-      setShowWelcomeOverlay
+      setShowWelcomeOverlay,
+      showAvatarModal,
+      setShowAvatarModal
     }}>
       {children}
       <TutorialHint 
