@@ -1,0 +1,13 @@
+.tutorial-hint {
+  position: absolute;
+  z-index: 5000;
+  background: #fffbea;
+  border: 1px solid #fbbf24;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  max-width: 200px;
+  font-size: 0.875rem;
+  color: #92400e;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}

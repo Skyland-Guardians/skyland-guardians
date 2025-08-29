@@ -84,7 +84,7 @@ const RichMessage = ({ content }: { content: string }) => {
         </div>
       );
     }
-  } catch (e) {
+  } catch {
     // Fall back to markdown rendering if JSON parsing fails
   }
   return <MarkdownMessage content={content} />;
@@ -99,7 +99,7 @@ const formatCoins = (amount: number): string => {
 };
 
 export function AIPanel() {
-  const { messages, addMessage, gameState, userInfo, assetAllocations, coins = 10000, performanceHistory } = useGameState();
+  const { messages, addMessage, gameState, userInfo, assetAllocations, coins = 10000, performanceHistory, setActiveHint } = useGameState();
   const { currentPersonality } = useAIPersonality();
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -119,7 +119,17 @@ export function AIPanel() {
       // Add welcome message
       const welcomeMessage = gamifiedAIService.generateWelcomeMessage(userInfo.name);
       addMessage(welcomeMessage);
-      
+      // Queue tutorial hints for new players
+      const tutorialMessages = gamifiedAIService.generateTutorialMessages();
+      tutorialMessages.forEach((msg, index) => {
+        setTimeout(() => addMessage(msg), 800 * (index + 1));
+      });
+      const uiHints = gamifiedAIService.generateTutorialHints();
+      uiHints.forEach((hint, index) => {
+        setTimeout(() => setActiveHint && setActiveHint(hint), 800 * (index + 1));
+        setTimeout(() => setActiveHint && setActiveHint(null), 800 * (index + 1) + 4000);
+      });
+
       hasInitialized.current = true;
     }
   }, [messages.length, userInfo.name, addMessage, gameState, assetAllocations, coins, currentPersonality.id]);

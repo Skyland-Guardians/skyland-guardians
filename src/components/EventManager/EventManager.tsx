@@ -174,7 +174,6 @@ export function EventManager() {
       )}
 
       {/* Mission completion celebration */}
-      {console.log('🎊 [EventManager] Rendering MissionCompletedModal - Mission:', completedMission?.id, 'IsOpen:', showMissionCompleted)}
       <MissionCompletedModal
         mission={completedMission}
         isOpen={showMissionCompleted}
@@ -182,18 +181,20 @@ export function EventManager() {
       />
 
       {/* Card collection interface */}
-      <MyCards
-        isOpen={isCardCollectionOpen}
-        onClose={() => {
-          console.log('🔴 [EventManager] MyCards onClose called');
-          setCardCollectionOpen && setCardCollectionOpen(false);
-          console.log('🔴 [EventManager] setCardCollectionOpen(false) called');
-        }}
-        playerCards={gameState.playerCards}
-        activeMissions={gameState.activeMissions}
-        activeEvents={gameState.activeEvents}
-        currentDay={gameState.currentDay}
-      />
+        <MyCards
+          isOpen={isCardCollectionOpen}
+          onClose={() => {
+            console.log('🔴 [EventManager] MyCards onClose called');
+            if (setCardCollectionOpen) {
+              setCardCollectionOpen(false);
+              console.log('🔴 [EventManager] setCardCollectionOpen(false) called');
+            }
+          }}
+          playerCards={gameState.playerCards}
+          activeMissions={gameState.activeMissions}
+          activeEvents={gameState.activeEvents}
+          currentDay={gameState.currentDay}
+        />
 
       {/* Floating notifications */}
       {(pendingCount > 0 || newCardsCount > 0) && (

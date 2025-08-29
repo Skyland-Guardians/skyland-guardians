@@ -2,6 +2,7 @@
 
 import type { ChatMessage } from '../types/game';
 import type { AIPersonality } from '../data/ai-personalities';
+import type { UITutorialHint } from '../types/tutorial';
 import { AI_PERSONALITIES, DEFAULT_AI_PERSONALITY } from '../data/ai-personalities';
 import { GAME_ASSETS } from '../data/game-assets';
 
@@ -323,6 +324,53 @@ Always end with an appropriate emoji. Focus on education and risk management.`;
       timestamp: new Date(),
       type: 'greeting'
     };
+  }
+
+  generateTutorialMessages(): ChatMessage[] {
+    const now = Date.now();
+    return [
+      {
+        id: `ai-tutorial-1-${now}`,
+        sender: 'ai',
+        content: 'Your asset slots begin at 0%. Use the Asset Toolbar below to distribute weights until you reach 100%, then press APPLY to lock them in.',
+        timestamp: new Date(),
+        type: 'hint'
+      },
+      {
+        id: `ai-tutorial-2-${now}`,
+        sender: 'ai',
+        content: 'The left panel holds mission and event cards, the island in the middle shows your progress, and I wait on the right to answer questions.',
+        timestamp: new Date(),
+        type: 'hint'
+      },
+      {
+        id: `ai-tutorial-3-${now}`,
+        sender: 'ai',
+        content: 'At the top, "How to Play" explains the rules and "History" shows past performance. The MY CARDS and BADGES buttons on the left track your collection.',
+        timestamp: new Date(),
+        type: 'hint'
+      }
+    ];
+  }
+
+  generateTutorialHints(): UITutorialHint[] {
+    return [
+      {
+        id: `hint-toolbar-${Date.now()}`,
+        selector: '.layout-asset-toolbar',
+        content: 'Adjust asset weights with this toolbar and press APPLY.'
+      },
+      {
+        id: `hint-leftpanel-${Date.now()}`,
+        selector: '.layout-left-panel',
+        content: 'Missions and event cards appear on this side.'
+      },
+      {
+        id: `hint-header-${Date.now()}`,
+        selector: '.layout-header',
+        content: 'Use top buttons for How to Play and History.'
+      }
+    ];
   }
 
   generateEventFeedback(eventType: string, portfolioChange: number): string {

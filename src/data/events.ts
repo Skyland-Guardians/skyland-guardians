@@ -123,10 +123,11 @@ export class EventManager {
         return baseReturn * eventEffect.value;
       case 'add':
         return baseReturn + eventEffect.value;
-      case 'volatility':
+      case 'volatility': {
         // Increase volatility by adding random variation
         const randomFactor = (Math.random() - 0.5) * eventEffect.value;
         return baseReturn + randomFactor;
+      }
       default:
         return baseReturn;
     }

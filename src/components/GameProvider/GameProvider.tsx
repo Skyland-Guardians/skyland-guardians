@@ -11,6 +11,8 @@ import { gamifiedAIService } from '../../services/gamified-ai-service';
 import { eventManager } from '../../services/event-manager';
 import { achievementChecker } from '../../services/achievement-checker';
 import { achievementService } from '../../services/achievement-service';
+import type { UITutorialHint } from '../../types/tutorial';
+import { TutorialHint } from '../TutorialHint/TutorialHint';
 import { LevelManager } from '../../data/level-config';
 import type { MarketMode } from '../../data/asset-market-config';
 
@@ -49,17 +51,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const orderedAssets = orderedIds.map(id => GAME_ASSETS.find(a => a.id === id)).filter(Boolean) as typeof GAME_ASSETS;
 
   const defaultAllocations: AssetType[] = orderedAssets.map(a => {
-    // Set initial allocation: 60% Tech (sword), 40% Bonds (shield), 0% others
-    // This configuration doesn't complete any missions by default:
-    // - Task 1: sword=60% (>=40%), doesn't complete 
-    // - Task 3: shield=40% (<35%), doesn't complete
-    let allocation = 0;
-    if (a.id === 'sword') {
-      allocation = 60; // Agile Sword (Technology)
-    } else if (a.id === 'shield') {
-      allocation = 40; // Sturdy Shield (Bonds)
-    }
-    
+    // Start with zero allocation for every asset so players manually assign weights
     return {
       id: a.id,
       name: a.gameName.toUpperCase(),
@@ -67,7 +59,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       icon: a.icon || '',
       type: a.id as any,
       theme: mapThemeFromRisk(a.risk),
-      allocation: allocation
+      allocation: 0
     };
   });
 
@@ -91,6 +83,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   // 新成就状态
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
+
+  // Tutorial hint state
+  const [activeHint, setActiveHint] = useState<UITutorialHint | null>(null);
 
   // 检查成就
   const checkAchievements = (allocations: AssetType[] = assetAllocations) => {
@@ -449,9 +444,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       newAchievements,
       checkAchievements,
       resetAchievements,
-      onAchievementAnimationComplete
+      onAchievementAnimationComplete,
+      activeHint,
+      setActiveHint
     }}>
       {children}
+      <TutorialHint hint={activeHint} />
     </GameContext.Provider>
   );
 }
