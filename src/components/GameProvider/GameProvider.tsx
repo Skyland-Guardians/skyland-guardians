@@ -700,6 +700,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   };
 
+  const addCoins = (amount: number) => {
+    console.log('💰 [DEBUG] addCoins called with amount:', amount);
+    setCoins(prev => {
+      const newTotal = prev + amount;
+      console.log('💰 [DEBUG] Adding coins - prev:', prev, 'amount:', amount, 'new total:', newTotal);
+      return newTotal;
+    });
+  };
+
   return (
     <GameContext.Provider value={{
       gameState,
@@ -707,6 +716,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       assetAllocations,
       messages,
       coins,
+      addCoins,
       performNextDaySettlement,
       marketMode,
       setMarketMode,
@@ -775,6 +785,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
             } as UITutorialHint;
             setActiveHint(bottomHint);
             return;
+          }
+
+          // If the bottom hint was dismissed, show the money request hint next
+          if (activeHint && activeHint.id === 'hint-bottom') {
+            const hasUsedMoneyRequest = localStorage.getItem('hasUsedMoneyRequest');
+            if (!hasUsedMoneyRequest) {
+              const moneyHint = {
+                id: 'hint-money-request',
+                selector: 'button[title="Click to request more money from parents"]',
+                content: '💰 Need more funds? Click the money button to request additional money from your parents!'
+              } as UITutorialHint;
+              setActiveHint(moneyHint);
+              return;
+            }
           }
 
           // Default behavior: clear active hint

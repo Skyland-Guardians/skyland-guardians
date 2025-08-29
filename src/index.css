@@ -137,3 +137,19 @@ input[type="range"]::-moz-range-thumb {
     background-color: #f9f9f9;
   }
 }
+
+/* Pulse animation for money request hint */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}

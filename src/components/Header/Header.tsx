@@ -108,7 +108,7 @@ export function Header() {
     }
   };
 
-  const handleMoneyRequest = (amount: number, reason: string) => {
+    const handleMoneyRequest = (amount: number, reason: string) => {
     const existingRequests = JSON.parse(localStorage.getItem('parentControl_moneyRequests') || '[]');
     const newRequest = {
       id: `request_${Date.now()}`,
@@ -121,11 +121,14 @@ export function Header() {
     const updatedRequests = [...existingRequests, newRequest];
     localStorage.setItem('parentControl_moneyRequests', JSON.stringify(updatedRequests));
     
+    // Mark that user has used the money request feature
+    localStorage.setItem('hasUsedMoneyRequest', 'true');
+    
     // Show confirmation message
     addMessage({
       id: `money-request-${Date.now()}`,
       sender: 'ai',
-      content: `💌 Your request for $${amount.toLocaleString()} has been sent to your parents! They'll review it and get back to you.`,
+      content: `� Your request for $${amount.toLocaleString()} has been sent to your parents! They'll review it and get back to you.`,
       timestamp: new Date(),
       type: 'feedback'
     });
@@ -262,7 +265,10 @@ export function Header() {
       }}>
         {/* Coins */}
         <button
-          onClick={() => setShowMoneyRequestModal(true)}
+          onClick={() => {
+            setShowMoneyRequestModal(true);
+            localStorage.setItem('hasUsedMoneyRequest', 'true');
+          }}
           style={{
             background: 'linear-gradient(145deg, #f59e0b, #ea580c)',
             color: 'white',
