@@ -168,7 +168,7 @@ export function MainScreen() {
           title="Parent Control Panel"
         >
           <img 
-            src="./assets/main-screen-1-assets/ai-character-icon.png" 
+            src="./assets/main-screen-1-assets/shield-icon.png" 
             alt="Parent Control" 
             style={{ 
               width: '36px', 

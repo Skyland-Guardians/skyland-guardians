@@ -10,15 +10,48 @@ interface ParentControlPanelProps {
 }
 
 export function ParentControlPanel({ isOpen, onClose }: ParentControlPanelProps) {
-  const [assetMappings, setAssetMappings] = useState<RealWorldAssetMapping[]>([]);
+  // Initialize with default mappings directly from GAME_ASSETS
+  const getDefaultMappings = (): RealWorldAssetMapping[] => {
+    return GAME_ASSETS.map(asset => {
+      // Extract suggested real-world assets from the asset's realWorld description
+      let suggestedAssets = [];
+      if (asset.realWorld.includes('QQQ')) suggestedAssets.push('QQQ');
+      if (asset.realWorld.includes('BTC')) suggestedAssets.push('BTC');
+      if (asset.realWorld.includes('ETH')) suggestedAssets.push('ETH');
+      if (asset.realWorld.includes('GLD')) suggestedAssets.push('GLD');
+      if (asset.realWorld.includes('TLT')) suggestedAssets.push('TLT');
+      if (asset.realWorld.includes('USDC')) suggestedAssets.push('USDC');
+      
+      // If no specific assets found, use category-based defaults
+      if (suggestedAssets.length === 0) {
+        switch (asset.risk) {
+          case 'high':
+            suggestedAssets = asset.id === 'crystal' ? ['BTC', 'ETH'] : ['QQQ', 'VGT'];
+            break;
+          case 'medium':
+            suggestedAssets = asset.id === 'forest' ? ['ESGU'] : ['VTI'];
+            break;
+          case 'low':
+            suggestedAssets = asset.id === 'golden' ? ['GLD'] : asset.id === 'shield' ? ['TLT'] : ['USDC'];
+            break;
+        }
+      }
+      
+      return {
+          gameAssetId: asset.id,
+          realWorldAssets: suggestedAssets,
+          maxAllocationPercentage: 100
+        };
+    });
+  };
+
+  const [assetMappings, setAssetMappings] = useState<RealWorldAssetMapping[]>(getDefaultMappings());
   const [moneyRequests, setMoneyRequests] = useState<MoneyRequest[]>([]);
   const [activeLoans, setActiveLoans] = useState<LoanStatus[]>([]);
   const [activeTab, setActiveTab] = useState<'assets' | 'requests' | 'loans'>('assets');
 
   // Load data from localStorage and refresh on open
   useEffect(() => {
-    if (!isOpen) return;
-    
     const loadData = () => {
       const savedMappings = localStorage.getItem('parentControl_assetMappings');
       const savedRequests = localStorage.getItem('parentControl_moneyRequests');
@@ -56,7 +89,7 @@ export function ParentControlPanel({ isOpen, onClose }: ParentControlPanelProps)
           return {
             gameAssetId: asset.id,
             realWorldAssets: suggestedAssets,
-            maxAllocationPercentage: 25
+            maxAllocationPercentage: 100
           };
         });
         setAssetMappings(defaultMappings);
@@ -89,12 +122,14 @@ export function ParentControlPanel({ isOpen, onClose }: ParentControlPanelProps)
       }
     };
     
+    // Load data immediately on mount
     loadData();
     
-    // Set up interval to refresh data every 2 seconds when panel is open
-    const interval = setInterval(loadData, 2000);
-    
-    return () => clearInterval(interval);
+    // If panel is open, set up refresh interval
+    if (isOpen) {
+      const interval = setInterval(loadData, 2000);
+      return () => clearInterval(interval);
+    }
   }, [isOpen]);
 
   // Save data to localStorage
@@ -202,11 +237,6 @@ export function ParentControlPanel({ isOpen, onClose }: ParentControlPanelProps)
           alignItems: 'center'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <img 
-              src="./assets/main-screen-1-assets/ai-character-icon.png" 
-              alt="Parent Control" 
-              style={{ width: '32px', height: '32px' }}
-            />
             <h2 style={{ 
               color: '#fff', 
               margin: 0, 
@@ -275,12 +305,29 @@ export function ParentControlPanel({ isOpen, onClose }: ParentControlPanelProps)
         }}>
           {activeTab === 'assets' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <h3 style={{ color: '#fff', margin: '0 0 16px 0' }}>Configure Real-World Asset Mappings</h3>
-              {assetMappings.map(mapping => {
-                const gameAsset = GAME_ASSETS.find(a => a.id === mapping.gameAssetId);
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ color: '#fff', margin: '0' }}>Configure Real-World Asset Mappings</h3>
+                <div style={{ color: '#aaa', fontSize: '0.9rem' }}>
+                  {assetMappings.length} assets configured
+                </div>
+              </div>
+              
+              {GAME_ASSETS.map(gameAsset => {
+                // Find existing mapping or create default
+                const existingMapping = assetMappings.find(m => m.gameAssetId === gameAsset.id);
+                const mapping = existingMapping || {
+                  gameAssetId: gameAsset.id,
+                  realWorldAssets: gameAsset.id === 'crystal' ? ['BTC', 'ETH'] : 
+                                  gameAsset.id === 'sword' ? ['QQQ', 'VGT'] :
+                                  gameAsset.id === 'golden' ? ['GLD'] :
+                                  gameAsset.id === 'shield' ? ['TLT'] :
+                                  gameAsset.id === 'fountain' ? ['USDC'] : ['VTI'],
+                  maxAllocationPercentage: 100
+                };
+                
                 return (
                   <div
-                    key={mapping.gameAssetId}
+                    key={gameAsset.id}
                     style={{
                       background: '#2a2a3e',
                       borderRadius: '12px',
@@ -295,25 +342,31 @@ export function ParentControlPanel({ isOpen, onClose }: ParentControlPanelProps)
                       marginBottom: '16px'
                     }}>
                       <img 
-                        src={gameAsset?.icon} 
-                        alt={gameAsset?.gameName}
+                        src={gameAsset.icon} 
+                        alt={gameAsset.gameName}
                         style={{ width: '40px', height: '40px', flexShrink: 0 }}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
                       />
                       <div style={{ flex: 1 }}>
                         <h4 style={{ color: '#fff', margin: '0 0 4px 0' }}>
-                          {gameAsset?.gameName} ({gameAsset?.shortName})
+                          {gameAsset.gameName} ({gameAsset.shortName})
                         </h4>
                         <p style={{ color: '#10b981', margin: '0 0 4px 0', fontSize: '0.9rem', fontWeight: '600' }}>
-                          {gameAsset?.loreName}
+                          {gameAsset.loreName}
                         </p>
                         <p style={{ color: '#ccc', margin: '0 0 8px 0', fontSize: '0.85rem' }}>
-                          {gameAsset?.description}
+                          {gameAsset.description}
                         </p>
-                        <div style={{ display: 'flex', gap: '16px', fontSize: '0.8rem' }}>
-                          <span style={{ color: '#f59e0b' }}>Expected Return: {((gameAsset?.expectedReturn || 0) * 100).toFixed(1)}%</span>
-                          <span style={{ color: '#ef4444' }}>Risk: {gameAsset?.risk?.toUpperCase()}</span>
-                          <span style={{ color: '#8b5cf6' }}>Volatility: {((gameAsset?.volatility || 0) * 100).toFixed(1)}%</span>
+                        <div style={{ display: 'flex', gap: '16px', fontSize: '0.8rem', flexWrap: 'wrap' }}>
+                          <span style={{ color: '#f59e0b' }}>Expected Return: {(gameAsset.expectedReturn * 100).toFixed(1)}%</span>
+                          <span style={{ color: '#ef4444' }}>Risk: {gameAsset.risk.toUpperCase()}</span>
+                          <span style={{ color: '#8b5cf6' }}>Volatility: {(gameAsset.volatility * 100).toFixed(1)}%</span>
                         </div>
+                        <p style={{ color: '#6b7280', margin: '8px 0 0 0', fontSize: '0.8rem', fontStyle: 'italic' }}>
+                          Real-world mapping: {gameAsset.realWorld}
+                        </p>
                       </div>
                     </div>
                     
@@ -326,7 +379,7 @@ export function ParentControlPanel({ isOpen, onClose }: ParentControlPanelProps)
                         value={mapping.realWorldAssets}
                         onChange={(e) => {
                           const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
-                          updateAssetMapping(mapping.gameAssetId, { realWorldAssets: selectedOptions });
+                          updateAssetMapping(gameAsset.id, { realWorldAssets: selectedOptions });
                         }}
                         style={{
                           width: '100%',
@@ -357,7 +410,7 @@ export function ParentControlPanel({ isOpen, onClose }: ParentControlPanelProps)
                         step="5"
                         value={mapping.maxAllocationPercentage}
                         onChange={(e) => {
-                          updateAssetMapping(mapping.gameAssetId, { maxAllocationPercentage: Number(e.target.value) });
+                          updateAssetMapping(gameAsset.id, { maxAllocationPercentage: Number(e.target.value) });
                         }}
                         style={{
                           width: '100%',
