@@ -98,3 +98,9 @@ export interface SettlementResult {
   delta: number;
   perAsset: SettlementAsset[];
 }
+
+export interface GuardianSettings {
+  budget: number;
+  whitelist: string[];
+  riskLevel: 'low' | 'medium' | 'high';
+}

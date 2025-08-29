@@ -1,7 +1,9 @@
+import { Routes, Route } from 'react-router-dom';
 import { GameProvider } from './components/GameProvider/GameProvider';
 import { MainScreen } from './components/MainScreen/MainScreen';
 import { EventManager } from './components/EventManager';
 import { AchievementAnimation } from './components/AchievementAnimation';
+import { ParentDashboard } from './components/ParentDashboard/ParentDashboard';
 import { useGameState } from './hooks/useGameContext';
 
 function AppContent() {
@@ -24,7 +26,10 @@ function AppContent() {
 function App() {
   return (
     <GameProvider>
-      <AppContent />
+      <Routes>
+        <Route path="/" element={<AppContent />} />
+        <Route path="/parent" element={<ParentDashboard />} />
+      </Routes>
     </GameProvider>
   );
 }

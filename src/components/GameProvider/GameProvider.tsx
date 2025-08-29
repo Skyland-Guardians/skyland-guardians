@@ -1,6 +1,18 @@
 import { useState } from 'react';
 import type { ReactNode } from 'react';
-import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult, SettlementAsset, PlayerCard } from '../../types/game';
+import { useNavigate } from 'react-router-dom';
+import type {
+  GameState,
+  UserInfo,
+  AssetType,
+  ChatMessage,
+  Mission,
+  EventCard,
+  SettlementResult,
+  SettlementAsset,
+  PlayerCard,
+  GuardianSettings,
+} from '../../types/game';
 import { GameContext } from '../../hooks/useGameContext';
 import { SIMULATED_SERIES } from '../../data/simulated-asset-series';
 import { EVENT_CONFIGS } from '../../data/events';
@@ -15,6 +27,7 @@ import { LevelManager } from '../../data/level-config';
 import type { MarketMode } from '../../data/asset-market-config';
 
 export function GameProvider({ children }: { children: ReactNode }) {
+  const navigate = useNavigate();
   const [gameState, setGameState] = useState<GameState>({
     currentDay: 1,
     stars: 0,
@@ -33,6 +46,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
     level: 1
   });
 
+  const [guardianSettings, setGuardianSettings] = useState<GuardianSettings>({
+    budget: 0,
+    whitelist: [],
+    riskLevel: 'high'
+  });
+  const [isGuardianMode, setGuardianMode] = useState(false);
+
   const mapThemeFromRisk = (risk: 'low' | 'medium' | 'high') => {
     switch (risk) {
       case 'high':
@@ -43,6 +63,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         return 'blue';
     }
   };
+
+  const riskOrder = { low: 0, medium: 1, high: 2 } as const;
 
   // Build allocations in UI order (leftGroup then rightGroup) to match toolbar layout
   const orderedIds = [...(UI_ASSET_ORDER.leftGroup || []), ...(UI_ASSET_ORDER.rightGroup || [])];
@@ -139,12 +161,36 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setUserInfo(prev => ({ ...prev, ...updates }));
   };
 
+  const updateGuardianSettings = (updates: Partial<GuardianSettings>) => {
+    setGuardianSettings(prev => ({ ...prev, ...updates }));
+  };
+
+  const enterGuardianMode = () => {
+    setGuardianMode(true);
+    navigate('/parent');
+  };
+
+  const exitGuardianMode = () => {
+    setGuardianMode(false);
+    navigate('/');
+  };
+
   const updateAssetAllocation = (assetId: string, allocation: number) => {
     setAssetAllocations(prev => {
-      const updated = prev.map(asset => 
+      const assetInfo = GAME_ASSETS.find(a => a.id === assetId);
+      if (guardianSettings.whitelist.length && !guardianSettings.whitelist.includes(assetId)) {
+        return prev;
+      }
+      if (assetInfo && riskOrder[assetInfo.risk] > riskOrder[guardianSettings.riskLevel]) {
+        return prev;
+      }
+      const totalAllocation = prev.reduce((sum, a) => sum + (a.id === assetId ? allocation : a.allocation), 0);
+      if (guardianSettings.budget && coins * totalAllocation / 100 > guardianSettings.budget) {
+        return prev;
+      }
+      const updated = prev.map(asset =>
         asset.id === assetId ? { ...asset, allocation } : asset
       );
-      
       return updated;
     });
   };
@@ -389,6 +435,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const triggerEvent = (eventId: string) => {
     const ev = marketEvents.find(e => e.id === eventId);
     if (!ev) return false;
+    if (guardianSettings.whitelist.length) {
+      const allowed = ev.targets.some(t => t === 'all' || guardianSettings.whitelist.includes(t));
+      if (!allowed) return false;
+    }
+    const tooRisky = ev.targets.some(t => {
+      if (t === 'all') return false;
+      const asset = GAME_ASSETS.find(a => a.id === t);
+      return asset && riskOrder[asset.risk] > riskOrder[guardianSettings.riskLevel];
+    });
+    if (tooRisky) return false;
     // mark event dayIndex to today's index so it applies immediately
     ev.dayIndex = marketDayIndex;
     setMarketEvents([...marketEvents]);
@@ -416,6 +472,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
       performanceHistory,
       updateGameState,
       updateUserInfo,
+      guardianSettings,
+      updateGuardianSettings,
+      enterGuardianMode,
+      exitGuardianMode,
+      isGuardianMode,
       updateAssetAllocation,
       addMessage,
       setCurrentMission,

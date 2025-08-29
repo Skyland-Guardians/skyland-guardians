@@ -1,5 +1,15 @@
 import { createContext, useContext } from 'react';
-import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult, PlayerCard } from '../types/game';
+import type {
+  GameState,
+  UserInfo,
+  AssetType,
+  ChatMessage,
+  Mission,
+  EventCard,
+  SettlementResult,
+  PlayerCard,
+  GuardianSettings,
+} from '../types/game';
 
 export interface GameContextType {
   gameState: GameState;
@@ -57,6 +67,11 @@ export interface GameContextType {
   checkAchievements?: (allocations?: AssetType[]) => void;
   resetAchievements?: () => void;
   onAchievementAnimationComplete?: () => void;
+  guardianSettings?: GuardianSettings;
+  updateGuardianSettings?: (settings: Partial<GuardianSettings>) => void;
+  enterGuardianMode?: () => void;
+  exitGuardianMode?: () => void;
+  isGuardianMode?: boolean;
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
