@@ -4,13 +4,16 @@ import { SkylandIsland } from '../Island/SkylandIsland';
 import { AIPanel } from '../AIPanel/AIPanel';
 import { AssetToolbar } from '../AssetToolbar/AssetToolbar';
 import { useGameState } from '../../hooks/useGameContext';
+import { ParentControlPanel } from '../ParentControlPanel/ParentControlPanel';
 
 import { BadgesPanel } from '../BadgesPanel/BadgesPanel';
 import { DebugPanel } from '../DebugPanel/DebugPanel';
 import './Layout.css';
+import { useState } from 'react';
 
 export function MainScreen() {
   const { gameState } = useGameState();
+  const [showParentControl, setShowParentControl] = useState(false);
   const isChaoMode = gameState.mode === 'chaos';
 
   return (
@@ -133,6 +136,53 @@ export function MainScreen() {
         <div className="modal-container">
           <DebugPanel />
         </div>
+        
+        {/* Parent Control Entry Button - Fixed position in bottom right */}
+        <button
+          onClick={() => setShowParentControl(true)}
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            background: 'linear-gradient(145deg, #6366f1, #4f46e5)',
+            border: 'none',
+            boxShadow: '0 8px 25px rgba(99, 102, 241, 0.4)',
+            cursor: 'pointer',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.3s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.1)';
+            e.currentTarget.style.boxShadow = '0 12px 35px rgba(99, 102, 241, 0.6)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 8px 25px rgba(99, 102, 241, 0.4)';
+          }}
+          title="Parent Control Panel"
+        >
+          <img 
+            src="./assets/main-screen-1-assets/ai-character-icon.png" 
+            alt="Parent Control" 
+            style={{ 
+              width: '36px', 
+              height: '36px',
+              filter: 'brightness(0) invert(1)'
+            }}
+          />
+        </button>
+
+        {/* Parent Control Panel */}
+        <ParentControlPanel
+          isOpen={showParentControl}
+          onClose={() => setShowParentControl(false)}
+        />
         
       </div>
     </>
