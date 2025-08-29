@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { GameState, UserInfo, AssetType, ChatMessage, Mission, EventCard, SettlementResult, SettlementAsset, PlayerCard } from '../../types/game';
 import { GameContext } from '../../hooks/useGameContext';
@@ -18,6 +18,39 @@ import { LevelManager } from '../../data/level-config';
 import type { MarketMode } from '../../data/asset-market-config';
 
 export function GameProvider({ children }: { children: ReactNode }) {
+  const STORAGE_KEY = 'skyland-guardians-app-state-v1';
+
+  const serializeForStorage = (payload: any) => {
+    try {
+      // Ensure Dates are converted to ISO strings (messages)
+      const copy = { ...payload };
+      if (Array.isArray(copy.messages)) {
+        copy.messages = copy.messages.map((m: any) => ({ ...m, timestamp: m?.timestamp instanceof Date ? m.timestamp.toISOString() : m.timestamp }));
+      }
+      return JSON.stringify(copy);
+    } catch (e) {
+      console.warn('Failed to serialize state for storage', e);
+      return null;
+    }
+  };
+
+  const loadFromStorage = () => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+
+      // Convert message timestamps back to Date
+      if (Array.isArray(parsed.messages)) {
+        parsed.messages = parsed.messages.map((m: any) => ({ ...m, timestamp: m?.timestamp ? new Date(m.timestamp) : new Date() }));
+      }
+
+      return parsed;
+    } catch (e) {
+      console.warn('Failed to load persisted state', e);
+      return null;
+    }
+  };
   const [gameState, setGameState] = useState<GameState>({
     currentDay: 1,
     stars: 0,
@@ -89,6 +122,45 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   // Tutorial hint state
   const [activeHint, setActiveHint] = useState<UITutorialHint | null>(null);
+
+  // Load persisted state once on mount
+  useEffect(() => {
+    const persisted = loadFromStorage();
+    if (!persisted) return;
+
+    // Apply persisted slices if available
+    if (persisted.gameState) setGameState(prev => ({ ...prev, ...persisted.gameState }));
+    if (persisted.userInfo) setUserInfo(prev => ({ ...prev, ...persisted.userInfo }));
+    if (Array.isArray(persisted.assetAllocations)) setAssetAllocations(persisted.assetAllocations);
+    if (Array.isArray(persisted.messages)) setMessages(persisted.messages);
+    if (typeof persisted.coins === 'number') setCoins(persisted.coins);
+    if (persisted.marketMode) setMarketMode(persisted.marketMode);
+    if (typeof persisted.marketDayIndex === 'number') setMarketDayIndex(persisted.marketDayIndex);
+    if (Array.isArray(persisted.marketEvents)) setMarketEvents(persisted.marketEvents);
+    if (Array.isArray(persisted.performanceHistory)) setPerformanceHistory(persisted.performanceHistory);
+  }, []);
+
+  // Persist whenever important slices change
+  useEffect(() => {
+    try {
+      const payload = {
+        gameState,
+        userInfo,
+        assetAllocations,
+        messages,
+        coins,
+        marketMode,
+        marketDayIndex,
+        marketEvents,
+        performanceHistory
+      };
+
+      const serialized = serializeForStorage(payload);
+      if (serialized) localStorage.setItem(STORAGE_KEY, serialized);
+    } catch (e) {
+      console.warn('Failed to persist game state', e);
+    }
+  }, [gameState, userInfo, assetAllocations, messages, coins, marketMode, marketDayIndex, marketEvents, performanceHistory]);
 
   // 检查成就
   const checkAchievements = (allocations: AssetType[] = assetAllocations) => {
