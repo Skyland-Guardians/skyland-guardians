@@ -11,6 +11,7 @@ import { gamifiedAIService } from '../../services/gamified-ai-service';
 import { eventManager } from '../../services/event-manager';
 import { achievementChecker } from '../../services/achievement-checker';
 import { achievementService } from '../../services/achievement-service';
+import { updateLeaderboard } from '../Leaderboard/updateLeaderboard';
 import type { UITutorialHint } from '../../types/tutorial';
 import { TutorialHint } from '../TutorialHint/TutorialHint';
 import { MyCardOverlayPrompt } from '../MyCards/MyCardOverlayPrompt';
@@ -396,7 +397,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const checkAchievements = (allocations: AssetType[] = assetAllocations) => {
     const newlyUnlocked = achievementChecker.checkAchievements(allocations, gameState.stars);
     if (newlyUnlocked.length > 0) {
-      setNewAchievements(prev => [...prev, ...newlyUnlocked]);
+      setNewAchievements(prev => {
+        const updated = [...prev, ...newlyUnlocked];
+        // 同步排行榜（成就变化）
+        updateLeaderboard({
+          nickname: userInfo.name || 'JAMES',
+          stars: gameState.stars,
+          achievements: updated
+        });
+        return updated;
+      });
     }
   };
 
@@ -411,26 +421,28 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const updateGameState = (updates: Partial<GameState>) => {
     setGameState(prev => {
       const newState = { ...prev, ...updates };
-      
       // 如果星星数发生变化，检查是否需要升级
       if (updates.stars !== undefined && updates.stars !== prev.stars) {
         const levelCheck = LevelManager.checkLevelUp(prev.stars, updates.stars);
         if (levelCheck.leveledUp) {
           console.log(`🎉 Level up! ${levelCheck.oldLevel} → ${levelCheck.newLevel}`);
           newState.level = levelCheck.newLevel;
-          
           // TODO: 可以在这里添加升级庆祝动画或通知
           if (levelCheck.newLevelConfig) {
             console.log(`🌟 Reached ${levelCheck.newLevelConfig.title}: ${levelCheck.newLevelConfig.description}`);
           }
         }
-        
         // 星星数变化时检查成就
         setTimeout(() => {
           checkAchievements(assetAllocations);
         }, 100);
+        // 同步排行榜（星星变化）
+        updateLeaderboard({
+          nickname: userInfo.name || 'JAMES',
+          stars: updates.stars,
+          achievements: newAchievements
+        });
       }
-      
       return newState;
     });
   };

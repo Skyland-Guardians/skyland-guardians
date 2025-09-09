@@ -4,12 +4,14 @@ import { createPortal } from 'react-dom';
 import HistoryModal from '../HistoryModal/HistoryModal';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
 import { MoneyRequestModal } from '../MoneyRequestModal/MoneyRequestModal';
+import LeaderboardModal from '../Leaderboard/Leaderboard';
 // import AvatarModal from '../AvatarModal/AvatarModal';
 
 export function Header() {
   const { gameState, userInfo, coins, addMessage, assetAllocations, performanceHistory, getLevelProgress, showAvatarModal, setShowAvatarModal } = useGameState();
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showMoneyRequestModal, setShowMoneyRequestModal] = useState(false);
+  const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
   const [avatar, setAvatar] = useState(userInfo.avatar || '/src/assets/主界面1资源/小孩头像icon.png');
   const [nickname, setNickname] = useState(userInfo.name || 'JAMES');
   const [selectedBorder, setSelectedBorder] = useState(() => {
@@ -260,6 +262,38 @@ export function Header() {
         alignItems: 'center',
         gap: '1rem'
       }}>
+        {/* Leaderboard Button */}
+        <button
+          onClick={() => setShowLeaderboardModal(true)}
+          style={{
+            background: 'linear-gradient(145deg, #fbbf24, #f59e0b)',
+            color: 'white',
+            padding: '0.75rem 1.25rem',
+            borderRadius: '1rem',
+            fontWeight: '700',
+            fontSize: '1.1rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            boxShadow: '0 4px 12px rgba(251,191,36,0.3)',
+            border: '2px solid rgba(255,255,255,0.2)',
+            textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'scale(1.05)';
+            e.currentTarget.style.boxShadow = '0 6px 16px rgba(251,191,36,0.4)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(251,191,36,0.3)';
+          }}
+          title="View Leaderboard"
+        >
+          <span style={{ fontSize: '1.2rem' }}>🏆</span>
+          <span>Leaderboard</span>
+        </button>
         {/* Coins */}
         <button
           onClick={() => setShowMoneyRequestModal(true)}
@@ -535,6 +569,11 @@ export function Header() {
       />
       
       {/* Money Request Modal */}
+      {/* Leaderboard Modal */}
+      <LeaderboardModal
+        isOpen={showLeaderboardModal}
+        onClose={() => setShowLeaderboardModal(false)}
+      />
       <MoneyRequestModal
         isOpen={showMoneyRequestModal}
         onClose={() => setShowMoneyRequestModal(false)}
