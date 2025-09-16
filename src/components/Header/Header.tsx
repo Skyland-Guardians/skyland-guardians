@@ -5,6 +5,7 @@ import HistoryModal from '../HistoryModal/HistoryModal';
 import { gamifiedAIService } from '../../services/gamified-ai-service';
 import { MoneyRequestModal } from '../MoneyRequestModal/MoneyRequestModal';
 import LeaderboardModal from '../Leaderboard/Leaderboard';
+import { demoStorage } from '../../utils/demo-storage';
 // import AvatarModal from '../AvatarModal/AvatarModal';
 
 export function Header() {
@@ -48,9 +49,13 @@ export function Header() {
   const nicknameError = validateNickname(nickname);
   // 读取localStorage头像和昵称
   useEffect(() => {
-    const storedAvatar = localStorage.getItem('userAvatar');
-    const storedNickname = localStorage.getItem('userNickname');
-    const storedBorder = localStorage.getItem('userAvatarBorder');
+    // 显示存储方案信息
+    const storageInfo = demoStorage.getStorageInfo();
+    console.log('🎯 Demo Storage Info:', storageInfo);
+    
+    const storedAvatar = demoStorage.getItem('userAvatar');
+    const storedNickname = demoStorage.getItem('userNickname');
+    const storedBorder = demoStorage.getItem('userAvatarBorder');
     if (storedAvatar) setAvatar(storedAvatar);
     if (storedNickname) setNickname(storedNickname);
     if (storedBorder) setSelectedBorder(Number(storedBorder));
@@ -111,7 +116,19 @@ export function Header() {
   };
 
   const handleMoneyRequest = (amount: number, reason: string) => {
-    const existingRequests = JSON.parse(localStorage.getItem('parentControl_moneyRequests') || '[]');
+    console.log('💰 Demo Money Request:', { amount, reason });
+    
+    // 使用可靠的存储方案
+    const existingRequestsStr = demoStorage.getItem('parentControl_moneyRequests');
+    let existingRequests = [];
+    
+    try {
+      existingRequests = existingRequestsStr ? JSON.parse(existingRequestsStr) : [];
+    } catch (e) {
+      console.warn('Failed to parse existing requests, starting fresh:', e);
+      existingRequests = [];
+    }
+    
     const newRequest = {
       id: `request_${Date.now()}`,
       amount,
@@ -121,16 +138,33 @@ export function Header() {
     };
     
     const updatedRequests = [...existingRequests, newRequest];
-    localStorage.setItem('parentControl_moneyRequests', JSON.stringify(updatedRequests));
     
-    // Show confirmation message
-    addMessage({
-      id: `money-request-${Date.now()}`,
-      sender: 'ai',
-      content: `💌 Your request for $${amount.toLocaleString()} has been sent to your parents! They'll review it and get back to you.`,
-      timestamp: new Date(),
-      type: 'feedback'
-    });
+    // 保存数据
+    const saveSuccess = demoStorage.setItem('parentControl_moneyRequests', JSON.stringify(updatedRequests));
+    demoStorage.setItem('hasUsedMoneyRequest', 'true');
+    
+    const storageInfo = demoStorage.getStorageInfo();
+    
+    if (saveSuccess) {
+      console.log('✅ Money request saved successfully');
+      // Show confirmation message with storage method info
+      addMessage({
+        id: `money-request-${Date.now()}`,
+        sender: 'ai',
+        content: `Your request for $${amount.toLocaleString()} has been sent to your parents! They'll review it and get back to you. ${storageInfo.isDemo ? `(Demo mode: using ${storageInfo.method})` : ''}`,
+        timestamp: new Date(),
+        type: 'feedback'
+      });
+    } else {
+      console.error('❌ Failed to save money request');
+      addMessage({
+        id: `money-request-error-${Date.now()}`,
+        sender: 'ai',
+        content: `Sorry, there was an issue saving your request. Please try again. (Storage: ${storageInfo.method})`,
+        timestamp: new Date(),
+        type: 'feedback'
+      });
+    }
   };
 
   return (
@@ -146,7 +180,8 @@ export function Header() {
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '1rem'
+        gap: '1rem',
+        flexWrap: 'nowrap' // keep items on a single line and avoid wrapping when scaled
       }}>
         <div style={{
           display: 'flex',
@@ -165,11 +200,11 @@ export function Header() {
             boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
             cursor: 'pointer',
           }}
-          onClick={() => setShowAvatarModal && setShowAvatarModal(true)}
+          onClick={() => setShowAvatarModal?.(true)}
           tabIndex={0}
           title="Click to edit avatar and nickname"
           onKeyDown={e => {
-            if (e.key === 'Enter' || e.key === ' ') setShowAvatarModal && setShowAvatarModal(true);
+            if (e.key === 'Enter' || e.key === ' ') setShowAvatarModal?.(true);
           }}
         >
           <img 
@@ -296,7 +331,10 @@ export function Header() {
         </button>
         {/* Coins */}
         <button
-          onClick={() => setShowMoneyRequestModal(true)}
+          onClick={() => {
+            setShowMoneyRequestModal(true);
+            demoStorage.setItem('hasUsedMoneyRequest', 'true');
+          }}
           style={{
             background: 'linear-gradient(145deg, #f59e0b, #ea580c)',
             color: 'white',
@@ -312,6 +350,8 @@ export function Header() {
             textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
             cursor: 'pointer',
             transition: 'all 0.2s ease'
+            ,whiteSpace: 'nowrap', // prevent label from breaking into multiple lines
+            flexShrink: 0
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.05)';
@@ -340,7 +380,9 @@ export function Header() {
           gap: '0.5rem',
           boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
           border: '2px solid rgba(255, 255, 255, 0.2)',
-          textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
+          textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
+          whiteSpace: 'nowrap', // ensure "DAY 1" stays on one line
+          flexShrink: 0
         }}>
           <span style={{ fontSize: '1.2rem' }}>📅</span>
           <span>DAY {gameState.currentDay}</span>
@@ -387,6 +429,8 @@ export function Header() {
             textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
             cursor: 'pointer',
             transition: 'all 0.2s ease'
+            ,whiteSpace: 'nowrap', // keep "How to Play" on one line
+            flexShrink: 0
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'linear-gradient(145deg, #059669, #047857)';
@@ -420,6 +464,8 @@ export function Header() {
             textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
             cursor: 'pointer',
             transition: 'all 0.2s ease'
+            ,whiteSpace: 'nowrap',
+            flexShrink: 0
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'linear-gradient(145deg, #5b21b6, #4c1d95)';
@@ -454,7 +500,7 @@ export function Header() {
             justifyContent: 'center',
             pointerEvents: 'auto',
           }}
-          onClick={() => setShowAvatarModal && setShowAvatarModal(false)}
+          onClick={() => setShowAvatarModal?.(false)}
           aria-modal="true"
           role="dialog"
         >
@@ -481,7 +527,7 @@ export function Header() {
           >
             <div className="my-cards-header" style={{ padding: '20px 24px', borderBottom: '1px solid rgba(74,74,106,0.9)', background: 'linear-gradient(145deg, #2a2a3e, #1e1e2e)', borderTopLeftRadius: 16, borderTopRightRadius: 16, width: '100%' }}>
               <h3 className="my-cards-title" style={{ fontSize: '1.3rem', color: '#fff', margin: 0 }}>Edit Avatar &amp; Nickname</h3>
-              <button className="my-cards-close" style={{ fontSize: '2rem', color: '#aaa', background: 'none', border: 'none', cursor: 'pointer', width: 32, height: 32, borderRadius: '50%', position: 'absolute', top: 18, right: 18 }} onClick={() => setShowAvatarModal && setShowAvatarModal(false)}>×</button>
+              <button className="my-cards-close" style={{ fontSize: '2rem', color: '#aaa', background: 'none', border: 'none', cursor: 'pointer', width: 32, height: 32, borderRadius: '50%', position: 'absolute', top: 18, right: 18 }} onClick={() => setShowAvatarModal?.(false)}>×</button>
             </div>
             <div className="my-cards-content" style={{ width: '100%', padding: '32px 32px 24px 32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
               {/* Avatar preview with border and pendant (pendant outside top-left, 45° tilt, half over border) */}
@@ -509,8 +555,9 @@ export function Header() {
                     if (file) {
                       const reader = new FileReader();
                       reader.onload = () => {
-                        setAvatar(String(reader.result || ''));
-                        localStorage.setItem('userAvatar', String(reader.result || ''));
+                        const result = String(reader.result || '');
+                        setAvatar(result);
+                        demoStorage.setItem('userAvatar', result);
                       };
                       reader.readAsDataURL(file);
                     }
@@ -522,7 +569,7 @@ export function Header() {
                 value={nickname}
                 onChange={e => {
                   setNickname(e.target.value);
-                  localStorage.setItem('userNickname', e.target.value);
+                  demoStorage.setItem('userNickname', e.target.value);
                 }}
                 placeholder="Enter nickname"
                 maxLength={16}
@@ -536,7 +583,7 @@ export function Header() {
                 <button
                   type="button"
                   style={{ background: '#23233e', color: '#aaa', padding: '9px 18px', borderRadius: 10, border: 'none', fontWeight: 600, fontSize: '1rem', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
-                  onClick={() => setShowAvatarModal && setShowAvatarModal(false)}
+                  onClick={() => setShowAvatarModal?.(false)}
                 >
                   Cancel
                 </button>
@@ -544,12 +591,12 @@ export function Header() {
                   type="button"
                   style={{ background: (!nickname.trim() || nickname.length > 16 || !!nicknameError) ? '#666' : '#4a4a6a', color: '#fff', padding: '9px 18px', borderRadius: 10, border: 'none', fontWeight: 600, fontSize: '1rem', cursor: (!nickname.trim() || nickname.length > 16 || !!nicknameError) ? 'not-allowed' : 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
                   onClick={() => {
-                    setShowAvatarModal && setShowAvatarModal(false);
-                    localStorage.setItem('userAvatar', avatar);
-                    localStorage.setItem('userNickname', nickname);
-                    localStorage.setItem('userAvatarBorder', String(selectedBorder));
+                    setShowAvatarModal?.(false);
+                    demoStorage.setItem('userAvatar', avatar);
+                    demoStorage.setItem('userNickname', nickname);
+                    demoStorage.setItem('userAvatarBorder', String(selectedBorder));
                     // pendant not used; ensure no stale pendant data remains
-                    localStorage.removeItem('userAvatarPendant');
+                    demoStorage.removeItem('userAvatarPendant');
                   }}
                   disabled={!nickname.trim() || nickname.length > 16 || !!nicknameError}
                 >
