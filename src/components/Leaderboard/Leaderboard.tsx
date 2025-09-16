@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import type { LeaderboardEntry } from './LeaderboardEntry';
 import './Leaderboard.css';
-import { updateLeaderboard } from './updateLeaderboard';
 import { achievements } from '../../data/achievements';
 
 interface LeaderboardModalProps {
